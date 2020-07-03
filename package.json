@@ -1,0 +1,20 @@
+{
+  "name": "@alanshaw/drand-client",
+  "version": "0.0.0",
+  "description": "A client to the drand randomness beacon network.",
+  "type": "module",
+  "main": "./drand.js",
+  "scripts": {
+    "test": "ava -v -T 10m",
+    "lint": "standard"
+  },
+  "author": "Alan Shaw",
+  "license": "MIT",
+  "devDependencies": {
+    "abort-controller": "^3.0.0",
+    "ava": "^3.9.0",
+    "node-fetch": "^2.6.0",
+    "standard": "^14.3.4"
+  },
+  "dependencies": {}
+}
