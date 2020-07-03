@@ -40,6 +40,10 @@ class Optimizing {
     }
   }
 
+  roundAt (time) {
+    return this._clients[0].roundAt(time)
+  }
+
   async close () {
     return Promise.all(this._clients.map(c => c.close()))
   }
