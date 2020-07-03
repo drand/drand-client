@@ -13,7 +13,7 @@ const TESTNET_URLS = [
   'http://pl-sin.testnet.drand.sh'
 ]
 
-test('should get latest randomness from testnet', async t => {
+test('should get latest randomness', async t => {
   const drand = await Client.wrap(
     HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
@@ -22,7 +22,7 @@ test('should get latest randomness from testnet', async t => {
   t.true(rand.round > 1)
 })
 
-test('should get specific randomness round from testnet', async t => {
+test('should get specific randomness round', async t => {
   const drand = await Client.wrap(
     HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
@@ -55,7 +55,7 @@ test('should watch for randomness', async t => {
   let i = 0
   for await (const rand of drand.watch({ signal: controller.signal })) {
     const expectedRound = drand.roundAt(Date.now())
-    t.true(rand.round, expectedRound)
+    t.is(rand.round, expectedRound)
     if (i > 2) {
       break
     }

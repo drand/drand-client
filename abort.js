@@ -1,6 +1,14 @@
 /* eslint-env browser */
 
-export function withParent (parentSignal) {
+export class AbortError extends Error {
+  constructor (message) {
+    super(message)
+    this.type = 'aborted'
+    this.name = 'AbortError'
+  }
+}
+
+export function controllerWithParent (parentSignal) {
   const controller = new AbortController()
 
   if (parentSignal == null) {

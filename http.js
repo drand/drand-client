@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import * as AbortFactory from './abort-factory.js'
+import { controllerWithParent } from './abort.js'
 import PollingWatcher from './polling-watcher.js'
 
 export default class HTTP {
@@ -20,7 +20,7 @@ export default class HTTP {
       round = 0
     }
 
-    const controller = AbortFactory.withParent(options.signal)
+    const controller = controllerWithParent(options.signal)
     this._controllers.push(controller)
 
     try {

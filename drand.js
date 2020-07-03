@@ -18,6 +18,7 @@ async function makeClient (cfg) {
   }
 
   // TODO: watcher
+  // TODO: verifiers
 
   const client = new Optimizing(cfg.clients)
   await client.start()

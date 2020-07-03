@@ -1,10 +1,20 @@
-import * as AbortFactory from './abort-factory.js'
+import { AbortError, controllerWithParent } from './abort.js'
 
-async function forNextRound (round, chainInfo) {
+async function forNextRound (round, chainInfo, { signal }) {
   const time = (chainInfo.genesis_time * 1000) + ((round + 1) * (chainInfo.period * 1000))
   const delta = time - Date.now()
   if (delta <= 0) return
-  return new Promise(resolve => setTimeout(resolve, delta))
+  return new Promise((resolve, reject) => {
+    const timeoutID = setTimeout(() => {
+      signal.removeEventListener('abort', onAbort)
+      resolve()
+    }, delta)
+    const onAbort = () => {
+      clearTimeout(timeoutID)
+      reject(new AbortError())
+    }
+    signal.addEventListener('abort', onAbort)
+  })
 }
 
 export default class PollingWatcher {
@@ -17,7 +27,7 @@ export default class PollingWatcher {
   async * Watch (options) {
     options = options || {}
 
-    const controller = AbortFactory.withParent(options.signal)
+    const controller = controllerWithParent(options.signal)
     this._controllers.push(controller)
 
     try {
@@ -28,7 +38,7 @@ export default class PollingWatcher {
 
       while (true) {
         round = this._client.roundAt(Date.now())
-        await forNextRound(round, this._chainInfo)
+        await forNextRound(round, this._chainInfo, { signal: controller.signal })
         rand = await this._client.get(round + 1, { signal: controller.signal })
         yield rand
       }
