@@ -1,6 +1,6 @@
 {
   "name": "@alanshaw/drand-client",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A client to the drand randomness beacon network.",
   "type": "module",
   "main": "./drand.js",
