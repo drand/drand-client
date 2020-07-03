@@ -1,6 +1,5 @@
 /* eslint-env browser */
 
-import fetch from 'node-fetch'
 import * as AbortFactory from './abort-factory.js'
 import PollingWatcher from './polling-watcher.js'
 
