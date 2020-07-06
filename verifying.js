@@ -1,6 +1,6 @@
 /* eslint-env browser */
 /* global Go fs drand */
-import './wasm/wasm_exec.cjs'
+import './wasm/wasm_exec.js'
 
 class Verifier {
   static instance () {

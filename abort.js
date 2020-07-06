@@ -2,9 +2,10 @@
 
 export class AbortError extends Error {
   constructor (message) {
-    super(message)
+    super(message || 'The operation was aborted')
     this.type = 'aborted'
     this.name = 'AbortError'
+    this.code = 'ABORT_ERR'
   }
 }
 
