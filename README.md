@@ -4,7 +4,7 @@ A client to the drand randomness beacon network.
 
 ⚠️ This client uses esmodules and is expected to be run in the browser. If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch) and [`AbortController`](http://npm.im/abort-controller) as globals.
 
-⚠️ This client does not yet support _verification_ and it should NOT be used in production for anything security critical.
+⚠️ This client does not yet support full/partial chain _verification_ and it should NOT be used in production for anything security critical.
 
 ## Usage
 

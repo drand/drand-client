@@ -24,7 +24,7 @@ export default class PollingWatcher {
     this._controllers = []
   }
 
-  async * Watch (options) {
+  async * watch (options) {
     options = options || {}
 
     const controller = controllerWithParent(options.signal)

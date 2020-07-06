@@ -62,3 +62,12 @@ test('should watch for randomness', async t => {
     i++
   }
 })
+
+test('should disable beacon verification', async t => {
+  const drand = await Client.wrap(
+    HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
+    { chainHash: TESTNET_CHAIN_HASH, disableBeaconVerification: true }
+  )
+  const rand = await drand.get()
+  t.true(rand.round > 1)
+})

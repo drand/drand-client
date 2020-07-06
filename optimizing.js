@@ -1,4 +1,4 @@
-class Optimizing {
+export default class Optimizing {
   // TODO: options with default request timeout, concurrency and speed test interval
   constructor (clients) {
     this._clients = clients
@@ -48,5 +48,3 @@ class Optimizing {
     return Promise.all(this._clients.map(c => c.close()))
   }
 }
-
-export default Optimizing

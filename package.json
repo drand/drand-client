@@ -6,7 +6,9 @@
   "main": "./drand.js",
   "scripts": {
     "test": "ava -v -T 10m",
-    "lint": "standard"
+    "lint": "standard",
+    "build": "npm run build:wasm",
+    "build:wasm": "cd wasm && GOOS=js GOARCH=wasm go build -ldflags=\"-s -w\" -o drand.wasm main.go"
   },
   "author": "Alan Shaw",
   "license": "MIT",

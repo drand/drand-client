@@ -1,5 +1,6 @@
 import HTTP from './http.js'
 import Optimizing from './optimizing.js'
+import Verifying from './verifying.js'
 
 async function wrap (clients, options) {
   clients = await Promise.resolve(clients)
@@ -18,7 +19,10 @@ async function makeClient (cfg) {
   }
 
   // TODO: watcher
-  // TODO: verifiers
+
+  if (!cfg.disableBeaconVerification) {
+    cfg.clients = cfg.clients.map(c => new Verifying(c))
+  }
 
   const client = new Optimizing(cfg.clients)
   await client.start()

@@ -44,12 +44,14 @@ export default class HTTP {
     const res = await fetch(`${url}/info`, { signal: options.signal })
     if (!res.ok) throw new Error(`unexpected HTTP status ${res.status} for URL ${url}/info`)
     const info = await res.json()
-    // TODO: verify chain hash
+    if (chainHash && chainHash !== info.hash) {
+      throw new Error(`${url} does not advertise the expected drand group (${info.hash} vs ${chainHash})`)
+    }
     return info
   }
 
   async * watch (options) {
-    yield * this._watcher.Watch(options)
+    yield * this._watcher.watch(options)
   }
 
   roundAt (time) {
