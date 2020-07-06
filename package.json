@@ -18,5 +18,13 @@
     "node-fetch": "^2.6.0",
     "standard": "^14.3.4"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alanshaw/drand-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alanshaw/drand-client/issues"
+  },
+  "homepage": "https://github.com/alanshaw/drand-client#readme"
 }
