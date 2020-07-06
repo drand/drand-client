@@ -17,7 +17,8 @@ class Verifier {
           const data = new Uint8Array(await fs.promises.readFile(`${dirname}/wasm/drand.wasm`))
           result = await WebAssembly.instantiate(data, go.importObject)
         } else {
-          result = await WebAssembly.instantiateStreaming(fetch('./wasm/drand.wasm'), go.importObject)
+          const url = `${import.meta.url.split('/').slice(0, -1).join('/')}/wasm/drand.wasm`
+          result = await WebAssembly.instantiateStreaming(fetch(url), go.importObject)
         }
         go.run(result.instance)
         return drand // window.drand / global.drand should now be available
