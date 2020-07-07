@@ -13,7 +13,8 @@ export default class Optimizing {
     // TODO: race with concurrency
     for (const client of this._clients) {
       try {
-        return client.get(round, options)
+        const rand = await client.get(round, options)
+        return rand
       } catch (err) {
         if (client === this._clients[this._clients.length - 1]) {
           throw err
@@ -31,7 +32,8 @@ export default class Optimizing {
   async info (options) {
     for (const client of this._clients) {
       try {
-        return client.info(options)
+        const info = await client.info(options)
+        return info
       } catch (err) {
         if (client === this._clients[this._clients.length - 1]) {
           throw err

@@ -73,6 +73,6 @@ export default class Verifying {
   }
 
   async close () {
-    this._client.close()
+    return this._client.close()
   }
 }
