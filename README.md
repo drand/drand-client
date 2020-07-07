@@ -1,5 +1,9 @@
 # drand client
 
+[![Build Status](https://travis-ci.org/alanshaw/drand-client.svg?branch=master)](https://travis-ci.org/alanshaw/drand-client)
+[![dependencies Status](https://david-dm.org/alanshaw/drand-client/status.svg)](https://david-dm.org/alanshaw/drand-client)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 A client to the drand randomness beacon network.
 
 ⚠️ This client uses esmodules and is expected to be run in the browser. If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch) and [`AbortController`](http://npm.im/abort-controller) as globals.
@@ -43,6 +47,10 @@ for await (const res of drand.watch()) {
     console.log(res)
 }
 ```
+
+## Contribute
+
+Feel free to dive in! [Open an issue](https://github.com/alanshaw/drand-client/issues/new) or submit PRs.
 
 ## License
 
