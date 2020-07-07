@@ -11,14 +11,18 @@ class Verifier {
       try {
         // TODO: switch to TinyGo when math/big works for smaller wasm file and non-global exports.
         const go = new Go()
+        const url = `${import.meta.url.split('/').slice(0, -1).join('/')}/wasm/drand.wasm`
         let result
         if (typeof fs !== 'undefined' && fs.promises) { // wasm_exec puts fs on global object in Node.js
           const dirname = new URL(import.meta.url).pathname.split('/').slice(0, -1).join('/')
           const data = new Uint8Array(await fs.promises.readFile(`${dirname}/wasm/drand.wasm`))
           result = await WebAssembly.instantiate(data, go.importObject)
-        } else {
-          const url = `${import.meta.url.split('/').slice(0, -1).join('/')}/wasm/drand.wasm`
+        } else if (WebAssembly.instantiateStreaming) {
           result = await WebAssembly.instantiateStreaming(fetch(url), go.importObject)
+        } else {
+          const res = await fetch(url)
+          if (!res.ok) throw new Error(`unexpected HTTP status fetching WASM ${res.status}`)
+          result = await WebAssembly.instantiate(await res.arrayBuffer(), go.importObject)
         }
         go.run(result.instance)
         return drand // window.drand / global.drand should now be available
