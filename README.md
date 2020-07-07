@@ -6,16 +6,23 @@
 
 A client to the drand randomness beacon network.
 
-⚠️ This client uses esmodules and is expected to be run in the browser. If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch) and [`AbortController`](http://npm.im/abort-controller) as globals.
+⚠️ This client uses esmodules and is expected to be run in the browser or deno. If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch) and [`AbortController`](http://npm.im/abort-controller) as globals.
 
 ⚠️ This client does not yet support full/partial chain _verification_ and it should NOT be used in production for anything security critical.
+
+## Install
+
+In the browser or deno you can grab and use the client from a CDN e.g. https://cdn.jsdelivr.net/npm/@alanshaw/drand-client/drand.js. In Node.js, install with `npm install @alanshaw/drand-client`.
 
 ## Usage
 
 The `drand-client` supports multiple transports, although only HTTP is available currently.
 
-```js
-import Client, { HTTP } from 'drand-client'
+### Browser
+
+```html
+<script type="module">
+import Client, { HTTP } from 'https://cdn.jsdelivr.net/npm/@alanshaw/drand-client/drand.js'
 
 const chainHash = '138a324aa6540f93d0dad002aa89454b1bec2b6e948682cde6bd4db40f4b7c9b' // (hex encoded)
 const drand = await Client.wrap(
@@ -25,6 +32,34 @@ const drand = await Client.wrap(
 const res = await drand.get()
 
 console.log(res)
+</script>
+```
+
+### Deno
+
+Usage in [deno](https://deno.land/) is the same as the [browser](#browser), minus the HTML `<script>` tag. Ensure you run your script with the the `--allow-net` flag e.g. `deno run --allow-net client.js`.
+
+### Node.js
+
+If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch) and [`AbortController`](http://npm.im/abort-controller) as globals e.g.
+
+```js
+import Client, { HTTP } from '@alanshaw/drand-client'
+import fetch from 'node-fetch'
+import AbortController from 'abort-controller'
+
+global.fetch = fetch
+global.AbortController = AbortController
+
+// Use as per browser example...
+```
+
+**From common.js:**
+
+```js
+global.fetch = require('node-fetch')
+global.AbortController = require('abort-controller')
+const { default: Client, HTTP } = await import('@alanshaw/drand-client')
 ```
 
 ### Get a specific round
