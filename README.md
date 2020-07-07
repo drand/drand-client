@@ -72,7 +72,7 @@ global.AbortController = AbortController
 import Client, { HTTP } from 'https://cdn.jsdelivr.net/npm/@alanshaw/drand-client/drand.js'
 ```
 
-### `Client.wrap([]Client | Promise<[]Client>, options?: object): Promise<Client>`
+#### `Client.wrap([]Client | Promise<[]Client>, options?: object): Promise<Client>`
 
 Wrap provides a single entrypoint for wrapping concrete client implementation(s) with configured aggregation, caching, and retry logic.
 
@@ -89,7 +89,7 @@ e.g.
 const client = await Client.wrap([/* ... */], options)
 ```
 
-### `client.get(round?: number, options?: object): Promise<object>`
+#### `client.get(round?: number, options?: object): Promise<object>`
 
 Returns the randomness at `round` or an error. Requesting round = 0 will return randomness for the most recent known round, bounded at minimum to `client.roundAt(Date.now())`.
 
@@ -110,7 +110,7 @@ const res = await client.get(round)
 */
 ```
 
-### `client.info(options?: object): Promise<object>`
+#### `client.info(options?: object): Promise<object>`
 
 Info returns the parameters of the chain this client is connected to. The public key, when it started, and how frequently it updates.
 
@@ -130,7 +130,7 @@ const info = await client.info()
 */
 ```
 
-### `client.watch(options?: object): AsyncIterable<object>`
+#### `client.watch(options?: object): AsyncIterable<object>`
 
 Watch returns an async iterable that yields new randomness beacons as they become available.
 
@@ -145,11 +145,11 @@ for await (const res of client.watch()) {
 // See output example from .get
 ```
 
-### `new HTTP(url: string, chainInfo: object, options?: object)`
+#### `new HTTP(url: string, chainInfo: object, options?: object)`
 
 TODO
 
-### `HTTP.forURLs([]string, chainHash): Promise<[]Client>`
+#### `HTTP.forURLs([]string, chainHash): Promise<[]Client>`
 
 TODO
 
