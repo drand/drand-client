@@ -9,7 +9,7 @@
   <a href="https://www.jsdelivr.com/package/npm/drand-client" title="jsdelivr downloads"><img src="https://data.jsdelivr.com/v1/package/npm/drand-client/badge?style=rounded" /></a>
 </p>
 
-<p align="center">A <strong>client</strong> to the drand randomness beacon network.</p>
+<p align="center">A JavaScript <strong>client</strong> to the drand randomness beacon network.</p>
 
 <p align="center">⚠️ This client does not yet support full/partial chain <em>verification</em>.</p>
 
