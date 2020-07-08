@@ -1,13 +1,17 @@
 # drand client
 
-[![Build Status](https://travis-ci.org/drand/drand-client.svg?branch=master)](https://travis-ci.org/drand/drand-client)
-[![dependencies Status](https://david-dm.org/drand/drand-client/status.svg)](https://david-dm.org/drand/drand-client)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![](https://data.jsdelivr.com/v1/package/npm/drand-client/badge?style=rounded)](https://www.jsdelivr.com/package/npm/drand-client)
+<p align="center"><img src="logo.png" width="220" /></p>
 
-A client to the drand randomness beacon network.
+<p align="center">
+  <a href="https://travis-ci.org/drand/drand-client" title="Build Status"><img src="https://travis-ci.org/drand/drand-client.svg?branch=master" /></a>
+  <a href="https://david-dm.org/drand/drand-client" title="dependencies Status"><img src="https://david-dm.org/drand/drand-client/status.svg" /></a>
+  <a href="https://standardjs.com" title="JavaScript Style Guide"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" /></a>
+  <a href="https://www.jsdelivr.com/package/npm/drand-client" title="jsdelivr downloads"><img src="https://data.jsdelivr.com/v1/package/npm/drand-client/badge?style=rounded" /></a>
+</p>
 
-⚠️ This client does not yet support full/partial chain _verification_.
+<p align="center">A <strong>client</strong> to the drand randomness beacon network.</p>
+
+<p align="center">⚠️ This client does not yet support full/partial chain <em>verification</em>.</p>
 
 ## Install
 
