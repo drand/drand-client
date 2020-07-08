@@ -13,6 +13,28 @@
 
 <p align="center">⚠️ This client does not yet support full/partial chain <em>verification</em>.</p>
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [drand client](#drand-client)
+  - [Install](#install)
+  - [Usage](#usage)
+    - [Browser](#browser)
+    - [Deno](#deno)
+    - [Node.js](#nodejs)
+  - [API](#api)
+      - [`Client.wrap([]Client | Promise<[]Client>, options?: object): Promise<Client>`](#clientwrapclient--promiseclient-options-object-promiseclient)
+      - [`client.get(round?: number, options?: object): Promise<object>`](#clientgetround-number-options-object-promiseobject)
+      - [`client.info(options?: object): Promise<object>`](#clientinfooptions-object-promiseobject)
+      - [`client.watch(options?: object): AsyncIterable<object>`](#clientwatchoptions-object-asynciterableobject)
+      - [`new HTTP(url: string, chainInfo: object, options?: object)`](#new-httpurl-string-chaininfo-object-options-object)
+      - [`HTTP.forURLs([]string, chainHash): Promise<[]Client>`](#httpforurlsstring-chainhash-promiseclient)
+  - [Contribute](#contribute)
+  - [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Install
 
 In the browser or deno you can grab and use the client from a CDN e.g. https://cdn.jsdelivr.net/npm/drand-client/drand.js. In Node.js, install with `npm install drand-client`.
