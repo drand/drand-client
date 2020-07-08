@@ -174,11 +174,11 @@ for await (const res of client.watch()) {
 
 #### `new HTTP(url: string, chainInfo: object, options?: object)`
 
-TODO
+Creates a new HTTP client when the chain info is already known.
 
 #### `HTTP.forURLs([]string, chainHash): Promise<[]Client>`
 
-TODO
+Provides a shortcut for creating a set of HTTP clients for a set of URLs.
 
 ## Contribute
 
