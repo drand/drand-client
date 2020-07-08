@@ -26,5 +26,14 @@
   "bugs": {
     "url": "https://github.com/drand/drand-client/issues"
   },
-  "homepage": "https://github.com/drand/drand-client#readme"
+  "homepage": "https://github.com/drand/drand-client#readme",
+  "keywords": [
+    "drand",
+    "random",
+    "randomness",
+    "client",
+    "kyber",
+    "bls",
+    "bls12381"
+  ]
 }
