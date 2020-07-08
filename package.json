@@ -1,5 +1,5 @@
 {
-  "name": "@alanshaw/drand-client",
+  "name": "drand-client",
   "version": "0.1.1",
   "description": "A client to the drand randomness beacon network.",
   "type": "module",
@@ -21,10 +21,10 @@
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alanshaw/drand-client.git"
+    "url": "git+https://github.com/drand/drand-client.git"
   },
   "bugs": {
-    "url": "https://github.com/alanshaw/drand-client/issues"
+    "url": "https://github.com/drand/drand-client/issues"
   },
-  "homepage": "https://github.com/alanshaw/drand-client#readme"
+  "homepage": "https://github.com/drand/drand-client#readme"
 }

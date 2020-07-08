@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 
-	"github.com/alanshaw/drand-client/wasm/key"
+	"github.com/drand/drand-client/wasm/key"
 	"github.com/drand/kyber"
 )
 

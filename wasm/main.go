@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"syscall/js"
 
-	"github.com/alanshaw/drand-client/wasm/chain"
-	"github.com/alanshaw/drand-client/wasm/key"
+	"github.com/drand/drand-client/wasm/chain"
+	"github.com/drand/drand-client/wasm/key"
 )
 
 var done = make(chan struct{})

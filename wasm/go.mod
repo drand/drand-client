@@ -1,4 +1,4 @@
-module github.com/alanshaw/drand-client/wasm
+module github.com/drand/drand-client/wasm
 
 go 1.14
 
