@@ -1,7 +1,8 @@
 import { AbortError, controllerWithParent } from './abort.js'
+import Chain from './chain.js'
 
 async function forNextRound (round, chainInfo, { signal }) {
-  const time = (chainInfo.genesis_time * 1000) + ((round + 1) * (chainInfo.period * 1000))
+  const time = Chain.roundTime(round + 1, chainInfo.genesis_time * 1000, chainInfo.period * 1000)
   const delta = time - Date.now()
   if (delta <= 0) return
   return new Promise((resolve, reject) => {

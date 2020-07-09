@@ -7,7 +7,7 @@ import AbortController from 'abort-controller'
 global.fetch = fetch
 global.AbortController = AbortController
 
-const TESTNET_CHAIN_HASH = 'bec303dc34b6d535388773470fa064bdf9aa50e6064fcf02ca96d90ec5cab846'
+const TESTNET_CHAIN_HASH = '5107ecb951646809bf9d56c44168182986e8469aadb906597ede430e24a0408b'
 const TESTNET_URLS = [
   'http://pl-eu.testnet.drand.sh',
   'http://pl-us.testnet.drand.sh',

@@ -2,6 +2,7 @@
 
 import { controllerWithParent } from './abort.js'
 import PollingWatcher from './polling-watcher.js'
+import Chain from './chain.js'
 
 export default class HTTP {
   constructor (url, chainInfo, options) {
@@ -55,7 +56,7 @@ export default class HTTP {
   }
 
   roundAt (time) {
-    return Math.floor((time - (this._chainInfo.genesis_time * 1000)) / (this._chainInfo.period * 1000))
+    return Chain.roundAt(time, this._chainInfo.genesis_time * 1000, this._chainInfo.period * 1000)
   }
 
   async close () {
