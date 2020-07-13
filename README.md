@@ -120,6 +120,7 @@ const client = await Client.wrap([/* ... */], options)
 
 Returns the randomness at `round` or an error. Requesting round = 0 will return randomness for the most recent known round, bounded at minimum to `client.roundAt(Date.now())`.
 
+* `options.noCache: boolean` - bypass the cache.
 * `options.signal: AbortSignal` - a signal obtained from an [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) that can be used to abort the request.
 
 e.g.
@@ -141,6 +142,7 @@ const res = await client.get(round)
 
 Info returns the parameters of the chain this client is connected to. The public key, when it started, and how frequently it updates.
 
+* `options.noCache: boolean` - bypass the cache.
 * `options.signal: AbortSignal` - a signal obtained from an [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) that can be used to abort the request.
 
 e.g.
