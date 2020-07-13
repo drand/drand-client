@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-const SPEED_TEST_INTERVAL = 1000 * 30
+const SPEED_TEST_INTERVAL = 1000 * 60 * 5
 
 export default class Optimizing {
   // TODO: options for default request timeout and concurrency
