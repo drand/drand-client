@@ -27,6 +27,7 @@
       - [`client.get(round?: number, options?: object): Promise<object>`](#clientgetround-number-options-object-promiseobject)
       - [`client.info(options?: object): Promise<object>`](#clientinfooptions-object-promiseobject)
       - [`client.watch(options?: object): AsyncIterable<object>`](#clientwatchoptions-object-asynciterableobject)
+      - [`client.close(): Promise`](#clientclose-promise)
       - [`new HTTP(url: string, chainInfo: object, options?: object)`](#new-httpurl-string-chaininfo-object-options-object)
       - [`HTTP.forURLs([]string, chainHash): Promise<[]Client>`](#httpforurlsstring-chainhash-promiseclient)
   - [Contribute](#contribute)
@@ -170,6 +171,10 @@ for await (const res of client.watch()) {
 }
 // See output example from .get
 ```
+
+#### `client.close(): Promise`
+
+Halts the client, any background processes it runs and any in-flight `get`, `watch` or `info` requests.
 
 #### `new HTTP(url: string, chainInfo: object, options?: object)`
 
