@@ -16,22 +16,22 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
-- [drand client](#drand-client)
-  - [Install](#install)
-  - [Usage](#usage)
-    - [Browser](#browser)
-    - [Deno](#deno)
-    - [Node.js](#nodejs)
-  - [API](#api)
-      - [`Client.wrap([]Client | Promise<[]Client>, options?: object): Promise<Client>`](#clientwrapclient--promiseclient-options-object-promiseclient)
-      - [`client.get(round?: number, options?: object): Promise<object>`](#clientgetround-number-options-object-promiseobject)
-      - [`client.info(options?: object): Promise<object>`](#clientinfooptions-object-promiseobject)
-      - [`client.watch(options?: object): AsyncIterable<object>`](#clientwatchoptions-object-asynciterableobject)
-      - [`client.close(): Promise`](#clientclose-promise)
-      - [`new HTTP(url: string, chainInfo: object, options?: object)`](#new-httpurl-string-chaininfo-object-options-object)
-      - [`HTTP.forURLs([]string, chainHash): Promise<[]Client>`](#httpforurlsstring-chainhash-promiseclient)
-  - [Contribute](#contribute)
-  - [License](#license)
+- [Install](#install)
+- [Usage](#usage)
+  - [Browser](#browser)
+  - [Deno](#deno)
+  - [Node.js](#nodejs)
+- [API](#api)
+    - [`Client.wrap([]Client | Promise<[]Client>, options?: object): Promise<Client>`](#clientwrapclient--promiseclient-options-object-promiseclient)
+    - [`client.get(round?: number, options?: object): Promise<object>`](#clientgetround-number-options-object-promiseobject)
+    - [`client.info(options?: object): Promise<object>`](#clientinfooptions-object-promiseobject)
+    - [`client.watch(options?: object): AsyncIterable<object>`](#clientwatchoptions-object-asynciterableobject)
+    - [`client.roundAt(time): number`](#clientroundattime-number)
+    - [`client.close(): Promise`](#clientclose-promise)
+    - [`new HTTP(url: string, chainInfo: object, options?: object)`](#new-httpurl-string-chaininfo-object-options-object)
+    - [`HTTP.forURLs([]string, chainHash): Promise<[]Client>`](#httpforurlsstring-chainhash-promiseclient)
+- [Contribute](#contribute)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -171,6 +171,10 @@ for await (const res of client.watch()) {
 }
 // See output example from .get
 ```
+
+#### `client.roundAt(time): number`
+
+Returns the round number for the passed time (in milliseconds from Unix epoch).
 
 #### `client.close(): Promise`
 
