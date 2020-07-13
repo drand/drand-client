@@ -21,7 +21,7 @@ export default class Optimizing {
     const run = async () => {
       const stats = await Promise.all(this._clients.map(async c => {
         try {
-          const res = await this._get(c, 1)
+          const res = await this._get(c, 1, { noCache: true })
           return res.stat
         } catch (_) {
           // An abort happened

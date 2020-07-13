@@ -25,7 +25,7 @@ export default class HTTP {
     this._controllers.push(controller)
 
     try {
-      const url = `${this._url}/public/${round || 'latest'}`
+      const url = `${this._url}/public/${round || 'latest'}${options.noCache ? '?' + Date.now() : ''}`
       const res = await fetch(url, { signal: controller.signal })
       if (!res.ok) throw new Error(`unexpected HTTP status ${res.status} for URL ${url}`)
       const rand = await res.json()
