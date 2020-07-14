@@ -6,6 +6,7 @@ async function forNextRound (round, chainInfo, { signal }) {
   const delta = time - Date.now()
   if (delta <= 0) return
   return new Promise((resolve, reject) => {
+    if (signal.aborted) return reject(new AbortError())
     const timeoutID = setTimeout(() => {
       signal.removeEventListener('abort', onAbort)
       resolve()

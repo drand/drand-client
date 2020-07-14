@@ -25,7 +25,7 @@ export default class HTTP {
     this._controllers.push(controller)
 
     try {
-      const url = `${this._url}/public/${round || 'latest'}`
+      const url = `${this._url}/public/${round || 'latest'}${options.noCache ? '?' + Date.now() : ''}`
       const res = await fetch(url, { signal: controller.signal })
       if (!res.ok) throw new Error(`unexpected HTTP status ${res.status} for URL ${url}`)
       const rand = await res.json()
@@ -42,7 +42,7 @@ export default class HTTP {
 
   static async info (url, chainHash, options) {
     options = options || {}
-    const res = await fetch(`${url}/info`, { signal: options.signal })
+    const res = await fetch(`${url}/info${options.noCache ? '?' + Date.now() : ''}`, { signal: options.signal })
     if (!res.ok) throw new Error(`unexpected HTTP status ${res.status} for URL ${url}/info`)
     const info = await res.json()
     if (chainHash && chainHash !== info.hash) {
