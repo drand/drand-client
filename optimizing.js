@@ -41,7 +41,7 @@ export default class Optimizing {
     for (const next of stats) {
       for (const curr of this._stats) {
         if (curr.client === next.client) {
-          if (curr.startTime < next.startTime) {
+          if (curr.startTime <= next.startTime) {
             curr.rtt = next.rtt
             curr.startTime = next.startTime
           }
