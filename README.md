@@ -63,7 +63,7 @@ console.log(res)
 
 ### Deno
 
-Usage in Deno is the same as the [browser](#browser), minus the HTML `<script>` tag. Ensure you run your script with the the `--allow-net` flag e.g. `deno run --allow-net client.js`.
+Usage in Deno is the same as the [browser](#browser), minus the HTML `<script>` tag. Ensure you run your script with the `--allow-net` flag e.g. `deno run --allow-net client.js`.
 
 ### Node.js
 
