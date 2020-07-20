@@ -14,7 +14,7 @@
   "license": "(Apache-2.0 OR MIT)",
   "devDependencies": {
     "abort-controller": "^3.0.0",
-    "ava": "^3.9.0",
+    "ava": "^3.10.1",
     "node-fetch": "^2.6.0",
     "standard": "^14.3.4"
   },
