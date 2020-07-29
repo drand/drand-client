@@ -37,7 +37,13 @@
 
 ## Install
 
-In the browser or [Deno](https://deno.land) you can grab and use the client from a CDN e.g. https://cdn.jsdelivr.net/npm/drand-client/drand.js. In [Node.js](https://nodejs.org), install with `npm install drand-client`.
+In the browser or [Deno](https://deno.land) you can grab and use the client from a CDN e.g. https://cdn.jsdelivr.net/npm/drand-client/drand.js.
+
+In [Node.js](https://nodejs.org), install with:
+
+```sh
+npm install drand-client
+```
 
 ## Usage
 
@@ -47,17 +53,27 @@ The `drand-client` supports multiple transports, although only HTTP is available
 
 ```html
 <script type="module">
-import Client, { HTTP } from 'https://cdn.jsdelivr.net/npm/drand-client/drand.js'
+  import Client, { HTTP } from 'https://cdn.jsdelivr.net/npm/drand-client/drand.js'
 
-const chainHash = '138a324aa6540f93d0dad002aa89454b1bec2b6e948682cde6bd4db40f4b7c9b' // (hex encoded)
-const options = { chainHash }
-const client = await Client.wrap(
-  HTTP.forURLs(['http://drand.network'], chainHash),
-  options
-)
-const res = await client.get() // gets the latest randomness round
+  const chainHash = '8990e7a9aaed2ffed73dbd7092123d6f289930540d7651336225dc172e51b2ce' // (hex encoded)
+  const urls = [
+    'https://api.drand.sh',
+    'https://drand.cloudflare.com'
+    // ...
+  ]
 
-console.log(res)
+  async function main() {
+    const options = { chainHash }
+
+    const client = await Client.wrap(HTTP.forURLs(urls, chainHash), options)
+
+    // e.g. use the client to get the latest randomness round:
+    const res = await client.get()
+
+    console.log(res.round, res.randomness)
+  }
+
+  main()
 </script>
 ```
 
