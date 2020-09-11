@@ -1,6 +1,7 @@
 /* eslint-env browser */
 /* global Go fs drand */
 import './wasm/wasm_exec.js'
+import drand_verify from './pkg/drand_verify.js'
 
 class Verifier {
   static instance () {
@@ -68,9 +69,11 @@ export default class Verifying {
     const start = Date.now()
     const info = await this.info(options)
     const afterInfo = Date.now()
-    const verifier = await Verifier.instance()
+    // const verifier = await Verifier.instance()
     const afterInstantiation = Date.now()
-    await verifier.verifyBeacon(info.public_key, rand)
+    //await verifier.verifyBeacon(info.public_key, rand)
+    const ok = drand_verify.verify_beacon(info.public_key, rand.round, rand.previous_signature, rand.signature)
+    if (!ok) throw new Error("Verification failed")
     const end = Date.now()
     console.log(`Verification time: ${end-start}ms (${afterInfo-start}ms info; ${afterInstantiation-afterInfo}ms instantiation; ${end-afterInstantiation}ms verify beacon)`)
     // TODO: derive the randomness from the signature
