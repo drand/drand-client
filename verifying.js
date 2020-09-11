@@ -65,9 +65,14 @@ export default class Verifying {
 
   async _verify (rand, options) {
     // TODO: full/partial chain verification
+    const start = Date.now()
     const info = await this.info(options)
+    const afterInfo = Date.now()
     const verifier = await Verifier.instance()
+    const afterInstantiation = Date.now()
     await verifier.verifyBeacon(info.public_key, rand)
+    const end = Date.now()
+    console.log(`Verification time: ${end-start}ms (${afterInfo-start}ms info; ${afterInstantiation-afterInfo}ms instantiation; ${end-afterInstantiation}ms verify beacon)`)
     // TODO: derive the randomness from the signature
     return { ...rand }
   }
