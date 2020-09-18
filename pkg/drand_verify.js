@@ -1,7 +1,5 @@
-let imports = {};
-imports['__wbindgen_placeholder__'] = module.exports;
+
 let wasm;
-const { TextDecoder } = require(String.raw`util`);
 
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
@@ -50,20 +48,56 @@ function takeObject(idx) {
 
 let WASM_VECTOR_LEN = 0;
 
-let cachegetNodeBufferMemory0 = null;
-function getNodeBufferMemory0() {
-    if (cachegetNodeBufferMemory0 === null || cachegetNodeBufferMemory0.buffer !== wasm.memory.buffer) {
-        cachegetNodeBufferMemory0 = Buffer.from(wasm.memory.buffer);
-    }
-    return cachegetNodeBufferMemory0;
+let cachedTextEncoder = new TextEncoder('utf-8');
+
+const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
+    ? function (arg, view) {
+    return cachedTextEncoder.encodeInto(arg, view);
 }
+    : function (arg, view) {
+    const buf = cachedTextEncoder.encode(arg);
+    view.set(buf);
+    return {
+        read: arg.length,
+        written: buf.length
+    };
+});
 
-function passStringToWasm0(arg, malloc) {
+function passStringToWasm0(arg, malloc, realloc) {
 
-    const len = Buffer.byteLength(arg);
-    const ptr = malloc(len);
-    getNodeBufferMemory0().write(arg, ptr, len);
-    WASM_VECTOR_LEN = len;
+    if (realloc === undefined) {
+        const buf = cachedTextEncoder.encode(arg);
+        const ptr = malloc(buf.length);
+        getUint8Memory0().subarray(ptr, ptr + buf.length).set(buf);
+        WASM_VECTOR_LEN = buf.length;
+        return ptr;
+    }
+
+    let len = arg.length;
+    let ptr = malloc(len);
+
+    const mem = getUint8Memory0();
+
+    let offset = 0;
+
+    for (; offset < len; offset++) {
+        const code = arg.charCodeAt(offset);
+        if (code > 0x7F) break;
+        mem[ptr + offset] = code;
+    }
+
+    if (offset !== len) {
+        if (offset !== 0) {
+            arg = arg.slice(offset);
+        }
+        ptr = realloc(ptr, len, len = offset + arg.length * 3);
+        const view = getUint8Memory0().subarray(ptr + offset, ptr + len);
+        const ret = encodeString(arg, view);
+
+        offset += ret.written;
+    }
+
+    WASM_VECTOR_LEN = offset;
     return ptr;
 }
 /**
@@ -80,7 +114,7 @@ function passStringToWasm0(arg, malloc) {
 * @param {string} signature_hex
 * @returns {boolean}
 */
-module.exports.verify_beacon = function(pk_hex, round, previous_signature_hex, signature_hex) {
+export function verify_beacon(pk_hex, round, previous_signature_hex, signature_hex) {
     var ptr0 = passStringToWasm0(pk_hex, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     var len0 = WASM_VECTOR_LEN;
     var ptr1 = passStringToWasm0(previous_signature_hex, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -89,22 +123,66 @@ module.exports.verify_beacon = function(pk_hex, round, previous_signature_hex, s
     var len2 = WASM_VECTOR_LEN;
     var ret = wasm.verify_beacon(ptr0, len0, round, ptr1, len1, ptr2, len2);
     return ret !== 0;
-};
+}
 
-module.exports.__wbindgen_string_new = function(arg0, arg1) {
-    var ret = getStringFromWasm0(arg0, arg1);
-    return addHeapObject(ret);
-};
+async function load(module, imports) {
+    if (typeof Response === 'function' && module instanceof Response) {
 
-module.exports.__wbindgen_rethrow = function(arg0) {
-    throw takeObject(arg0);
-};
+        if (typeof WebAssembly.instantiateStreaming === 'function') {
+            try {
+                return await WebAssembly.instantiateStreaming(module, imports);
 
-const path = require('path').join(__dirname, 'drand_verify_bg.wasm');
-const bytes = require('fs').readFileSync(path);
+            } catch (e) {
+                if (module.headers.get('Content-Type') != 'application/wasm') {
+                    console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
 
-const wasmModule = new WebAssembly.Module(bytes);
-const wasmInstance = new WebAssembly.Instance(wasmModule, imports);
-wasm = wasmInstance.exports;
-module.exports.__wasm = wasm;
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        const bytes = await module.arrayBuffer();
+        return await WebAssembly.instantiate(bytes, imports);
+
+    } else {
+
+        const instance = await WebAssembly.instantiate(module, imports);
+
+        if (instance instanceof WebAssembly.Instance) {
+            return { instance, module };
+
+        } else {
+            return instance;
+        }
+    }
+}
+
+async function init(input) {
+    if (typeof input === 'undefined') {
+        input = import.meta.url.replace(/\.js$/, '_bg.wasm');
+    }
+    const imports = {};
+    imports.wbg = {};
+    imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
+        var ret = getStringFromWasm0(arg0, arg1);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbindgen_rethrow = function(arg0) {
+        throw takeObject(arg0);
+    };
+
+    if (typeof input === 'string' || (typeof Request === 'function' && input instanceof Request) || (typeof URL === 'function' && input instanceof URL)) {
+        input = fetch(input);
+    }
+
+    const { instance, module } = await load(await input, imports);
+
+    wasm = instance.exports;
+    init.__wbindgen_wasm_module = module;
+
+    return wasm;
+}
+
+export default init;
 
