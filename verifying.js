@@ -1,6 +1,4 @@
 /* eslint-env browser */
-/* global Go fs drand */
-import './wasm/wasm_exec.js'
 import init, { verify_beacon } from './pkg/drand_verify.js'
 
 class Verifier {
@@ -14,9 +12,10 @@ class Verifier {
         // is treated as dependency and creates an asset module. This allows us to create a package that
         // works in node, browsers and Webpack.
         const url = new URL("./pkg/drand_verify_bg.wasm", import.meta.url)
-        if (typeof fs !== 'undefined' && fs.promises) {
+        if (url.protocol === "file:") {
           // node-fetch does not like file:// URLs
-          const data = new Uint8Array(await fs.promises.readFile(url))
+          const fs = await import("fs");
+          const data = await fs.promises.readFile(url)
           await init(data)
         } else {
           console.log(url)
