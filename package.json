@@ -7,8 +7,7 @@
   "scripts": {
     "test": "ava -v -T 10m",
     "lint": "standard",
-    "build": "npm run build:wasm",
-    "build:wasm": "cd wasm && GOOS=js GOARCH=wasm go build -ldflags=\"-s -w\" -o drand.wasm main.go"
+    "lint:fix": "standard --fix"
   },
   "author": "Alan Shaw",
   "license": "(Apache-2.0 OR MIT)",
@@ -16,9 +15,11 @@
     "abort-controller": "^3.0.0",
     "ava": "^3.10.1",
     "node-fetch": "^2.6.0",
-    "standard": "^14.3.4"
+    "standard": "^17.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@noble/bls12-381": "^1.2.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/drand/drand-client.git"
@@ -27,12 +28,19 @@
     "url": "https://github.com/drand/drand-client/issues"
   },
   "homepage": "https://github.com/drand/drand-client#readme",
+  "engines": {
+    "node": ">= 10.4.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie all"
+  ],
   "keywords": [
     "drand",
     "random",
     "randomness",
     "client",
-    "kyber",
     "bls",
     "bls12381"
   ]

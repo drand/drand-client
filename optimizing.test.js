@@ -10,7 +10,7 @@ global.AbortController = AbortController
 
 const TESTNET_CHAIN_HASH = '84b2234fb34e835dccd048255d7ad3194b81af7d978c3bf157e3469592ae4e02'
 const TESTNET_URLS = [
-  'http://pl-us.testnet.drand.sh',
+  'http://pl-us.testnet.drand.sh'
 ]
 
 test('should get randomness from working client', async t => {
