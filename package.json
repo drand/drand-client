@@ -23,6 +23,7 @@
     "type": "git",
     "url": "git+https://github.com/drand/drand-client.git"
   },
+  "types": "index.d.ts",
   "bugs": {
     "url": "https://github.com/drand/drand-client/issues"
   },
