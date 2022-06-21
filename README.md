@@ -205,6 +205,10 @@ Creates a new HTTP client when the chain info is already known.
 
 Provides a shortcut for creating a set of HTTP clients for a set of URLs.
 
+## Publishing
+
+This repo automatically publishes to npmjs.com as [drand-client](https://www.npmjs.com/package/drand-client) if changes hit the master branch with an updated version number.
+
 ## Contribute
 
 Feel free to dive in! [Open an issue](https://github.com/drand/drand-client/issues/new) or submit PRs.
