@@ -28,16 +28,3 @@ jobs:
           dry-run: ${{ github.ref != 'refs/heads/master' }}
           # don't try and deploy if versions haven't changed
           check-version: true
-
-      - name: publish report
-        if: ${{ !steps.publish.outputs.dry-run }}
-        run: |
-          if [ ${{ !steps.publish.outputs.old-version }} ]; then
-            echo "No version change - publishing skipped"
-          
-          elif [ ${{ steps.publish.outputs.dry-run }} ]; then
-              echo "Running on master would change version from  ${{ steps.publish.outputs.old-version }} to ${{ steps.publish.outputs.version }}"
-          
-          else
-              echo "Version changed from ${{ steps.publish.outputs.old-version }} to ${{ steps.publish.outputs.version }}"
-          fi
