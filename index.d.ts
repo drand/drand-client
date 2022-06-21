@@ -1,13 +1,12 @@
 import { AbortSignal } from "abort-controller"
-
-type RandomnessBeacon = {
+export type RandomnessBeacon = {
     round: number
     randomness: string
     signature: string
     previous_signature: string
 }
 
-type NodeInfo = {
+export type NodeInfo = {
     public_key: string
     period: number
     genesis_time: number
@@ -19,17 +18,17 @@ type NodeInfo = {
     }
 }
 
-type ClientOptions = {
-    insecure: boolean
-    disableBeaconVerification: boolean
+export type ClientOptions = {
     chainHash: string
-    chainInfo: string
-    cacheSize: number
-    watcher: Watcher
+    insecure?: boolean
+    disableBeaconVerification?: boolean
+    chainInfo?: string
+    cacheSize?: number
+    watcher?: Watcher
 } & WatcherOptions
 
-type WatcherOptions = {
-    signal: AbortSignal
+export type WatcherOptions = {
+    signal?: AbortSignal
 }
 
 export interface Watcher {
@@ -39,14 +38,15 @@ export interface Watcher {
 
 export class HTTP {
     static forURLs(urls: Array<string>, chainHash: string): Promise<Array<HTTP>>
-    static info(url: string, chainHash: string, options: ClientOptions): Promise<NodeInfo>
+}
 
-    get(): Promise<RandomnessBeacon>
+export class Client {
+    static wrap(clients: Array<HTTP>, options: ClientOptions): Client
+    start(): Promise<void>
+    get(round?: number, options?: ClientOptions): Promise<RandomnessBeacon>
     info(): Promise<NodeInfo>
     close(): Promise<void>
     roundAt(time: number): number
 }
 
-export class Client {
-    static wrap(clients: Array<Client>, options: ClientOptions): Client
-}
+export default Client
