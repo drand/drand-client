@@ -29,11 +29,15 @@ jobs:
           # don't try and deploy if versions haven't changed
           check-version: true
 
-      - name: publishing report dry run
+      - name: publish report
         if: ${{ !steps.publish.outputs.dry-run }}
         run: |
-          echo "Running on master would change version from  ${{ steps.publish.outputs.old-version }} to ${{ steps.publish.outputs.version }}"
-      - name: publishing report
-        if: ${{ steps.publish.outputs.dry-run }}
-        run: |
-          echo "Version changed from ${{ steps.publish.outputs.old-version }} to ${{ steps.publish.outputs.version }}"
+          if [ ${{ !steps.publish.outputs.old-version }} ]; then
+            echo "No version change - publishing skipped"
+          
+          elif [ ${{ steps.publish.outputs.dry-run }} ]; then
+              echo "Running on master would change version from  ${{ steps.publish.outputs.old-version }} to ${{ steps.publish.outputs.version }}"
+          
+          else
+              echo "Version changed from ${{ steps.publish.outputs.old-version }} to ${{ steps.publish.outputs.version }}"
+          fi
