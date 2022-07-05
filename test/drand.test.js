@@ -1,5 +1,5 @@
 import test from 'ava'
-import Client, { HTTP } from './drand.js'
+import Client, { HTTP } from '../lib/drand.js'
 import fetch from 'node-fetch'
 import AbortController from 'abort-controller'
 

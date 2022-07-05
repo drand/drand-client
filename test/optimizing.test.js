@@ -1,9 +1,9 @@
 import test from 'ava'
-import HTTP from './http.js'
-import Optimizing from './optimizing.js'
+import HTTP from '../lib/http.js'
+import Optimizing from '../lib/optimizing.js'
 import fetch from 'node-fetch'
 import AbortController from 'abort-controller'
-import Mock from './mock.js'
+import Mock from '../lib/mock.js'
 
 global.fetch = fetch
 global.AbortController = AbortController

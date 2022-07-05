@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "A client to the drand randomness beacon network.",
   "type": "module",
-  "main": "./drand.js",
+  "main": "lib/drand.js",
   "scripts": {
     "test": "ava -v -T 10m",
     "lint": "standard",

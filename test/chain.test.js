@@ -1,5 +1,5 @@
 import test from 'ava'
-import Chain from './chain.js'
+import Chain from '../lib/chain.js'
 
 test('should get round 1 when time is less than genesis', t => {
   t.is(Chain.roundAt(0, 1, 1000), 1)
