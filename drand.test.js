@@ -8,7 +8,7 @@ global.AbortController = AbortController
 
 const TESTNET_CHAIN_HASH = '84b2234fb34e835dccd048255d7ad3194b81af7d978c3bf157e3469592ae4e02'
 const TESTNET_URLS = [
-  'http://pl-us.testnet.drand.sh',
+  'http://pl-us.testnet.drand.sh'
 ]
 
 test('should get latest randomness', async t => {
@@ -25,8 +25,8 @@ test('should get specific randomness round', async t => {
     HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
   )
-  const rand = await drand.get(1)
-  t.is(rand.round, 1)
+  const rand = await drand.get(256)
+  t.is(rand.round, 256)
 })
 
 test('should abort get', async t => {
