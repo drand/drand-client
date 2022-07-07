@@ -1,4 +1,3 @@
-import test from 'ava'
 import Client, { HTTP } from '../lib/drand'
 import fetch from 'node-fetch'
 globalThis.fetch = fetch as any
@@ -8,25 +7,25 @@ const TESTNET_URLS = [
   'http://pl-us.testnet.drand.sh'
 ]
 
-test('should get latest randomness', async t => {
+test('should get latest randomness', async () => {
   const drand = await Client.wrap(
     await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
   )
   const rand = await drand.get()
-  t.true(rand.round > 1)
+  expect(rand.round > 1).toBe(true)
 })
 
-test('should get specific randomness round', async t => {
+test('should get specific randomness round', async () => {
   const drand = await Client.wrap(
     await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
   )
   const rand = await drand.get(256)
-  t.is(rand.round, 256)
+  expect(rand.round).toBe(256)
 })
 
-test('should abort get', async t => {
+test('should abort get', async () => {
   const drand = await Client.wrap(
     await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
@@ -35,11 +34,11 @@ test('should abort get', async t => {
   const controller = new AbortController()
   controller.abort()
 
-  const err = await t.throwsAsync(drand.get(1, { signal: controller.signal })) as any
-  t.is(err.type, 'aborted')
+  const err = await expect(() => drand.get(1, { signal: controller.signal })).toThrow() as any
+  expect(err.type).toBe('aborted')
 })
 
-test('should watch for randomness', async t => {
+test('should watch for randomness', async () => {
   const drand = await Client.wrap(
     await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
@@ -50,19 +49,20 @@ test('should watch for randomness', async t => {
   let i = 0
   for await (const rand of drand.watch({ signal: controller.signal })) {
     const expectedRound = drand.roundAt(Date.now())
-    t.is(rand.round, expectedRound)
+    expect(rand.round).toBe(expectedRound)
     if (i > 2) {
       break
     }
     i++
   }
+  expect(i).toBeGreaterThan(2)
 })
 
-test('should disable beacon verification', async t => {
+test('should disable beacon verification', async () => {
   const drand = await Client.wrap(
     await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH, disableBeaconVerification: true }
   )
   const rand = await drand.get()
-  t.true(rand.round > 1)
+  expect(rand.round > 1).toBe(true)
 })

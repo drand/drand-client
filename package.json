@@ -7,19 +7,20 @@
   "scripts": {
     "clean": "rm -rf ./build/*",
     "compile": "tsc --project tsconfig.json",
-    "test": "ava -v -T 10m",
+    "test": "jest --detectOpenHandles ./test/**.test.ts",
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
   "author": "Alan Shaw",
   "license": "(Apache-2.0 OR MIT)",
   "devDependencies": {
+    "@types/jest": "^28.1.4",
     "@types/node-fetch": "^2.6.2",
     "abort-controller": "^3.0.0",
-    "ava": "^4.3.0",
+    "jest": "^28.1.2",
     "node-fetch": "^2.6.0",
     "standard": "^17.0.0",
-    "ts-node": "^10.8.2",
+    "ts-jest": "^28.0.5",
     "typescript": "^4.7.4"
   },
   "dependencies": {
@@ -47,14 +48,5 @@
     "client",
     "bls",
     "bls12381"
-  ],
-  "ava": {
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--loader=ts-node/esm",
-      "--experimental-specifier-resolution=node"
-    ]
-  }
+  ]
 }

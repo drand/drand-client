@@ -14,7 +14,7 @@ type TestBeacon = {
 }
 export default class ClientStub {
 
-    private readonly beaconIndex: number
+    private beaconIndex: number
     private controllers: Array<AbortController>
 
     constructor (private options: TestOptions = {}) {
@@ -49,9 +49,27 @@ export default class ClientStub {
         return chainInfo
     }
 
-    async * watch(): AsyncIterable<RandomnessBeacon> {
-        for (const beacon of this.options.beacons ?? []) {
-            yield beacon as RandomnessBeacon
+    async * watch(options: ClientOptions = {}): AsyncGenerator<RandomnessBeacon> {
+        const { chainInfo } = this.options
+        if (!chainInfo) throw new Error('watch needs to know period from missing chain info')
+
+        const controller = controllerWithParent(options.signal)
+        this.controllers.push(controller)
+
+        const beacons = this.options.beacons || []
+
+        try {
+            while (true) {
+                const beacon = beacons[this.beaconIndex]
+                if (!beacon) throw new Error(`no beacon at index ${this.beaconIndex}`)
+                await waitOrAbort(beacon.delay || 0, controller.signal)
+                yield beacon as RandomnessBeacon
+                this.beaconIndex++
+                await waitOrAbort(chainInfo.period * 1000, controller.signal)
+            }
+        } finally {
+            this.controllers = this.controllers.filter(c => c !== controller)
+            controller.abort()
         }
     }
 

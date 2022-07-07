@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "esnext",
-    "target": "es6",
+    "module": "commonjs",
+    "target": "esnext",
     "sourceMap": true,
     "jsx": "preserve",
     "outDir": "./build/",
@@ -22,11 +22,12 @@
     "isolatedModules": false,
     "types": [
       "node",
-      "mocha"
+      "jest"
     ]
   },
   "include": [
-    "lib/**/*.ts"
+    "lib/**/*.ts",
+    "test/**/*.ts"
   ],
   "compileOnSave": true
 }

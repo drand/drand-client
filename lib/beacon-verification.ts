@@ -1,4 +1,4 @@
-import * as bls from '@noble/bls12-381'
+import bls from '@noble/bls12-381'
 import {RandomnessBeacon} from "./drand"
 
 async function verifyBeacon(publicKey: string, beacon: RandomnessBeacon) {

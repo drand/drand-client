@@ -37,7 +37,7 @@ export default class HTTP {
     }
 
     async * watch (options: ClientOptions): AsyncGenerator<RandomnessBeacon> {
-        yield * await this.watcher.watch(options)
+        return this.watcher.watch(options)
     }
 
     roundAt (time: number) {

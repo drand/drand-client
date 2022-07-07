@@ -13,31 +13,28 @@ export default class OptimizingClient {
     // TODO: options for default request timeout and concurrency
     private options: ClientOptions
     private readonly stats: Array<ClientStats>
-    private speedTestIntervalId?: number
+    private speedTestIntervalId?: any
 
     constructor(
         private readonly clients: Array<NetworkClient>,
         options?: ClientOptions
     ) {
         this.clients = clients
-        this.stats = clients.map(c => ({client: c, rtt: 0, startTime: Date.now()}))
-        this.options = {...options, speedTestInterval: options?.speedTestInterval || defaultSpeedTestInterval}
+        this.stats = clients.map(c => ({client: c, rtt: Number.MAX_SAFE_INTEGER, startTime: Date.now()}))
+        this.options = options || {}
     }
 
-    start() {
-        if (this.options.speedTestInterval ?? 0 > 0) {
-            this.startSpeedTesting()
+    start(): Promise<void> {
+        if (this.options.speedTestInterval ?? defaultSpeedTestInterval > 0) {
+            return this.startSpeedTesting()
         }
+
+        return Promise.resolve()
     }
 
     async get(round: number = 0, options: ClientOptions = {}): Promise<RandomnessBeacon> {
-        console.log(this.fastestClients())
         const requestsUpdatingStats = this.fastestClients().map(client => this.getUpdatingStats(client, round, options))
-        return Promise.any(requestsUpdatingStats).then(x => {
-            console.log(this.fastestClients())
-
-            return x
-        })
+        return Promise.any(requestsUpdatingStats)
     }
 
     async getUpdatingStats(client: NetworkClient, round: number, options: ClientOptions): Promise<RandomnessBeacon> {
@@ -60,7 +57,7 @@ export default class OptimizingClient {
         }
     }
 
-    async* watch(options: ClientOptions) {
+    async* watch(options: ClientOptions = {}): AsyncGenerator<RandomnessBeacon> {
         // TODO: watch and race all clients
         const client = this.fastestClients()[0]
         yield* await client.watch(options)
@@ -69,7 +66,7 @@ export default class OptimizingClient {
     async info() {
         for (const client of this.clients) {
             try {
-                return client.info()
+                return await client.info()
             } catch (err) {
                 if (client === this.clients[this.clients.length - 1]) {
                     throw err
@@ -87,7 +84,7 @@ export default class OptimizingClient {
         return Promise.all(this.clients.map(c => c.close()))
     }
 
-    private startSpeedTesting() {
+    private startSpeedTesting(): Promise<void> {
         const run = async () => {
             await Promise.all(this.clients.map(async c => {
                 try {
@@ -97,7 +94,8 @@ export default class OptimizingClient {
                 }
             }))
         }
-        this.speedTestIntervalId = setInterval(run, this.options.speedTestInterval)
+        this.speedTestIntervalId = setInterval(run, this.options.speedTestInterval || defaultSpeedTestInterval)
+        return run()
     }
 
     private fastestClients() {
