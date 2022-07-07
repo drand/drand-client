@@ -1,5 +1,5 @@
-import Chain from './chain.js'
-import { AbortError, controllerWithParent } from './abort.js'
+import Chain from '../lib/chain.ts'
+import { AbortError, controllerWithParent } from '../lib/abort.ts'
 
 /**
  * A mock client for testing.

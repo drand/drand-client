@@ -1,5 +1,5 @@
 import test from 'ava'
-import { roundBuffer } from './beacon-verification.js'
+import { roundBuffer } from '../lib/beacon-verification'
 
 test('round buffer converts numbers < 255 correctly', async t => {
   t.is(roundBuffer(1).readBigUInt64BE(), BigInt(1))

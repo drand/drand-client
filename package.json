@@ -5,6 +5,8 @@
   "type": "module",
   "main": "lib/drand.js",
   "scripts": {
+    "clean": "rm -rf ./build/*",
+    "compile": "tsc --project tsconfig.json",
     "test": "ava -v -T 10m",
     "lint": "standard",
     "lint:fix": "standard --fix"
@@ -12,10 +14,13 @@
   "author": "Alan Shaw",
   "license": "(Apache-2.0 OR MIT)",
   "devDependencies": {
+    "@types/node-fetch": "^2.6.2",
     "abort-controller": "^3.0.0",
-    "ava": "^3.10.1",
+    "ava": "^4.3.0",
     "node-fetch": "^2.6.0",
-    "standard": "^17.0.0"
+    "standard": "^17.0.0",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "@noble/bls12-381": "^1.2.0"
@@ -33,8 +38,7 @@
   },
   "browserslist": [
     "> 1%",
-    "last 2 versions",
-    "not ie all"
+    "last 2 versions"
   ],
   "keywords": [
     "drand",
@@ -43,5 +47,14 @@
     "client",
     "bls",
     "bls12381"
-  ]
+  ],
+  "ava": {
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm",
+      "--experimental-specifier-resolution=node"
+    ]
+  }
 }

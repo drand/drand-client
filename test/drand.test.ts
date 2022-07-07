@@ -1,10 +1,7 @@
 import test from 'ava'
-import Client, { HTTP } from '../lib/drand.js'
+import Client, { HTTP } from '../lib/drand'
 import fetch from 'node-fetch'
-import AbortController from 'abort-controller'
-
-global.fetch = fetch
-global.AbortController = AbortController
+globalThis.fetch = fetch as any
 
 const TESTNET_CHAIN_HASH = '84b2234fb34e835dccd048255d7ad3194b81af7d978c3bf157e3469592ae4e02'
 const TESTNET_URLS = [
@@ -13,7 +10,7 @@ const TESTNET_URLS = [
 
 test('should get latest randomness', async t => {
   const drand = await Client.wrap(
-    HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
+    await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
   )
   const rand = await drand.get()
@@ -22,7 +19,7 @@ test('should get latest randomness', async t => {
 
 test('should get specific randomness round', async t => {
   const drand = await Client.wrap(
-    HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
+    await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
   )
   const rand = await drand.get(256)
@@ -31,20 +28,20 @@ test('should get specific randomness round', async t => {
 
 test('should abort get', async t => {
   const drand = await Client.wrap(
-    HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
+    await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
   )
 
   const controller = new AbortController()
   controller.abort()
 
-  const err = await t.throwsAsync(drand.get(1, { signal: controller.signal }))
+  const err = await t.throwsAsync(drand.get(1, { signal: controller.signal })) as any
   t.is(err.type, 'aborted')
 })
 
 test('should watch for randomness', async t => {
   const drand = await Client.wrap(
-    HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
+    await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH }
   )
 
@@ -63,7 +60,7 @@ test('should watch for randomness', async t => {
 
 test('should disable beacon verification', async t => {
   const drand = await Client.wrap(
-    HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
+    await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
     { chainHash: TESTNET_CHAIN_HASH, disableBeaconVerification: true }
   )
   const rand = await drand.get()
