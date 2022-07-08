@@ -93,7 +93,7 @@ export default class OptimizingClient implements NetworkClient {
         return Promise.all(this.clients.map(c => c.close())).then()
     }
 
-    private startSpeedTesting(): Promise<void> {
+    private async startSpeedTesting(): Promise<void> {
         const run = async () => {
             await Promise.all(this.clients.map(async c => {
                 try {
@@ -104,7 +104,7 @@ export default class OptimizingClient implements NetworkClient {
             }))
         }
         this.speedTestIntervalId = setInterval(run, this.options.speedTestInterval || defaultSpeedTestInterval)
-        return run()
+        return await run()
     }
 
     private fastestClients() {
