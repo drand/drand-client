@@ -1,4 +1,4 @@
-import {ChainInfo, DrandOptions, NetworkClient, RandomnessBeacon} from './drand'
+import {ChainInfo, NetworkClient, RandomnessBeacon} from './drand'
 import Chain from './chain'
 import {controllerWithParent} from './abort'
 import PollingWatcher from './polling-watcher'
@@ -9,8 +9,7 @@ export default class HTTP implements NetworkClient {
 
     constructor(
         private readonly url: string,
-        private readonly chainInfo: ChainInfo,
-        private readonly options: DrandOptions = {}) {
+        private readonly chainInfo: ChainInfo) {
         this.watcher = new PollingWatcher(this, chainInfo)
         this.controllers = []
     }
@@ -25,33 +24,33 @@ export default class HTTP implements NetworkClient {
             const url = `${this.url}/public/${round || 'latest'}${options.noCache ? '?' + Date.now() : ''}`
             const res = await fetch(url, {signal: controller.signal})
             if (!res.ok) throw new Error(`unexpected HTTP status ${res.status} for URL ${url}`)
-            return res.json()
+            return await res.json()
         } finally {
             this.controllers = this.controllers.filter(c => c !== controller)
             controller.abort()
         }
     }
 
-    async info () {
+    async info() {
         return this.chainInfo
     }
 
-    async* watch (options: ClientOptions): AsyncGenerator<RandomnessBeacon> {
+    async* watch(options: ClientOptions): AsyncGenerator<RandomnessBeacon> {
         yield* this.watcher.watch(options)
     }
 
-    roundAt (time: number) {
+    roundAt(time: number) {
         return Chain.roundAt(time, this.chainInfo.genesis_time * 1000, this.chainInfo.period * 1000)
     }
 
-    async close () {
+    async close() {
         this.controllers.forEach(c => c.abort())
         this.controllers = []
         await this.watcher.close()
     }
 
     static async info(url: string, chainHash: string, options: ClientOptions = {}) {
-        const res = await fetch(`${url}/info${options.noCache ? '?' + Date.now() : ''}`, { signal: options.signal })
+        const res = await fetch(`${url}/info${options.noCache ? '?' + Date.now() : ''}`, {signal: options.signal})
         if (!res.ok) throw new Error(`unexpected HTTP status ${res.status} for URL ${url}/info`)
 
         const info = await res.json()
@@ -60,7 +59,8 @@ export default class HTTP implements NetworkClient {
         }
         return info
     }
-    static async forURLs (urls: Array<string>, chainHash: string): Promise<Array<NetworkClient>> {
+
+    static async forURLs(urls: Array<string>, chainHash: string): Promise<Array<NetworkClient>> {
         let chainInfo: ChainInfo
         for (const url of urls) {
             try {
