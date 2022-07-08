@@ -1,6 +1,6 @@
-import {ClientOptions} from "./http"
-import {ChainInfo, NetworkClient, RandomnessBeacon} from "./drand"
-import {AbortError} from "./abort";
+import {ClientOptions} from './http'
+import {ChainInfo, NetworkClient, RandomnessBeacon} from './drand'
+import {AbortError} from './abort'
 
 const defaultSpeedTestInterval = 1000 * 60 * 5
 
@@ -14,7 +14,7 @@ export default class OptimizingClient implements NetworkClient {
     // TODO: options for default request timeout and concurrency
     private options: ClientOptions
     private readonly stats: Array<ClientStats>
-    private speedTestIntervalId?: any
+    private speedTestIntervalId?: NodeJS.Timeout
 
     constructor(
         private readonly clients: Array<NetworkClient>,
@@ -33,7 +33,7 @@ export default class OptimizingClient implements NetworkClient {
         return Promise.resolve()
     }
 
-    async get(round: number = 0, options: ClientOptions = {}): Promise<RandomnessBeacon> {
+    async get(round = 0, options: ClientOptions = {}): Promise<RandomnessBeacon> {
         const requestsUpdatingStats = this.fastestClients().map(client => this.getUpdatingStats(client, round, options))
         return Promise.any(requestsUpdatingStats).catch(err => {
             if (err instanceof AggregateError) {
@@ -48,15 +48,15 @@ export default class OptimizingClient implements NetworkClient {
         try {
             const {startTime, rtt, value, error, aborted} = await timed(() => client.get(round, options))
             if (aborted) {
-                throw new AbortError("Client aborted")
+                throw new AbortError('Client aborted')
             }
 
             stagedStats.push({startTime, rtt, client})
-            if (!!error) {
+            if (error) {
                 throw error
             }
             if (!value) {
-                throw Error("No value was returned by the client!")
+                throw Error('No value was returned by the client!')
             }
 
             return value
@@ -81,7 +81,7 @@ export default class OptimizingClient implements NetworkClient {
                 }
             }
         }
-        throw Error("No clients returned chain info")
+        throw Error('No clients returned chain info')
     }
 
     roundAt(time: number) {
@@ -89,7 +89,7 @@ export default class OptimizingClient implements NetworkClient {
     }
 
     async close(): Promise<void> {
-        clearInterval(this.speedTestIntervalId)
+        this.speedTestIntervalId && clearInterval(this.speedTestIntervalId)
         return Promise.all(this.clients.map(c => c.close())).then()
     }
 
@@ -135,8 +135,8 @@ async function timed<T>(f: () => T): Promise<Timed<T>> {
     try {
         const value = await f()
         return {startTime, rtt: Date.now() - startTime, value, aborted: false}
-    } catch (err: any) {
-        if (err.name === "AbortError") {
+    } catch (err) {
+        if (err instanceof AbortError) {
             return {startTime, rtt: Number.MAX_SAFE_INTEGER, error: err as Error, aborted: true}
         }
         return {startTime, rtt: Number.MAX_SAFE_INTEGER, error: err as Error, aborted: false}

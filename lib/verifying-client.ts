@@ -1,6 +1,6 @@
-import {ClientOptions} from "./http";
-import {NetworkClient, RandomnessBeacon} from "./drand";
-import {verifyBeacon} from "./beacon-verification";
+import {ClientOptions} from './http';
+import {NetworkClient, RandomnessBeacon} from './drand';
+import {verifyBeacon} from './beacon-verification';
 
 export default class VerifyingClient implements NetworkClient {
 

@@ -1,7 +1,7 @@
-import {DrandOptions, RandomnessBeacon} from "../lib/drand";
-import Chain from "../lib/chain";
-import {controllerWithParent, waitOrAbort} from "../lib/abort";
-import {ClientOptions} from "../lib/http";
+import {DrandOptions, RandomnessBeacon} from '../lib/drand'
+import Chain from '../lib/chain'
+import {controllerWithParent, waitOrAbort} from '../lib/abort'
+import {ClientOptions} from '../lib/http'
 
 interface TestOptions extends DrandOptions {
     latestBeaconIndex?: number

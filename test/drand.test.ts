@@ -1,7 +1,8 @@
 import Client, {HTTP, NetworkClient} from '../lib/drand'
 import fetch from 'node-fetch'
-import {AbortError} from "../lib/abort";
+import {AbortError} from '../lib/abort'
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 globalThis.fetch = fetch as any
 
 const TESTNET_CHAIN_HASH = '84b2234fb34e835dccd048255d7ad3194b81af7d978c3bf157e3469592ae4e02'
@@ -11,7 +12,7 @@ const TESTNET_URLS = [
 let drand: NetworkClient
 
 afterEach(async () => {
-    if (!!drand) {
+    if (drand) {
         await drand.close()
     }
 })
@@ -45,7 +46,7 @@ test('should abort get', async () => {
     await expect(async () => drand.get(1, {
         signal: controller.signal,
         speedTestInterval: 0
-    })).rejects.toThrow(new AbortError("Client aborted"))
+    })).rejects.toThrow(new AbortError('Client aborted'))
 })
 
 test('should watch for randomness', async () => {
@@ -67,7 +68,7 @@ test('should watch for randomness', async () => {
         expect(i).toBeGreaterThan(1)
     } catch (err) {
         // we expect an `AbortError` after `break`
-        if (err ! instanceof AbortError) {
+        if (!(err instanceof AbortError)) {
             throw err
         }
     }

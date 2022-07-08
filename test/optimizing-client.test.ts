@@ -1,10 +1,11 @@
 import HTTP, {ClientOptions} from '../lib/http'
 import OptimizingClient from '../lib/optimizing-client'
 import Mock from './client-stub'
-import {RandomnessBeacon} from "../lib/drand";
+import {NetworkClient, RandomnessBeacon} from '../lib/drand'
 
 import fetch from 'node-fetch'
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 globalThis.fetch = fetch as any;
 
 const TESTNET_CHAIN_HASH = '84b2234fb34e835dccd048255d7ad3194b81af7d978c3bf157e3469592ae4e02'
@@ -15,7 +16,7 @@ const TESTNET_URLS = [
 let client: OptimizingClient
 
 afterEach(async () => {
-    if (!!client) {
+    if (client) {
         await client.close()
     }
 })
@@ -27,10 +28,11 @@ test('should get randomness from working client', async () => {
         async get() {
             throw new Error('boom')
         },
-        close() {}
-    }
+        close() {/* to not blow up */
+        }
+    } as unknown as NetworkClient
 
-    client = new OptimizingClient([faultyClient as any, new HTTP(TESTNET_URLS[0], info)])
+    client = new OptimizingClient([faultyClient, new HTTP(TESTNET_URLS[0], info)])
     expect((await client.get(1)).round).toEqual(1)
 })
 
@@ -41,11 +43,12 @@ test('should fail to get randomness if all clients fail', async () => {
             calls++
             throw new Error('boom')
         },
-        close() {}
-})
+        close() {/* to not blow up */
+        }
+    }) as unknown as NetworkClient
 
-    client = new OptimizingClient([faultyClient() as any, faultyClient() as any])
-    await expect(() => client.get(1)).rejects.toThrow("boom")
+    client = new OptimizingClient([faultyClient(), faultyClient()])
+    await expect(() => client.get(1)).rejects.toThrow('boom')
     expect(calls).toBe(2)
 })
 
@@ -56,10 +59,11 @@ test('should get info from working client', async () => {
         async info() {
             throw new Error('boom')
         },
-        close() {}
-    }
+        close() {/* to not blow up */
+        }
+    } as unknown as NetworkClient
 
-    client = new OptimizingClient([faultyClient as any, new HTTP(TESTNET_URLS[0], info)])
+    client = new OptimizingClient([faultyClient, new HTTP(TESTNET_URLS[0], info)])
     expect(await client.info()).toEqual(info)
 })
 
@@ -70,17 +74,18 @@ test('should fail to get info if all clients fail', async () => {
             calls++
             throw new Error('boom')
         },
-        close() {}
-    })
+        close() {/* to not blow up */
+        }
+    }) as unknown as NetworkClient
 
-    client = new OptimizingClient([faultyClient() as any, faultyClient() as any])
-    await expect(() => client.info()).rejects.toThrow("boom")
+    client = new OptimizingClient([faultyClient(), faultyClient()])
+    await expect(() => client.info()).rejects.toThrow('boom')
     expect(calls).toBe(2)
 })
 
 test('should get from the fastest client', async () => {
     const fastBeacons = [{round: 138}, {round: 139}, {round: 140}]
-    const fast = new Mock({beacons: [{round: 1}, ...fastBeacons]})
+    const fast = new Mock({beacons: [{round: 1}, ...fastBeacons]}) as unknown as NetworkClient
 
     // This client shouldn't be used other than for the speed test
     class Slow extends Mock {
@@ -88,10 +93,12 @@ test('should get from the fastest client', async () => {
             if (round !== 1) throw new Error(`not expected to call get other than for speed test (${round})`)
             return super.get(round, options)
         }
-        close() {}
+
+        close() {/* to not blow up */
+        }
     }
 
-    const slow = new Slow({beacons: [{round: 1, delay: 100}]}) as any
+    const slow = new Slow({beacons: [{round: 1, delay: 100}]}) as unknown as NetworkClient
 
     client = new OptimizingClient([slow, fast])
     await client.start()
@@ -105,13 +112,13 @@ test('should get from the fastest client', async () => {
 test('should watch from the fastest client', async () => {
     const chainInfo = {
         period: 1,
-        public_key: "deadbeefdeadbeef",
+        public_key: 'deadbeefdeadbeef',
         genesis_time: Date.now(),
-        hash: "deadbeef",
-        groupHash: "cafebabecafebabe",
-        schemeID: "pedersen-bls-chained",
+        hash: 'deadbeef',
+        groupHash: 'cafebabecafebabe',
+        schemeID: 'pedersen-bls-chained',
         metadata: {
-            beaconID: "deadbeefcafebabe",
+            beaconID: 'deadbeefcafebabe',
         }
     }
 
@@ -120,17 +127,19 @@ test('should watch from the fastest client', async () => {
         beacons: [{round: 1}, ...fastBeacons],
         latestBeaconIndex: 1,
         chainInfo
-    })
+    }) as unknown as NetworkClient
 
     // This client shouldn't be used other than for the speed test
     class Slow extends Mock {
         watch(): AsyncGenerator<RandomnessBeacon> {
             throw new Error('not expected to call watch')
         }
-        close() {}
+
+        close() {/* to not blow up */
+        }
     }
 
-    const slow = new Slow({beacons: [{round: 1, delay: 100}]}) as any
+    const slow = new Slow({beacons: [{round: 1, delay: 100}]}) as unknown as NetworkClient
 
     client = new OptimizingClient([slow, fast])
     // client does an initial speed test and orders the clients by response time
@@ -155,22 +164,26 @@ test('should switch to a faster client', async () => {
             if (round > 139) throw new Error(`not expected to be asked for beacons > 139 (${round})`)
             return super.get(round, options)
         }
-        close() {}
+
+        close() {/* to not blow up */
+        }
     }
 
     const fastThenSlow = new FastThenSlow({
         beacons: [{round: 1}, ...[beacons[0], ...beacons.slice(1).map(b => ({...b, delay: 200}))]]
-    })
+    }) as unknown as NetworkClient
 
     class Steady extends Mock {
         get(round: number, options: ClientOptions) {
             if (round > 1 && round < 140) throw new Error(`not expected to be asked for beacons < 140 (${round})`)
             return super.get(round, options)
         }
-        close() {}
+
+        close() {/* to not blow up */
+        }
     }
 
-    const steady = new Steady({beacons: [{round: 1, delay: 100}, ...beacons.map(b => ({...b, delay: 100}))]}) as any
+    const steady = new Steady({beacons: [{round: 1, delay: 100}, ...beacons.map(b => ({...b, delay: 100}))]}) as unknown as NetworkClient
 
     client = new OptimizingClient([fastThenSlow, steady])
     await client.start()

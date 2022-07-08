@@ -1,6 +1,6 @@
-import HTTP, {ClientOptions, Watcher} from "./http"
-import VerifyingClient from "./verifying-client";
-import OptimizingClient from "./optimizing-client";
+import HTTP, {ClientOptions, Watcher} from './http'
+import VerifyingClient from './verifying-client'
+import OptimizingClient from './optimizing-client'
 
 export type DrandOptions = Partial<{
     chainHash: string

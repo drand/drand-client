@@ -1,11 +1,11 @@
-import {ChainInfo, DrandOptions, NetworkClient, RandomnessBeacon} from "./drand";
-import Chain from "./chain";
-import {controllerWithParent} from "./abort";
-import PollingWatcher from "./polling-watcher";
+import {ChainInfo, DrandOptions, NetworkClient, RandomnessBeacon} from './drand'
+import Chain from './chain'
+import {controllerWithParent} from './abort'
+import PollingWatcher from './polling-watcher'
 
 export default class HTTP implements NetworkClient {
     private readonly watcher: Watcher
-    private controllers: Array<any>
+    private controllers: Array<AbortController>
 
     constructor(
         private readonly url: string,
@@ -15,7 +15,7 @@ export default class HTTP implements NetworkClient {
         this.controllers = []
     }
 
-    async get(round: number = 0, options: ClientOptions) {
+    async get(round = 0, options: ClientOptions) {
         options = options || {}
 
         const controller = controllerWithParent(options.signal)

@@ -1,7 +1,7 @@
-import {ChainInfo, NetworkClient, RandomnessBeacon} from "./drand";
-import {ClientOptions, Watcher} from "./http";
-import {controllerWithParent, waitOrAbort} from "./abort";
-import Chain from "./chain";
+import {ChainInfo, NetworkClient, RandomnessBeacon} from './drand'
+import {ClientOptions, Watcher} from './http'
+import {controllerWithParent, waitOrAbort} from './abort'
+import Chain from './chain'
 
 export default class PollingWatcher implements Watcher {
     controllers: Array<AbortController> = []

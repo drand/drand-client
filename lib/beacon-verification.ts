@@ -1,5 +1,5 @@
 import * as bls from '@noble/bls12-381'
-import {RandomnessBeacon} from "./drand"
+import {RandomnessBeacon} from './drand'
 
 async function verifyBeacon(publicKey: string, beacon: RandomnessBeacon): Promise<boolean> {
     const previousSigAndRound = Buffer.concat([
