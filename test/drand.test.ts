@@ -46,7 +46,7 @@ test('should abort get', async () => {
     await expect(async () => drand.get(1, {
         signal: controller.signal,
         speedTestInterval: 0
-    })).rejects.toThrow(new AbortError('Client aborted'))
+    })).rejects.toThrow(new AbortError('The user aborted a request.'))
 })
 
 test('should watch for randomness', async () => {
