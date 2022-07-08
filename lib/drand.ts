@@ -12,7 +12,7 @@ export type DrandOptions = Partial<{
 }>
 
 export interface NetworkClient {
-    get(round: number, options: ClientOptions): Promise<RandomnessBeacon>
+    get(round?: number, options?: ClientOptions): Promise<RandomnessBeacon>
     info(): Promise<ChainInfo>
     roundAt(time: number): number
     close(): Promise<void>
@@ -20,7 +20,7 @@ export interface NetworkClient {
 }
 
 class Client {
-    static async wrap(clients: Array<NetworkClient> = [], options: DrandOptions) {
+    static async wrap(clients: Array<NetworkClient> = [], options: DrandOptions): Promise<NetworkClient> {
         const cfg = {...options, cacheSize: options.cacheSize || 32}
 
         if (!cfg.insecure && cfg.chainHash == null && cfg.chainInfo == null) {

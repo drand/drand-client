@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf ./build/*",
     "compile": "tsc --project tsconfig.json",
-    "test": "jest --verbose ./test/**.test.ts",
+    "test": "jest --verbose --detectOpenHandles ./test/**.test.ts",
     "lint": "standard",
     "lint:fix": "standard --fix"
   },

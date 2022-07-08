@@ -1,4 +1,4 @@
-import Client, {HTTP} from '../lib/drand'
+import Client, {HTTP, NetworkClient} from '../lib/drand'
 import fetch from 'node-fetch'
 import {AbortError} from "../lib/abort";
 
@@ -8,9 +8,16 @@ const TESTNET_CHAIN_HASH = '84b2234fb34e835dccd048255d7ad3194b81af7d978c3bf157e3
 const TESTNET_URLS = [
     'http://pl-us.testnet.drand.sh'
 ]
+let drand: NetworkClient
+
+afterEach(async () => {
+    if (!!drand) {
+        await drand.close()
+    }
+})
 
 test('should get latest randomness', async () => {
-    const drand = await Client.wrap(
+    drand = await Client.wrap(
         await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
         {chainHash: TESTNET_CHAIN_HASH}
     )
@@ -19,7 +26,7 @@ test('should get latest randomness', async () => {
 })
 
 test('should get specific randomness round', async () => {
-    const drand = await Client.wrap(
+    drand = await Client.wrap(
         await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
         {chainHash: TESTNET_CHAIN_HASH}
     )
@@ -28,7 +35,7 @@ test('should get specific randomness round', async () => {
 })
 
 test('should abort get', async () => {
-    const drand = await Client.wrap(
+    drand = await Client.wrap(
         await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
         {chainHash: TESTNET_CHAIN_HASH}
     )
@@ -42,7 +49,7 @@ test('should abort get', async () => {
 })
 
 test('should watch for randomness', async () => {
-    const drand = await Client.wrap(
+    drand = await Client.wrap(
         await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
         {chainHash: TESTNET_CHAIN_HASH}
     )
@@ -63,18 +70,17 @@ test('should watch for randomness', async () => {
         if (err ! instanceof AbortError) {
             throw err
         }
-    } finally {
-        await drand.close()
     }
     // if we get unlucky and start just after a beacon is release we may need to wait some time for the next one
     // by default, the testnet beacons are every 30secs
-}, 45000)
+}, 65000)
 
 test('should disable beacon verification', async () => {
-    const drand = await Client.wrap(
+    drand = await Client.wrap(
         await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
         {chainHash: TESTNET_CHAIN_HASH, disableBeaconVerification: true}
     )
     const rand = await drand.get()
     expect(rand.round > 1).toBe(true)
+    await drand.close()
 }, 10000)
