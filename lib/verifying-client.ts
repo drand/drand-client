@@ -2,7 +2,7 @@ import {ClientOptions} from "./http";
 import {NetworkClient, RandomnessBeacon} from "./drand";
 import {verifyBeacon} from "./beacon-verification";
 
-export default class VerifyingClient {
+export default class VerifyingClient implements NetworkClient {
 
     constructor(private client: NetworkClient) {}
 
@@ -20,7 +20,7 @@ export default class VerifyingClient {
     }
 
     async* watch(options: ClientOptions = {}): AsyncGenerator<RandomnessBeacon> {
-        return this.client.watch(options)
+        yield* this.client.watch(options)
     }
 
     private async verify (rand: RandomnessBeacon) {

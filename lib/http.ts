@@ -3,7 +3,7 @@ import Chain from "./chain";
 import {controllerWithParent} from "./abort";
 import PollingWatcher from "./polling-watcher";
 
-export default class HTTP {
+export default class HTTP implements NetworkClient {
     private readonly watcher: Watcher
     private controllers: Array<any>
 
@@ -36,8 +36,8 @@ export default class HTTP {
         return this.chainInfo
     }
 
-    async * watch (options: ClientOptions): AsyncGenerator<RandomnessBeacon> {
-        return this.watcher.watch(options)
+    async* watch (options: ClientOptions): AsyncGenerator<RandomnessBeacon> {
+        yield* this.watcher.watch(options)
     }
 
     roundAt (time: number) {

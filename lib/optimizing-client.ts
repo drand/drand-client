@@ -1,5 +1,6 @@
 import {ClientOptions} from "./http"
-import {NetworkClient, RandomnessBeacon} from "./drand"
+import {ChainInfo, NetworkClient, RandomnessBeacon} from "./drand"
+import {AbortError} from "./abort";
 
 const defaultSpeedTestInterval = 1000 * 60 * 5
 
@@ -9,7 +10,7 @@ type ClientStats = {
     startTime: number
 }
 
-export default class OptimizingClient {
+export default class OptimizingClient implements NetworkClient {
     // TODO: options for default request timeout and concurrency
     private options: ClientOptions
     private readonly stats: Array<ClientStats>
@@ -34,22 +35,29 @@ export default class OptimizingClient {
 
     async get(round: number = 0, options: ClientOptions = {}): Promise<RandomnessBeacon> {
         const requestsUpdatingStats = this.fastestClients().map(client => this.getUpdatingStats(client, round, options))
-        return Promise.any(requestsUpdatingStats)
+        return Promise.any(requestsUpdatingStats).catch(err => {
+            if (err instanceof AggregateError) {
+                throw err.errors[0]
+            }
+            throw err
+        })
     }
 
     async getUpdatingStats(client: NetworkClient, round: number, options: ClientOptions): Promise<RandomnessBeacon> {
         const stagedStats: Array<ClientStats> = []
         try {
             const {startTime, rtt, value, error, aborted} = await timed(() => client.get(round, options))
-            if (aborted && !!error) {
-                throw error
-            }
-
-            if (!value) {
-                throw Error("No value was returned by the client!")
+            if (aborted) {
+                throw new AbortError("Client aborted")
             }
 
             stagedStats.push({startTime, rtt, client})
+            if (!!error) {
+                throw error
+            }
+            if (!value) {
+                throw Error("No value was returned by the client!")
+            }
 
             return value
         } finally {
@@ -60,10 +68,10 @@ export default class OptimizingClient {
     async* watch(options: ClientOptions = {}): AsyncGenerator<RandomnessBeacon> {
         // TODO: watch and race all clients
         const client = this.fastestClients()[0]
-        yield* await client.watch(options)
+        yield* client.watch(options)
     }
 
-    async info() {
+    async info(): Promise<ChainInfo> {
         for (const client of this.clients) {
             try {
                 return await client.info()
@@ -73,15 +81,16 @@ export default class OptimizingClient {
                 }
             }
         }
+        throw Error("No clients returned chain info")
     }
 
     roundAt(time: number) {
         return this.clients[0].roundAt(time)
     }
 
-    async close() {
+    async close(): Promise<void> {
         clearInterval(this.speedTestIntervalId)
-        return Promise.all(this.clients.map(c => c.close()))
+        return Promise.all(this.clients.map(c => c.close())).then()
     }
 
     private startSpeedTesting(): Promise<void> {
