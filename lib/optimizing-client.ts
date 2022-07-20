@@ -136,9 +136,11 @@ async function timed<T>(f: () => T): Promise<Timed<T>> {
         const value = await f()
         return {startTime, rtt: Date.now() - startTime, value, aborted: false}
     } catch (err) {
-        if (err instanceof AbortError) {
-            return {startTime, rtt: Number.MAX_SAFE_INTEGER, error: err as Error, aborted: true}
+        return {
+            startTime,
+            rtt: Number.MAX_SAFE_INTEGER,
+            error: err as Error,
+            aborted: err instanceof AbortError
         }
-        return {startTime, rtt: Number.MAX_SAFE_INTEGER, error: err as Error, aborted: false}
     }
 }
