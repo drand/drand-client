@@ -12,9 +12,7 @@ test('round buffer converts max safe int correctly', async () => {
   expect(roundBuffer(Number.MAX_SAFE_INTEGER).readBigUInt64BE()).toBe(BigInt(Number.MAX_SAFE_INTEGER))
 })
 
-test.skip(
-  'round buffer fails to convert unsafe round counts correctly',
-  async () => {
+// this is a limitation of the prior pure JS client too, leaving this test in as a demonstration of that
+test.skip('round buffer fails to convert unsafe round counts correctly', async () => {
     expect(roundBuffer(Number.MAX_VALUE).readBigUInt64BE()).toBe(BigInt(Number.MAX_VALUE))
-  }
-)
+})
