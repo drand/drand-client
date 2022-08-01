@@ -113,7 +113,7 @@ test('should watch from the fastest client', async () => {
     const chainInfo = {
         period: 1,
         public_key: 'deadbeefdeadbeef',
-        genesis_time: Date.now(),
+        genesis_time: Date.now() / 1000,
         hash: 'deadbeef',
         groupHash: 'cafebabecafebabe',
         schemeID: 'pedersen-bls-chained',
