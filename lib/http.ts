@@ -40,7 +40,7 @@ export default class HTTP implements NetworkClient {
     }
 
     roundAt(time: number) {
-        return Chain.roundAt(time, this.chainInfo.genesis_time * 1000, this.chainInfo.period * 1000)
+        return Chain.roundAt(time, this.chainInfo.genesis_time, this.chainInfo.period)
     }
 
     async close() {

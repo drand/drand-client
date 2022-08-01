@@ -18,7 +18,7 @@ export default class PollingWatcher implements Watcher {
                 const round = this.client.roundAt(Date.now())
                 yield this.client.get(round, clientOptions)
 
-                const nextRoundTime = Chain.roundTime(round + 1, this.chainInfo.genesis_time * 1000, this.chainInfo.period * 1000)
+                const nextRoundTime = Chain.roundTime(round + 1, this.chainInfo.genesis_time, this.chainInfo.period)
                 await waitOrAbort(nextRoundTime - Date.now(), controller.signal)
             }
         } finally {

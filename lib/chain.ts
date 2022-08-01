@@ -5,12 +5,12 @@ export default class Chain {
      * a chain period.
      *
      * @param time {number} Round time in ms
-     * @param genesis {number} Chain genesis time in ms
-     * @param period {number} Chain period in ms
+     * @param genesis {number} Chain genesis time in seconds
+     * @param period {number} Chain period in seconds
      */
     static roundAt(time: number, genesis: number, period: number) {
-        if (time < genesis) return 1
-        return Math.floor((time - genesis) / period) + 1
+        if (time < genesis * 1000) return 1
+        return Math.floor((time - (genesis * 1000)) / (period * 1000)) + 1
     }
 
 
@@ -19,11 +19,11 @@ export default class Chain {
      * genesis and a chain period.
      *
      * @param round {number} Round number
-     * @param genesis {number} Chain genesis time in ms
-     * @param period {number} Chain period in ms
+     * @param genesis {number} Chain genesis time in seconds
+     * @param period {number} Chain period in seconds
      */
     static roundTime (round: number, genesis: number, period: number) {
         round = round < 0 ? 0 : round
-        return genesis + ((round - 1) * period)
+        return genesis + ((round - 1) * period) * 1000
     }
 }
