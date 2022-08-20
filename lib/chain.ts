@@ -15,7 +15,7 @@ export default class Chain {
 
 
     /**
-     * roundTime determines the time a round should be available, given a chain
+     * roundTime determines the time a round should be available (in milliseconds), given a chain
      * genesis and a chain period.
      *
      * @param round {number} Round number
@@ -24,6 +24,6 @@ export default class Chain {
      */
     static roundTime (round: number, genesis: number, period: number) {
         round = round < 0 ? 0 : round
-        return genesis + ((round - 1) * period) * 1000
+        return (genesis + (round - 1) * period) * 1000
     }
 }
