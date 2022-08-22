@@ -22,9 +22,8 @@ jobs:
 
       - name: publish to npmjs
         uses: JS-DevTools/npm-publish@v1
+        if: github.ref == 'refs/heads/master'
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          # dry run if on a side branch
-          dry-run: ${{ github.ref != 'refs/heads/master' }}
           # don't try and deploy if versions haven't changed
           check-version: true
