@@ -55,7 +55,7 @@ test('should watch for randomness', async () => {
         {chainHash: TESTNET_CHAIN_HASH}
     )
     
-    let startTime = Date.now();
+    const startTime = Date.now();
     try {
         let i = 0
         for await(const rand of drand.watch({signal: new AbortController().signal})) {
