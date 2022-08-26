@@ -54,7 +54,8 @@ test('should watch for randomness', async () => {
         await HTTP.forURLs(TESTNET_URLS, TESTNET_CHAIN_HASH),
         {chainHash: TESTNET_CHAIN_HASH}
     )
-
+    
+    const startTime = Date.now();
     try {
         let i = 0
         for await(const rand of drand.watch({signal: new AbortController().signal})) {
@@ -72,6 +73,9 @@ test('should watch for randomness', async () => {
             throw err
         }
     }
+    // check to make sure the watch did not exit too soon
+    // it should take no less than 30s, so we'll use 25s to be safe
+    expect(Date.now() - startTime).toBeGreaterThan(25000)
     // if we get unlucky and start just after a beacon is release we may need to wait some time for the next one
     // by default, the testnet beacons are every 30secs
 }, 65000)
