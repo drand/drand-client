@@ -14,7 +14,7 @@ export default class OptimizingClient implements NetworkClient {
     // TODO: options for default request timeout and concurrency
     private options: ClientOptions
     private readonly stats: Array<ClientStats>
-    private speedTestIntervalId?: number
+    private speedTestIntervalId?: ReturnType<typeof setInterval>
 
     constructor(
         private readonly clients: Array<NetworkClient>,

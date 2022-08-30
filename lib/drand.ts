@@ -13,9 +13,13 @@ export type DrandOptions = Partial<{
 
 export interface NetworkClient {
     get(round?: number, options?: ClientOptions): Promise<RandomnessBeacon>
+
     info(): Promise<ChainInfo>
+
     roundAt(time: number): number
+
     close(): Promise<void>
+
     watch(options: ClientOptions): AsyncGenerator<RandomnessBeacon>
 }
 
@@ -58,12 +62,37 @@ export type ChainInfo = {
     }
 }
 
-export type RandomnessBeacon = {
+export type RandomnessBeacon = ChainedBeacon | UnchainedBeacon
+export type ChainedBeacon = {
     round: number
     randomness: string
     signature: string
     previous_signature: string
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export function isChainedBeacon(value: any, info: ChainInfo): value is ChainedBeacon {
+    return info.schemeID === 'pedersen-bls-chained' &&
+        !!value.previous_signature &&
+        !!value.randomness &&
+        !!value.signature &&
+        value.round > 0
+}
+
+export type UnchainedBeacon = {
+    round: number
+    randomness: string
+    signature: string
+}
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export function isUnchainedBeacon(value: any, info: ChainInfo): value is UnchainedBeacon {
+    return info.schemeID === 'pedersen-bls-unchained' &&
+        !!value.randomness &&
+        !!value.signature &&
+        value.previous_signature === undefined &&
+        value.round > 0
+}
+
 export default Client
-export { HTTP }
+export {HTTP}
