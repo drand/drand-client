@@ -1,5 +1,5 @@
 import * as bls from '@noble/bls12-381'
-import {ChainedBeacon, ChainInfo, isChainedBeacon, isUnchainedBeacon, RandomnessBeacon, UnchainedBeacon} from './drand'
+import {ChainedBeacon, ChainInfo, isChainedBeacon, isUnchainedBeacon, RandomnessBeacon, UnchainedBeacon} from "./index";
 
 async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Promise<boolean> {
     const publicKey = chainInfo.public_key
