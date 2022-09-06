@@ -109,7 +109,7 @@ export type ChainedBeacon = {
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function isChainedBeacon(value: any, info: ChainInfo): value is ChainedBeacon {
-    return info.schemeID === 'pedersen-bls-chained' &&
+    return info.schemeID === "pedersen-bls-chained" &&
         !!value.previous_signature &&
         !!value.randomness &&
         !!value.signature &&
@@ -124,7 +124,7 @@ export type UnchainedBeacon = {
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function isUnchainedBeacon(value: any, info: ChainInfo): value is UnchainedBeacon {
-    return info.schemeID === 'pedersen-bls-unchained' &&
+    return info.schemeID === "pedersen-bls-unchained" &&
         !!value.randomness &&
         !!value.signature &&
         value.previous_signature === undefined &&
