@@ -1,6 +1,6 @@
 # drand client
 
-<p align='center'><img src='logo.png' width='220' /></p>
+<p align="center"><img src="logo.png" width="220" /></p>
 
 <p align="center">
   <a href="https://david-dm.org/drand/drand-client" title="dependencies Status"><img src="https://david-dm.org/drand/drand-client/status.svg" /></a>
