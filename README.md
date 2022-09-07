@@ -46,30 +46,71 @@ npm install drand-client
 
 ## Usage
 
-The `drand-client` supports multiple transports, although only HTTP is available currently.
+The `drand-client` contains HTTP implementations, but other transports can be supported by implementing the `DrandNode`, `Chain` and `ChainClient` interfaces.
 
 ### Browser
 
 ```html
+
 <script type="module">
-  import Client, { HTTP } from 'https://cdn.jsdelivr.net/npm/drand-client/drand.js'
+  import { fetchBeacon, fetchBeaconByTime, HttpChainClient, watch } from 'https://cdn.jsdelivr.net/npm/drand-client'
+  import HttpCachingChain from 'https://cdn.jsdelivr.net/npm/drand-client/http-caching-chain'
+  import FastestNodeClient from 'https://cdn.jsdelivr.net/npm/drand-client/fastest-node-client'
+  import MultiBeaconNode from 'https://cdn.jsdelivr.net/npm/drand-client//multi-beacon-node'
 
   const chainHash = '8990e7a9aaed2ffed73dbd7092123d6f289930540d7651336225dc172e51b2ce' // (hex encoded)
-  const urls = [
-    'https://api.drand.sh',
-    'https://drand.cloudflare.com'
-    // ...
-  ]
+  const publicKey = '868f005eb8e6e4ca0a47c8a77ceaa5309a47978a7c71bc5cce96366b5d7a569937c529eeda66c7293784a9402801af31' // (hex encoded)
 
-  async function main() {
-    const options = { chainHash }
+  async function main () {
+    const options = {
+      disableBeaconVerification: false,
+      noCache: false,
+      chainVerificationParams: { chainHash, publicKey }  // these are optional, but recommended!
+    }
 
-    const client = await Client.wrap(HTTP.forURLs(urls, chainHash), options)
+    // if you want to connect to a single chain to grab the latest beacon you can simply do the following
+    const chain = new HttpCachingChain('https://api.drand.sh', options)
+    const client = new HttpChainClient(chain, options)
+    const theLatestBeacon = await fetchBeacon(client)
 
-    // e.g. use the client to get the latest randomness round:
-    const res = await client.get()
+    // alternatively you can also get the beacon for a given time
+    const theBeaconRightNow = await fetchBeaconByTime(client, Date.now())
 
-    console.log(res.round, res.randomness)
+    // if you're happy to get randomness from many APIs and automatically use the fastest
+    // (note: it's verifiable, so you don't need to worry about malicious providers as long as you fill in the 
+    // `chainVerificationParams` in the options!)
+    const urls = [
+      'https://api.drand.sh',
+      'https://drand.cloudflare.com'
+      // ...
+    ]
+    const fastestNodeClient = new FastestNodeClient(urls, options)
+    const theLatestBeaconFromTheFastestClient = await fetchBeacon(fastestNodeClient)
+
+    // you can also use an async generator to watch the latest randomness automatically!
+    // use an abort controller to stop it
+    const abortController = new AbortController()
+    for await (const beacon of watch(client, abortController)) {
+      if (beacon.round === 10) {
+        abortController.abort("round 10 reached")
+      }
+    }
+
+    // finally you can also interact with multibeacon nodes by using the `MultiBeaconNode` class
+    const multiBeaconNode = new MultiBeaconNode("https://api.drand.sh", options)
+    const health = await multiBeaconNode.health()
+    
+    // you can monitor its health
+    if (health.status === 200) {
+      console.log(`Multibeacon node is healthy and has processed ${health.current} of ${health.expected} rounds`)
+    }
+    
+    // and get the chains it follows
+    const chains = await multiBeaconNode.chains()
+    for (const c of chains) {
+      const info = await c.info()
+      console.log(`Chain with baseUrl ${c.baseUrl} has a genesis time of ${info.genesis_time}`)
+    }
   }
 
   main()

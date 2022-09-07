@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import {MultiChainNode} from '../lib'
+import {MultiBeaconNode} from '../lib'
 
 beforeAll(() => {
     fetchMock.enableMocks()
@@ -14,7 +14,7 @@ beforeEach(() => {
 })
 
 describe('multichain node', () => {
-    const multiChainNode = new MultiChainNode('https://example.com')
+    const multiChainNode = new MultiBeaconNode('https://example.com')
 
     describe('chains', () => {
         it('should blow up if the response from the node isn\'t an array', async () => {

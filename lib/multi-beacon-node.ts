@@ -1,7 +1,7 @@
 import {Chain, ChainOptions, defaultChainOptions, DrandNode, HealthCheckResponse} from './index'
-import CachingChain from './caching-chain'
+import HttpCachingChain from './http-caching-chain'
 
-class MultiChainNode implements DrandNode {
+class MultiBeaconNode implements DrandNode {
     constructor(public baseUrl: string, private options: ChainOptions = defaultChainOptions) {
     }
 
@@ -12,7 +12,7 @@ class MultiChainNode implements DrandNode {
         if (!Array.isArray(chains)) {
             throw Error(`Expected an array from the chains endpoint but got: ${chains}`)
         }
-        return chains.map((chainHash: string) => new CachingChain(`${this.baseUrl}/${chainHash}`), this.options)
+        return chains.map((chainHash: string) => new HttpCachingChain(`${this.baseUrl}/${chainHash}`), this.options)
     }
 
     async health(): Promise<HealthCheckResponse> {
@@ -34,4 +34,4 @@ class MultiChainNode implements DrandNode {
     }
 }
 
-export default MultiChainNode
+export default MultiBeaconNode

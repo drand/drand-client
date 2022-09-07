@@ -12,7 +12,6 @@ beforeEach(() => {
 })
 
 describe('http chain client', () => {
-    const client = new HttpChainClient()
     const chainInfo = {
         public_key: '868f005eb8e6e4ca0a47c8a77ceaa5309a47978a7c71bc5cce96366b5d7a569937c529eeda66c7293784a9402801af31',
         period: 30,
@@ -34,10 +33,11 @@ describe('http chain client', () => {
         signature: '8d61d9100567de44682506aea1a7a6fa6e5491cd27a0a0ed349ef6910ac5ac20ff7bc3e09d7c046566c9f7f3c6f3b10104990e7cb424998203d8f7de586fb7fa5f60045417a432684f85093b06ca91c769f0e7ca19268375e659c2a2352b4655',
         previous_signature: '176f93498eac9ca337150b46d21dd58673ea4e3581185f869672e59fa4cb390a'
     }
+    const client = new HttpChainClient(chain)
 
     describe('get', () => {
         it('should throw an error for a round number less than 1', async () => {
-            await expect(client.get(chain, 0)).rejects.toThrowError()
+            await expect(client.get(0)).rejects.toThrowError()
             expect(fetchMock).not.toHaveBeenCalled()
         })
 
@@ -45,7 +45,7 @@ describe('http chain client', () => {
             const roundNumber = 1
             fetchMock.once(JSON.stringify(roundOne))
 
-            await expect(client.get(chain, roundNumber)).resolves.toEqual(roundOne)
+            await expect(client.get(roundNumber)).resolves.toEqual(roundOne)
             expect(fetchMock).toHaveBeenCalledTimes(1)
             expect(fetchMock).toHaveBeenCalledWith(`https://example.com/public/${roundNumber}`)
         })
@@ -55,7 +55,7 @@ describe('http chain client', () => {
         it('should call the API with latest', async () => {
             fetchMock.once(JSON.stringify(roundOne))
 
-            await expect(client.latest(chain)).resolves.toEqual(roundOne)
+            await expect(client.latest()).resolves.toEqual(roundOne)
             expect(fetchMock).toHaveBeenCalledTimes(1)
             expect(fetchMock).toHaveBeenCalledWith('https://example.com/public/latest')
         })
@@ -67,24 +67,24 @@ describe('http chain client', () => {
             fetchMock.once(JSON.stringify(invalidBeacon))
 
             // requesting round 2
-            await expect(client.fetchRound(chain, '1')).rejects.toThrowError()
+            await expect(client.fetchRound('1')).rejects.toThrowError()
         })
 
         it('should not throw an error if the returned beacon is not valid when `disableBeaconVerification` is set', async () => {
-            const client = new HttpChainClient({noCache: false, disableBeaconVerification: true})
+            const client = new HttpChainClient(chain, {noCache: false, disableBeaconVerification: true})
 
             const invalidBeacon = {...roundOne, signature: 'deadbeefdeadbeefdeadbeefdeadbeef'}
             fetchMock.once(JSON.stringify(invalidBeacon))
 
             // requesting round 2
-            await expect(client.fetchRound(chain, '1')).resolves.toEqual(invalidBeacon)
+            await expect(client.fetchRound('1')).resolves.toEqual(invalidBeacon)
         })
 
         it('should call with API with a query param if noCache is set', async () => {
-            const client = new HttpChainClient({noCache: true, disableBeaconVerification: false})
+            const client = new HttpChainClient(chain, {noCache: true, disableBeaconVerification: false})
             fetchMock.once(JSON.stringify(roundOne))
 
-            await expect(client.fetchRound(chain, 'latest')).resolves.toEqual(roundOne)
+            await expect(client.fetchRound( 'latest')).resolves.toEqual(roundOne)
 
             // should have been with cache busting params, not just the normal latest endpoint
             expect(fetchMock).not.toHaveBeenCalledWith('https://example.com/public/latest')

@@ -1,22 +1,15 @@
 import {Chain, ChainInfo, ChainOptions, ChainVerificationParams, defaultChainOptions} from './index'
 import {jsonOrError} from './util'
 
-class CachingChain implements Chain {
-
-    private cachedInfo?: ChainInfo
-
+class HttpChain implements Chain {
     constructor(public baseUrl: string, private options: ChainOptions = defaultChainOptions) {
     }
 
     async info(): Promise<ChainInfo> {
-        if (this.cachedInfo) {
-            return this.cachedInfo
-        }
         const chainInfo = await jsonOrError(`${this.baseUrl}/info`)
         if (!!this.options.chainVerificationParams && !isValidInfo(chainInfo, this.options.chainVerificationParams)) {
             throw Error(`The chain info retrieved from ${this.baseUrl} did not match the verification params!`)
         }
-        this.cachedInfo = chainInfo
         return chainInfo
     }
 }
@@ -25,4 +18,21 @@ function isValidInfo(chainInfo: ChainInfo, validParams: ChainVerificationParams)
     return chainInfo.hash === validParams.chainHash && chainInfo.public_key === validParams.publicKey
 }
 
-export default CachingChain
+class HttpCachingChain implements Chain {
+    private chain: Chain
+    private cachedInfo?: ChainInfo
+
+    constructor(public baseUrl: string, private options: ChainOptions = defaultChainOptions) {
+        this.chain = new HttpChain(baseUrl, options)
+    }
+
+    async info(): Promise<ChainInfo> {
+        if (!this.cachedInfo) {
+            this.cachedInfo = await this.chain.info()
+        }
+        return this.cachedInfo
+    }
+}
+
+export {HttpChain}
+export default HttpCachingChain

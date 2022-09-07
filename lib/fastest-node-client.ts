@@ -1,6 +1,7 @@
-import {Chain, ChainOptions, defaultChainOptions} from './index'
-import CachingChain from './caching-chain'
+import {Chain, ChainClient, ChainOptions, defaultChainOptions, RandomnessBeacon} from './index'
+import HttpCachingChain, {HttpChain} from './http-caching-chain'
 import {createSpeedTest, SpeedTest} from './speedtest'
+import HttpChainClient from "./http-chain-client";
 
 const defaultSpeedTestInterval = 1000 * 60
 
@@ -10,7 +11,8 @@ type SpeedTestEntry = {
 }
 
 // takes an array of drand nodes and periodically speed tests them to work out which is the fastest
-class MultiChainClient {
+// it then uses the fastest client to make calls using an underlying HTTP client
+class FastestNodeClient implements ChainClient {
 
     speedTests: Array<SpeedTestEntry> = []
 
@@ -24,13 +26,25 @@ class MultiChainClient {
         }
         this.speedTests = baseUrls.map(url => {
                 const testFn = async () => {
-                    await new CachingChain(url, options).info()
+                    await new HttpChain(url, options).info()
                     return
                 }
                 const test = createSpeedTest(testFn, speedTestIntervalMs)
                 return {test, url}
             }
         )
+    }
+
+    async latest(): Promise<RandomnessBeacon> {
+        return new HttpChainClient(this.current(), this.options).latest()
+    }
+
+    async get(roundNumber: number): Promise<RandomnessBeacon> {
+        return new HttpChainClient(this.current(), this.options).get(roundNumber)
+    }
+
+    chain(): Chain {
+        return this.current()
     }
 
     start() {
@@ -47,7 +61,7 @@ class MultiChainClient {
             throw Error('Somehow there were no entries to optimise! This should be impossible by now')
         }
 
-        return new CachingChain(fastestEntry.url, this.options)
+        return new HttpCachingChain(fastestEntry.url, this.options)
     }
 
     close() {
@@ -55,4 +69,4 @@ class MultiChainClient {
     }
 }
 
-export default MultiChainClient
+export default FastestNodeClient

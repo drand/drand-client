@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import MultichainClient from '../lib/multichain-client'
+import MultichainClient from '../lib/fastest-node-client'
 import {defaultChainOptions} from '../lib'
 import {sleep} from '../lib/util'
 

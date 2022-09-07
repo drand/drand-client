@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import {CachingChain, defaultChainOptions} from '../lib'
+import {HttpCachingChain, defaultChainOptions} from '../lib'
 
 beforeAll(() => {
     fetchMock.enableMocks()
@@ -25,7 +25,7 @@ describe('caching chain', () => {
     }
     it('should only call the network for the first request', async () => {
         // create a client with some verification options matching the expected chainInfo
-        const chain = new CachingChain('https:///example.com/wow', {
+        const chain = new HttpCachingChain('https:///example.com/wow', {
             ...defaultChainOptions,
             chainVerificationParams: {
                 chainHash: chainInfo.hash,
@@ -45,7 +45,7 @@ describe('caching chain', () => {
     })
 
     it('should throw an error if the chain hash returned does not match the verification params', async () => {
-        const chain = new CachingChain('https:///example.com/wow', {
+        const chain = new HttpCachingChain('https:///example.com/wow', {
             ...defaultChainOptions,
             chainVerificationParams: {
                 chainHash: 'cafebabe',
@@ -59,7 +59,7 @@ describe('caching chain', () => {
     })
 
     it('should throw an error if the public key returned does not match the verification params', async () => {
-        const chain = new CachingChain('https:///example.com/wow', {
+        const chain = new HttpCachingChain('https:///example.com/wow', {
             ...defaultChainOptions,
             chainVerificationParams: {
                 chainHash: chainInfo.hash,
@@ -73,7 +73,7 @@ describe('caching chain', () => {
 
     it('should not throw an error if the there are no chain verification params provided', async () => {
         // create a client with some verification options matching the expected chainInfo
-        const chain = new CachingChain('https:///example.com/wow')
+        const chain = new HttpCachingChain('https:///example.com/wow')
 
         fetchMock.mockResponseOnce(JSON.stringify(chainInfo))
 
