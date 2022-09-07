@@ -2,15 +2,14 @@ import {Chain, ChainOptions, defaultChainOptions} from './index'
 import CachingChain from './caching-chain'
 import {createSpeedTest, SpeedTest} from './speedtest'
 
-const defaultSpeedTestInterval = 1000 * 60 * 5
+const defaultSpeedTestInterval = 1000 * 60
 
 type SpeedTestEntry = {
     test: SpeedTest
     url: string
 }
 
-// takes an array of drand nodes and periodically speed tests them to work out which is the fastest,
-// using it for all calls
+// takes an array of drand nodes and periodically speed tests them to work out which is the fastest
 class MultiChainClient {
 
     speedTests: Array<SpeedTestEntry> = []
