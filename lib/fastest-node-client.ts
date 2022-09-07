@@ -55,7 +55,7 @@ class FastestNodeClient implements ChainClient {
 
     current(): Chain {
         if (this.speedTests.length === 0) {
-            console.warn("You are not currently running speed tests to choose the fastest client. Run `.start()` to speed test")
+            console.warn('You are not currently running speed tests to choose the fastest client. Run `.start()` to speed test')
         }
         const fastestEntry = this.speedTests
             .slice()
