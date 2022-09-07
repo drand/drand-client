@@ -1,6 +1,6 @@
-import {Chain, ChainOptions, defaultChainOptions} from './index';
-import CachingChain from './caching-chain';
-import {createSpeedTest, SpeedTest} from './speedtest';
+import {Chain, ChainOptions, defaultChainOptions} from './index'
+import CachingChain from './caching-chain'
+import {createSpeedTest, SpeedTest} from './speedtest'
 
 const defaultSpeedTestInterval = 1000 * 60 * 5
 

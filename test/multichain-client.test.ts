@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock'
 import MultichainClient from '../lib/multichain-client'
 import {defaultChainOptions} from '../lib'
-import {sleep} from '../lib/util';
+import {sleep} from '../lib/util'
 
 const speedTestIntervalMs = 200
 const client = new MultichainClient(

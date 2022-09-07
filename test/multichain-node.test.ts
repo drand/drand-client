@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import {MultiChainNode} from '../lib';
+import {MultiChainNode} from '../lib'
 
 beforeAll(() => {
     fetchMock.enableMocks()

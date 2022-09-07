@@ -1,4 +1,4 @@
-import {ChainInfo, roundAt, roundTime} from '../lib';
+import {ChainInfo, roundAt, roundTime} from '../lib'
 
 test('should get round 1 when time is less than genesis', () => {
     const chainInfo = createChainInfo(0, 1)
