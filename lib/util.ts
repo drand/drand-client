@@ -1,4 +1,4 @@
-import {ChainInfo} from "./index"
+import {ChainInfo} from './index'
 
 export function sleep(timeMs: number): Promise<void> {
     return new Promise(resolve => {
@@ -19,6 +19,7 @@ export function roundTime(chain: ChainInfo, round: number) {
     return (chain.genesis_time + (round - 1) * chain.period) * 1000
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export async function jsonOrError(url: string): Promise<any> {
     const response = await fetch(url)
     if (!response.ok) {

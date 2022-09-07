@@ -1,5 +1,5 @@
-import {Chain, ChainInfo, ChainOptions, ChainVerificationParams, defaultChainOptions} from "./index"
-import {jsonOrError} from "./util"
+import {Chain, ChainInfo, ChainOptions, ChainVerificationParams, defaultChainOptions} from './index'
+import {jsonOrError} from './util'
 
 class CachingChain implements Chain {
 

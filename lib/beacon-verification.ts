@@ -1,5 +1,5 @@
-import * as bls from "@noble/bls12-381"
-import {ChainedBeacon, ChainInfo, isChainedBeacon, isUnchainedBeacon, RandomnessBeacon, UnchainedBeacon} from "./index";
+import * as bls from '@noble/bls12-381'
+import {ChainedBeacon, ChainInfo, isChainedBeacon, isUnchainedBeacon, RandomnessBeacon, UnchainedBeacon} from './index';
 
 async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Promise<boolean> {
     const publicKey = chainInfo.public_key
@@ -29,7 +29,7 @@ async function unchainedBeaconMessage(beacon: UnchainedBeacon): Promise<Uint8Arr
 }
 
 function signatureBuffer(sig: string) {
-    return Buffer.from(sig, "hex")
+    return Buffer.from(sig, 'hex')
 }
 
 function roundBuffer(round: number) {

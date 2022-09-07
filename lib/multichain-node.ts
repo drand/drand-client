@@ -1,5 +1,5 @@
-import {Chain, ChainOptions, defaultChainOptions, DrandNode, HealthCheckResponse} from "./index"
-import CachingChain from "./caching-chain"
+import {Chain, ChainOptions, defaultChainOptions, DrandNode, HealthCheckResponse} from './index'
+import CachingChain from './caching-chain'
 
 class MultiChainNode implements DrandNode {
     constructor(public baseUrl: string, private options: ChainOptions = defaultChainOptions) {

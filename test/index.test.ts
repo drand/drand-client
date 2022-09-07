@@ -1,11 +1,11 @@
-import {fetchBeacon, fetchBeaconByTime, HttpChainClient, MultiChainNode, watch} from "../lib"
-import "isomorphic-fetch"
+import {fetchBeacon, fetchBeaconByTime, HttpChainClient, MultiChainNode, watch} from '../lib'
+import 'isomorphic-fetch'
 
 const httpClient = new HttpChainClient()
 
-test("Beacon fetching works with testnet", async () => {
+test('Beacon fetching works with testnet', async () => {
     // connect to testnet
-    const node = new MultiChainNode("https://pl-us.testnet.drand.sh")
+    const node = new MultiChainNode('https://pl-us.testnet.drand.sh')
     expect((await node.health()).status).toEqual(200)
     const chains = await node.chains()
     expect(await node.chains()).not.toHaveLength(0)
@@ -28,9 +28,9 @@ test("Beacon fetching works with testnet", async () => {
     await expect(fetchBeaconByTime(chains[0], httpClient, 0)).rejects.toThrow()
 })
 
-test("watch honours its abort controller", async () => {
+test('watch honours its abort controller', async () => {
     // connect to testnet
-    const node = new MultiChainNode("https://pl-us.testnet.drand.sh")
+    const node = new MultiChainNode('https://pl-us.testnet.drand.sh')
     expect((await node.health()).status).toEqual(200)
     const chains = await node.chains()
     expect(await node.chains()).not.toHaveLength(0)
@@ -44,7 +44,7 @@ test("watch honours its abort controller", async () => {
     expect(firstValue.value).toBeDefined()
 
     // cancel watching
-    abortController.abort("some reason")
+    abortController.abort('some reason')
 
     // there are no values left
     const finishedValue = await generator.next()

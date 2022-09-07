@@ -1,6 +1,6 @@
-import {Chain, ChainOptions, defaultChainOptions} from "./index";
-import CachingChain from "./caching-chain";
-import {createSpeedTest, SpeedTest} from "./speedtest";
+import {Chain, ChainOptions, defaultChainOptions} from './index';
+import CachingChain from './caching-chain';
+import {createSpeedTest, SpeedTest} from './speedtest';
 
 const defaultSpeedTestInterval = 1000 * 60 * 5
 
@@ -21,7 +21,7 @@ class MultiChainClient {
         speedTestIntervalMs = defaultSpeedTestInterval
     ) {
         if (baseUrls.length === 0) {
-            throw Error("Can't optimise an empty `baseUrls` array!")
+            throw Error('Can\'t optimise an empty `baseUrls` array!')
         }
         this.speedTests = baseUrls.map(url => {
                 const testFn = async () => {
@@ -45,7 +45,7 @@ class MultiChainClient {
             .shift()
 
         if (!fastestEntry) {
-            throw Error("Somehow there were no entries to optimise! This should be impossible by now")
+            throw Error('Somehow there were no entries to optimise! This should be impossible by now')
         }
 
         return new CachingChain(fastestEntry.url, this.options)

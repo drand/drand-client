@@ -4,7 +4,7 @@ export interface SpeedTest {
     average: () => number
 }
 
-export function createSpeedTest(test: () => Promise<void>, frequencyMs: number, samples: number = 5): SpeedTest {
+export function createSpeedTest(test: () => Promise<void>, frequencyMs: number, samples = 5): SpeedTest {
     let queue = new DroppingQueue<number>(samples)
     let intervalId: ReturnType<typeof setInterval> | null = null
 
@@ -21,7 +21,7 @@ export function createSpeedTest(test: () => Promise<void>, frequencyMs: number, 
     return {
         start: () => {
             if (intervalId != null) {
-                console.warn("Attempted to start a speed test, but it had already been started!")
+                console.warn('Attempted to start a speed test, but it had already been started!')
                 return
             }
             intervalId = setInterval(executeSpeedTest, frequencyMs)

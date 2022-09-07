@@ -1,5 +1,5 @@
-import fetchMock from "jest-fetch-mock"
-import {MultiChainNode} from "../lib";
+import fetchMock from 'jest-fetch-mock'
+import {MultiChainNode} from '../lib';
 
 beforeAll(() => {
     fetchMock.enableMocks()
@@ -13,18 +13,18 @@ beforeEach(() => {
     fetchMock.resetMocks()
 })
 
-describe("multichain node", () => {
-    const multiChainNode = new MultiChainNode("https://example.com")
+describe('multichain node', () => {
+    const multiChainNode = new MultiChainNode('https://example.com')
 
-    describe("chains", () => {
-        it("should blow up if the response from the node isn't an array", async () => {
-            fetchMock.mockResponseOnce("deadbeef")
+    describe('chains', () => {
+        it('should blow up if the response from the node isn\'t an array', async () => {
+            fetchMock.mockResponseOnce('deadbeef')
 
             await expect(multiChainNode.chains()).rejects.toThrowError()
         })
 
-        it("should create a chain object for each chain", async () => {
-            fetchMock.mockResponseOnce(JSON.stringify(["deadbeef", "cafebabe"]))
+        it('should create a chain object for each chain', async () => {
+            fetchMock.mockResponseOnce(JSON.stringify(['deadbeef', 'cafebabe']))
 
             const chains = await multiChainNode.chains()
 
@@ -32,19 +32,19 @@ describe("multichain node", () => {
         })
 
     })
-    describe("health", () => {
-        it("should return the status if not 200", async () => {
+    describe('health', () => {
+        it('should return the status if not 200', async () => {
             const expectedStatus = 503
-            fetchMock.mockResponse("it's broken", {
+            fetchMock.mockResponse('it\'s broken', {
                 status: expectedStatus,
-                statusText: "Service unavailable",
+                statusText: 'Service unavailable',
             })
 
             const health = await multiChainNode.health()
 
             expect(health.status).toEqual(expectedStatus)
         })
-        it("should return the correct current and expected if it is a 200", async () => {
+        it('should return the correct current and expected if it is a 200', async () => {
             const expectedResponse = {current: 20, expected: 120}
             fetchMock.mockResponse(JSON.stringify(expectedResponse))
 

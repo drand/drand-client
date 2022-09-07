@@ -1,8 +1,8 @@
-import CachingChain from "./caching-chain"
-import HttpChainClient from "./http-chain-client"
-import MultiChainClient from "./multichain-client"
-import MultiChainNode from "./multichain-node"
-import {roundAt, roundTime, sleep} from "./util"
+import CachingChain from './caching-chain'
+import HttpChainClient from './http-chain-client'
+import MultiChainClient from './multichain-client'
+import MultiChainNode from './multichain-node'
+import {roundAt, roundTime, sleep} from './util'
 
 // functionality for a given drand node
 export interface DrandNode {
@@ -67,7 +67,7 @@ export async function fetchBeacon(chain: Chain, client: ChainClient, roundNumber
 export async function fetchBeaconByTime(chain: Chain, client: ChainClient, time: number): Promise<RandomnessBeacon> {
     const info = await chain.info()
     if (time < info.genesis_time) {
-        throw Error("Cannot request a beacon before the genesis time")
+        throw Error('Cannot request a beacon before the genesis time')
     }
     const roundNumber = roundAt(time, info)
     return fetchBeacon(chain, client, roundNumber)
@@ -109,7 +109,7 @@ export type ChainedBeacon = {
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function isChainedBeacon(value: any, info: ChainInfo): value is ChainedBeacon {
-    return info.schemeID === "pedersen-bls-chained" &&
+    return info.schemeID === 'pedersen-bls-chained' &&
         !!value.previous_signature &&
         !!value.randomness &&
         !!value.signature &&
@@ -124,7 +124,7 @@ export type UnchainedBeacon = {
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function isUnchainedBeacon(value: any, info: ChainInfo): value is UnchainedBeacon {
-    return info.schemeID === "pedersen-bls-unchained" &&
+    return info.schemeID === 'pedersen-bls-unchained' &&
         !!value.randomness &&
         !!value.signature &&
         value.previous_signature === undefined &&
