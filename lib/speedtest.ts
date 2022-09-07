@@ -4,6 +4,7 @@ export interface SpeedTest {
     average: () => number
 }
 
+// a utility that tracks the last `samples` speed test execution times and returns the mean running time of them.
 export function createSpeedTest(test: () => Promise<void>, frequencyMs: number, samples = 5): SpeedTest {
     let queue = new DroppingQueue<number>(samples)
     let intervalId: ReturnType<typeof setInterval> | null = null

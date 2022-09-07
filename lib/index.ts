@@ -23,11 +23,11 @@ export type ChainOptions = {
     // setting this to true will skip validation of beacons signatures (not recommended)
     disableBeaconVerification: boolean
 
-    // setting this will add a query param to requests to stop it getting a cached version
+    // setting this will add a query param to requests to stop providers returning a cached version
     noCache: boolean
 
-    // adding these params will verify that the chain info from the requested chain matches them, otherwise an error will be thrown
-    // leaving them out assumes that you are sure the `baseUrl` you are using for the chain client is the correct chain
+    // adding these params will verify that the chain info from the requested chain matches them, otherwise an error will be thrown.
+    // Leaving them out assumes that you are sure the `baseUrl` you are using for the chain client is the correct chain
     chainVerificationParams?: ChainVerificationParams
 }
 
@@ -42,7 +42,7 @@ export type ChainVerificationParams = {
 }
 
 export type HealthCheckResponse = {
-    // the http status code of the node
+    // the http status code returned from the node's healthcheck
     status: number
     // the current round this node has caught up to. -1 when the service cannot be contacted
     current: number
@@ -86,7 +86,7 @@ export async function fetchBeaconByTime(client: ChainClient, time: number): Prom
     return fetchBeacon(client, roundNumber)
 }
 
-// get an async generator emitting beacons from the latest round onwards
+// an async generator emitting beacons from the latest round onwards
 export async function* watch(client: ChainClient, abortController: AbortController): AsyncGenerator<RandomnessBeacon> {
     while (!abortController.signal.aborted) {
         const info = await client.chain().info()
@@ -157,5 +157,5 @@ export function isUnchainedBeacon(value: any, info: ChainInfo): value is Unchain
         value.round > 0
 }
 
-// exports some default implementation of the above interfaces and other utility functions that could be used with them
+// exports some default implementations of the above interfaces and other utility functions that could be used with them
 export {HttpChainClient, HttpCachingChain, MultiBeaconNode, FastestNodeClient, roundAt, roundTime}
