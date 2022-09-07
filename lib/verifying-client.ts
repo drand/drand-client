@@ -26,7 +26,7 @@ export default class VerifyingClient implements NetworkClient {
     private async verify (rand: RandomnessBeacon) {
         // TODO: full/partial chain verification
         const info = await this.info()
-        const beaconValid = await verifyBeacon(info.public_key, rand)
+        const beaconValid = await verifyBeacon(info, rand)
         if (!beaconValid) {
             throw Error(`Round ${rand.round} beacon signature was not valid!!`)
         }
