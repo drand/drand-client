@@ -3,8 +3,9 @@ import HttpChainClient from './http-chain-client'
 import FastestNodeClient from './fastest-node-client'
 import MultiBeaconNode from './multi-beacon-node'
 import {roundAt, roundTime, sleep} from './util'
+import {verifyBeacon} from './beacon-verification'
 
-// functionality for a given drand node
+// functionality for inspecting a drand node
 export interface DrandNode {
     chains(): Promise<Array<Chain>>
 
@@ -43,14 +44,15 @@ export type ChainVerificationParams = {
 export type HealthCheckResponse = {
     // the http status code of the node
     status: number
-    // the current round this node has caught up to.  -1 when the service cannot be contacted
+    // the current round this node has caught up to. -1 when the service cannot be contacted
     current: number
-    // the expected current round.  -1 when the service cannot be contacted
+    // the expected current round. -1 when the service cannot be contacted
     expected: number
 }
 
 // functionality for fetching individual beacons for a given `Chain`
 export interface ChainClient {
+    options: ChainOptions
 
     latest(): Promise<RandomnessBeacon>
 
@@ -61,10 +63,17 @@ export interface ChainClient {
 
 // fetch a beacon for a given `roundNumber` or get the latest beacon by omitting the `roundNumber`
 export async function fetchBeacon(client: ChainClient, roundNumber?: number): Promise<RandomnessBeacon> {
+    let beacon = null
+
     if (!roundNumber) {
-        return client.latest()
+        beacon = await client.latest()
+    } else if (roundNumber < 1) {
+        throw Error('Cannot request lower than round number 1')
+    } else {
+        beacon = await client.get(roundNumber)
     }
-    return client.get(roundNumber)
+
+    return validatedBeacon(client, beacon)
 }
 
 // fetch the most recent beacon to have been emitted at a given `time` in epoch ms
@@ -82,13 +91,26 @@ export async function* watch(client: ChainClient, abortController: AbortControll
     while (!abortController.signal.aborted) {
         const info = await client.chain().info()
         const beacon = await client.latest()
-        yield beacon
+        yield validatedBeacon(client, beacon)
 
         const now = Date.now()
         const nextRoundTime = roundTime(info, beacon.round + 1)
 
         await sleep(nextRoundTime - now)
     }
+}
+
+// internal function for validating a beacon if validation has not been disabled in the client options
+async function validatedBeacon(client: ChainClient, beacon: RandomnessBeacon): Promise<RandomnessBeacon> {
+    if (client.options.disableBeaconVerification) {
+        return beacon
+    }
+    const info = await client.chain().info()
+    if (!await verifyBeacon(info, beacon)) {
+        throw Error('The beacon retrieved was not valid!')
+    }
+
+    return beacon
 }
 
 export type ChainInfo = {

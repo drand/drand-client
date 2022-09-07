@@ -15,7 +15,7 @@ beforeAll(() => {
 
 afterAll(() => {
     fetchMock.disableMocks()
-    client.close()
+    client.stop()
 })
 
 beforeEach(() => {

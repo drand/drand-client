@@ -1,6 +1,6 @@
 # drand client
 
-<p align="center"><img src="logo.png" width="220" /></p>
+<p align='center'><img src='logo.png' width='220' /></p>
 
 <p align="center">
   <a href="https://david-dm.org/drand/drand-client" title="dependencies Status"><img src="https://david-dm.org/drand/drand-client/status.svg" /></a>
@@ -9,26 +9,16 @@
 
 <p align="center">A JavaScript <strong>client</strong> to the drand randomness beacon network.</p>
 
-<p align="center">⚠️ This client does not yet support full/partial chain <em>verification</em>.</p>
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 ## Table of Contents
 
 - [Install](#install)
 - [Usage](#usage)
-  - [Browser](#browser)
-  - [Deno](#deno)
-  - [Node.js](#nodejs)
-- [API](#api)
-    - [`Client.wrap([]Client | Promise<[]Client>, options?: object): Promise<Client>`](#clientwrapclient--promiseclient-options-object-promiseclient)
-    - [`client.get(round?: number, options?: object): Promise<object>`](#clientgetround-number-options-object-promiseobject)
-    - [`client.info(options?: object): Promise<object>`](#clientinfooptions-object-promiseobject)
-    - [`client.watch(options?: object): AsyncIterable<object>`](#clientwatchoptions-object-asynciterableobject)
-    - [`client.roundAt(time): number`](#clientroundattime-number)
-    - [`client.close(): Promise`](#clientclose-promise)
-    - [`new HTTP(url: string, chainInfo: object, options?: object)`](#new-httpurl-string-chaininfo-object-options-object)
-    - [`HTTP.forURLs([]string, chainHash): Promise<[]Client>`](#httpforurlsstring-chainhash-promiseclient)
+    - [Browser](#browser)
+    - [Deno](#deno)
+    - [Node.js](#nodejs)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -36,7 +26,8 @@
 
 ## Install
 
-In the browser or [Deno](https://deno.land) you can grab and use the client from a CDN e.g. https://cdn.jsdelivr.net/npm/drand-client/drand.js.
+In the browser or [Deno](https://deno.land) you can grab and use the client from a CDN
+e.g. https://cdn.jsdelivr.net/npm/drand-client/drand.js.
 
 In [Node.js](https://nodejs.org), install with:
 
@@ -46,84 +37,103 @@ npm install drand-client
 
 ## Usage
 
-The `drand-client` contains HTTP implementations, but other transports can be supported by implementing the `DrandNode`, `Chain` and `ChainClient` interfaces.
+The `drand-client` contains HTTP implementations, but other transports can be supported by implementing the `DrandNode`
+, `Chain` and `ChainClient` interfaces where appropriate.
 
 ### Browser
 
 ```html
 
-<script type="module">
-  import { fetchBeacon, fetchBeaconByTime, HttpChainClient, watch } from 'https://cdn.jsdelivr.net/npm/drand-client'
-  import HttpCachingChain from 'https://cdn.jsdelivr.net/npm/drand-client/http-caching-chain'
-  import FastestNodeClient from 'https://cdn.jsdelivr.net/npm/drand-client/fastest-node-client'
-  import MultiBeaconNode from 'https://cdn.jsdelivr.net/npm/drand-client//multi-beacon-node'
+<script type='module'>
+    import { 
+      fetchBeacon, 
+      fetchBeaconByTime, 
+      HttpChainClient, 
+      watch, 
+      HttpCachingChain, 
+      FastestNodeClient, 
+      MultiBeaconNode 
+    } from 'https://cdn.jsdelivr.net/npm/drand-client'
 
-  const chainHash = '8990e7a9aaed2ffed73dbd7092123d6f289930540d7651336225dc172e51b2ce' // (hex encoded)
-  const publicKey = '868f005eb8e6e4ca0a47c8a77ceaa5309a47978a7c71bc5cce96366b5d7a569937c529eeda66c7293784a9402801af31' // (hex encoded)
+    const chainHash = '8990e7a9aaed2ffed73dbd7092123d6f289930540d7651336225dc172e51b2ce' // (hex encoded)
+    const publicKey = '868f005eb8e6e4ca0a47c8a77ceaa5309a47978a7c71bc5cce96366b5d7a569937c529eeda66c7293784a9402801af31' // (hex encoded)
 
-  async function main () {
-    const options = {
-      disableBeaconVerification: false,
-      noCache: false,
-      chainVerificationParams: { chainHash, publicKey }  // these are optional, but recommended!
+    async function main () {
+        const options = {
+            disableBeaconVerification: false, // `true` disables checking of signatures on beacons - faster but insecure!!!
+            noCache: false, // `true` disables caching when retrieving beacons for some providers
+            chainVerificationParams: { chainHash, publicKey }  // these are optional, but recommended! They are compared for parity against the `/info` output of a given node
+        }
+
+        // if you want to connect to a single chain to grab the latest beacon you can simply do the following
+        const chain = new HttpCachingChain('https://api.drand.sh', options)
+        const client = new HttpChainClient(chain, options)
+        const theLatestBeacon = await fetchBeacon(client)
+
+        // alternatively you can also get the beacon for a given time
+        const theBeaconRightNow = await fetchBeaconByTime(client, Date.now())
+
+        // if you're happy to get randomness from many APIs and automatically use the fastest
+        // (note: it's verifiable, so you don't need to worry about malicious providers as long as you fill in the 
+        // `chainVerificationParams` in the options!)
+        const urls = [
+            'https://api.drand.sh',
+            'https://drand.cloudflare.com'
+            // ...
+        ]
+        const fastestNodeClient = new FastestNodeClient(urls, options)
+        // don't forget to start it!
+        fastestNodeClient.start()
+        const theLatestBeaconFromTheFastestClient = await fetchBeacon(fastestNodeClient)
+        // don't forget to stop the speed testing!
+        fastestNodeClient.stop()
+
+        // you can also use an async generator to watch the latest randomness automatically!
+        // use an abort controller to stop it
+        const abortController = new AbortController()
+        for await (const beacon of watch(client, abortController)) {
+            if (beacon.round === 10) {
+                abortController.abort('round 10 reached')
+            }
+        }
+
+        // finally you can also interact with multibeacon nodes by using the `MultiBeaconNode` class
+        const multiBeaconNode = new MultiBeaconNode('https://api.drand.sh', options)
+        const health = await multiBeaconNode.health()
+
+        // you can monitor its health
+        if (health.status === 200) {
+            console.log(`Multibeacon node is healthy and has processed ${health.current} of ${health.expected} rounds`)
+        }
+
+        // and get the chains it follows
+        const chains = await multiBeaconNode.chains()
+        for (const c of chains) {
+            const info = await c.info()
+            console.log(`Chain with baseUrl ${c.baseUrl} has a genesis time of ${info.genesis_time}`)
+        }
+
+        // you can even create clients straight from the chains it returns
+        const latestBeaconsFromAllChains = Promise.all(
+                chains
+                        .map(each => new HttpChainClient(each, options))
+                        .map(client => fetchBeacon(client))
+        )
     }
 
-    // if you want to connect to a single chain to grab the latest beacon you can simply do the following
-    const chain = new HttpCachingChain('https://api.drand.sh', options)
-    const client = new HttpChainClient(chain, options)
-    const theLatestBeacon = await fetchBeacon(client)
-
-    // alternatively you can also get the beacon for a given time
-    const theBeaconRightNow = await fetchBeaconByTime(client, Date.now())
-
-    // if you're happy to get randomness from many APIs and automatically use the fastest
-    // (note: it's verifiable, so you don't need to worry about malicious providers as long as you fill in the 
-    // `chainVerificationParams` in the options!)
-    const urls = [
-      'https://api.drand.sh',
-      'https://drand.cloudflare.com'
-      // ...
-    ]
-    const fastestNodeClient = new FastestNodeClient(urls, options)
-    const theLatestBeaconFromTheFastestClient = await fetchBeacon(fastestNodeClient)
-
-    // you can also use an async generator to watch the latest randomness automatically!
-    // use an abort controller to stop it
-    const abortController = new AbortController()
-    for await (const beacon of watch(client, abortController)) {
-      if (beacon.round === 10) {
-        abortController.abort("round 10 reached")
-      }
-    }
-
-    // finally you can also interact with multibeacon nodes by using the `MultiBeaconNode` class
-    const multiBeaconNode = new MultiBeaconNode("https://api.drand.sh", options)
-    const health = await multiBeaconNode.health()
-    
-    // you can monitor its health
-    if (health.status === 200) {
-      console.log(`Multibeacon node is healthy and has processed ${health.current} of ${health.expected} rounds`)
-    }
-    
-    // and get the chains it follows
-    const chains = await multiBeaconNode.chains()
-    for (const c of chains) {
-      const info = await c.info()
-      console.log(`Chain with baseUrl ${c.baseUrl} has a genesis time of ${info.genesis_time}`)
-    }
-  }
-
-  main()
+    main()
 </script>
 ```
 
 ### Deno
 
-Usage in Deno is the same as the [browser](#browser), minus the HTML `<script>` tag. Ensure you run your script with the `--allow-net` flag e.g. `deno run --allow-net client.js`.
+Usage in Deno is the same as the [browser](#browser), minus the HTML `<script>` tag. Ensure you run your script with
+the `--allow-net` flag e.g. `deno run --allow-net client.js`.
 
 ### Node.js
 
-If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch) and [`AbortController`](http://npm.im/abort-controller) as globals e.g.
+If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch)
+and [`AbortController`](http://npm.im/abort-controller) as globals e.g.
 
 ```js
 import Client, { HTTP } from 'drand-client'
@@ -148,107 +158,10 @@ global.AbortController = AbortController
 
 // Use as per browser example...
 ```
-
-## API
-
-```js
-import Client, { HTTP } from 'https://cdn.jsdelivr.net/npm/drand-client/drand.js'
-```
-
-#### `Client.wrap([]Client | Promise<[]Client>, options?: object): Promise<Client>`
-
-Wrap provides a single entrypoint for wrapping concrete client implementation(s) with configured aggregation, caching, and retry logic.
-
-* `options.chainHash: string` - hex encoded hash of the chain information, it uniquely identifies the drand chain. It is used as a root of trust for validation of the first round of randomness.
-* `options.chainInfo: object` - the chain information, as returned by the `/info` JSON HTTP API endpoint. Can be passed instead of `options.chainHash`.
-* `options.disableBeaconVerification: boolean` - disables verification of randomness beacons as they arrive (not recommended). Note that verification is performed by a compiled WASM module which is loaded on demand (default: `false`).
-* `options.insecure: boolean` - indicate the client should be allowed to provide randomness when the root of trust is not fully provided in a validate-able way (default: `false`).
-
-Note: When using the client you _should_ use the `chainHash` or `chainInfo` option in order for your client to validate the randomness it receives is from the correct chain. You may use the `insecure` option to bypass this validation but it is _not recommended_!
-
-e.g.
-
-```js
-const client = await Client.wrap([/* ... */], options)
-```
-
-#### `client.get(round?: number, options?: object): Promise<object>`
-
-Returns the randomness at `round` or an error. Requesting round = 0 will return randomness for the most recent known round, bounded at minimum to `client.roundAt(Date.now())`.
-
-* `options.noCache: boolean` - bypass the cache.
-* `options.signal: AbortSignal` - a signal obtained from an [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) that can be used to abort the request.
-
-e.g.
-
-```js
-const round = 1
-const res = await client.get(round)
-/*
-{
-  "round": 367,
-  "signature": "b62dd642e939191af1f9e15bef0f0b0e9562a5f570a12a231864afe468377e2a6424a92ccfc34ef1471cbd58c37c6b020cf75ce9446d2aa1252a090250b2b1441f8a2a0d22208dcc09332eaa0143c4a508be13de63978dbed273e3b9813130d5",
-  "previous_signature": "afc545efb57f591dbdf833c339b3369f569566a93e49578db46b6586299422483b7a2d595814046e2847494b401650a0050981e716e531b6f4b620909c2bf1476fd82cf788a110becbc77e55746a7cccd47fb171e8ae2eea2a22fcc6a512486d",
-  "randomness": "d7aed3686bf2be657e6d38c20999831308ee6244b68c8825676db580e7e3bec6"
-}
-*/
-```
-
-#### `client.info(options?: object): Promise<object>`
-
-Info returns the parameters of the chain this client is connected to. The public key, when it started, and how frequently it updates.
-
-* `options.noCache: boolean` - bypass the cache.
-* `options.signal: AbortSignal` - a signal obtained from an [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) that can be used to abort the request.
-
-e.g.
-
-```js
-const info = await client.info()
-/*
-{
-  "public_key": "aaddd53d2c92454b698c52495990162bc999778a32fd570dad2ef3de2915a5b397d80ec5508919e84cd10944955b7318",
-  "period": 10,
-  "genesis_time": 1592226590,
-  "hash": "c599c267a0dd386606f7d6132da8327d57e1004760897c9dd4fb8495c29942b2"
-}
-*/
-```
-
-#### `client.watch(options?: object): AsyncIterable<object>`
-
-Watch returns an async iterable that yields new randomness beacons as they become available.
-
-* `options.signal: AbortSignal` - a signal obtained from an [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) that can be used to abort the request.
-
-e.g.
-
-```js
-for await (const res of client.watch()) {
-    console.log(res)
-}
-// See output example from .get
-```
-
-#### `client.roundAt(time): number`
-
-Returns the round number for the passed time (in milliseconds from Unix epoch).
-
-#### `client.close(): Promise`
-
-Halts the client, any background processes it runs and any in-flight `get`, `watch` or `info` requests.
-
-#### `new HTTP(url: string, chainInfo: object, options?: object)`
-
-Creates a new HTTP client when the chain info is already known.
-
-#### `HTTP.forURLs([]string, chainHash): Promise<[]Client>`
-
-Provides a shortcut for creating a set of HTTP clients for a set of URLs.
-
 ## Publishing
 
-This repo automatically publishes to npmjs.com as [drand-client](https://www.npmjs.com/package/drand-client) if changes hit the master branch with an updated version number.
+This repo automatically publishes to npmjs.com as [drand-client](https://www.npmjs.com/package/drand-client) if changes
+hit the master branch with an updated version number.
 
 ## Contribute
 
@@ -258,5 +171,7 @@ Feel free to dive in! [Open an issue](https://github.com/drand/drand-client/issu
 
 This project is dual-licensed under Apache 2.0 and MIT terms:
 
-- Apache License, Version 2.0, ([LICENSE-APACHE](https://github.com/drand/drand-client/blob/master/LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](https://github.com/drand/drand-client/blob/master/LICENSE-MIT) or http://opensource.org/licenses/MIT)
+- Apache License, Version 2.0, ([LICENSE-APACHE](https://github.com/drand/drand-client/blob/master/LICENSE-APACHE)
+  or http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](https://github.com/drand/drand-client/blob/master/LICENSE-MIT)
+  or http://opensource.org/licenses/MIT)
