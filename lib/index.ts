@@ -42,6 +42,7 @@ export type ChainVerificationParams = {
     publicKey: string
 }
 
+// this is aggregation of information returned by the `/health` endpoint of a node
 export type HealthCheckResponse = {
     // the http status code returned from the node's healthcheck
     status: number
@@ -52,6 +53,7 @@ export type HealthCheckResponse = {
 }
 
 // functionality for fetching individual beacons for a given `Chain`
+// you can implement this yourself to support protocols other than HTTP
 export interface ChainClient {
     options: ChainOptions
 
@@ -126,6 +128,7 @@ export type ChainInfo = {
 
 // currently drand supports chained and unchained randomness - read more here: https://drand.love/docs/cryptography/#randomness
 export type RandomnessBeacon = ChainedBeacon | UnchainedBeacon
+
 export type ChainedBeacon = {
     round: number
     randomness: string

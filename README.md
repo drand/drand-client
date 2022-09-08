@@ -74,22 +74,26 @@ The `drand-client` contains HTTP implementations, but other transports can be su
         const theBeaconRightNow = await fetchBeaconByTime(client, Date.now())
 
         // if you're happy to get randomness from many APIs and automatically use the fastest
-        // (note: it's verifiable, so you don't need to worry about malicious providers as long as you fill in the 
-        // `chainVerificationParams` in the options!)
+        // you can construct a `FastestNodeClient` with multiple URLs
+        // note: the randomness beacons are cryptographically verifiable, so as long as you fill
+        // in the `chainVerificationParams` in the options, you don't need to worry about malicious 
+        // providers sending you fake randomness!
         const urls = [
             'https://api.drand.sh',
             'https://drand.cloudflare.com'
             // ...
         ]
         const fastestNodeClient = new FastestNodeClient(urls, options)
-        // don't forget to start it, or you won't get the fastest node!
+        // don't forget to start the client, or it won't periodically optimise for the fastest node!
         fastestNodeClient.start()
+      
         const theLatestBeaconFromTheFastestClient = await fetchBeacon(fastestNodeClient)
+      
         // don't forget to stop the speed testing, or you may leak a `setInterval` call!
         fastestNodeClient.stop()
 
         // you can also use the `watch` async generator to watch the latest randomness automatically!
-        // use an abort controller to stop it:
+        // use an abort controller to stop it
         const abortController = new AbortController()
         for await (const beacon of watch(client, abortController)) {
             if (beacon.round === 10) {
@@ -97,7 +101,9 @@ The `drand-client` contains HTTP implementations, but other transports can be su
             }
         }
 
-        // finally you can also interact with multibeacon nodes by using the `MultiBeaconNode` class
+        // finally you can interact with multibeacon nodes by using the `MultiBeaconNode` class
+        // prior to drand 1.4, each node could only follow and contribute to a single beacon chain 
+        // - now nodes can contribute to many at once
         const multiBeaconNode = new MultiBeaconNode('https://api.drand.sh', options)
 
         // you can monitor its health
@@ -106,14 +112,14 @@ The `drand-client` contains HTTP implementations, but other transports can be su
             console.log(`Multibeacon node is healthy and has processed ${health.current} of ${health.expected} rounds`)
         }
 
-        // and get the chains it follows
+        // get the chains it follows
         const chains = await multiBeaconNode.chains()
         for (const c of chains) {
             const info = await c.info()
             console.log(`Chain with baseUrl ${c.baseUrl} has a genesis time of ${info.genesis_time}`)
         }
 
-        // you can even create clients straight from the chains it returns
+        // and even create clients straight from the chains it returns
         const latestBeaconsFromAllChains = Promise.all(
                 chains.map(chain => new HttpChainClient(chain, options))
                       .map(client => fetchBeacon(client))
