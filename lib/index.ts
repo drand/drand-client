@@ -80,9 +80,6 @@ export async function fetchBeacon(client: ChainClient, roundNumber?: number): Pr
 // fetch the most recent beacon to have been emitted at a given `time` in epoch ms
 export async function fetchBeaconByTime(client: ChainClient, time: number): Promise<RandomnessBeacon> {
     const info = await client.chain().info()
-    if (time < info.genesis_time) {
-        throw Error('Cannot request a beacon before the genesis time')
-    }
     const roundNumber = roundAt(time, info)
     return fetchBeacon(client, roundNumber)
 }
@@ -94,8 +91,8 @@ export async function* watch(client: ChainClient, abortController: AbortControll
         const beacon = await client.latest()
         yield validatedBeacon(client, beacon)
 
-        const now = Date.now()
         const nextRoundTime = roundTime(info, beacon.round + 1)
+        const now = Date.now()
 
         await sleep(nextRoundTime - now)
     }

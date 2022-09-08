@@ -10,7 +10,9 @@ export function sleep(timeMs: number): Promise<void> {
 }
 
 export function roundAt(time: number, chain: ChainInfo) {
-    if (time < chain.genesis_time * 1000) return 1
+    if (time < chain.genesis_time * 1000) {
+        throw Error('Cannot request a round before the genesis time')
+    }
     return Math.floor((time - (chain.genesis_time * 1000)) / (chain.period * 1000)) + 1
 }
 

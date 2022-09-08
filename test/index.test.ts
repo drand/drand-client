@@ -38,29 +38,31 @@ test('Beacon fetching works with testnet', async () => {
     await expect(fetchBeaconByTime(httpClient, 0)).rejects.toThrow()
 })
 
-test('watch honours its abort controller', async () => {
-    // connect to testnet
-    const node = new MultiBeaconNode('https://pl-us.testnet.drand.sh')
-    expect((await node.health()).status).toEqual(200)
-    const chains = await node.chains()
-    expect(await node.chains()).not.toHaveLength(0)
+describe('watch', () => {
+    it('should honour its abort controller', async () => {
+        // connect to testnet
+        const node = new MultiBeaconNode('https://pl-us.testnet.drand.sh')
+        expect((await node.health()).status).toEqual(200)
+        const chains = await node.chains()
+        expect(await node.chains()).not.toHaveLength(0)
 
-    // start watching the chain
-    const httpClient = new HttpChainClient(chains[0])
-    const abortController = new AbortController()
-    const generator = watch(httpClient, abortController)
+        // start watching the chain
+        const httpClient = new HttpChainClient(chains[0])
+        const abortController = new AbortController()
+        const generator = watch(httpClient, abortController)
 
-    // get a value
-    const firstValue = await generator.next()
-    expect(firstValue.value).toBeDefined()
+        // get a value
+        const firstValue = await generator.next()
+        expect(firstValue.value).toBeDefined()
 
-    // cancel watching
-    abortController.abort('some reason')
+        // cancel watching
+        abortController.abort('some reason')
 
-    // there are no values left
-    const finishedValue = await generator.next()
-    expect(finishedValue.done).toEqual(true)
-    expect(finishedValue.value).toBeUndefined()
+        // there are no values left
+        const finishedValue = await generator.next()
+        expect(finishedValue.done).toEqual(true)
+        expect(finishedValue.value).toBeUndefined()
+    })
 })
 
 describe('fetch beacon', () => {

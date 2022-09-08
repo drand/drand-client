@@ -82,10 +82,10 @@ The `drand-client` contains HTTP implementations, but other transports can be su
             // ...
         ]
         const fastestNodeClient = new FastestNodeClient(urls, options)
-        // don't forget to start it!
+        // don't forget to start it, or you won't get the fastest node!
         fastestNodeClient.start()
         const theLatestBeaconFromTheFastestClient = await fetchBeacon(fastestNodeClient)
-        // don't forget to stop the speed testing!
+        // don't forget to stop the speed testing, or you may leak a `setInterval` call!
         fastestNodeClient.stop()
 
         // you can also use the `watch` async generator to watch the latest randomness automatically!
