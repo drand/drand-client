@@ -15,13 +15,15 @@ beforeAll(() => {
 
 afterAll(() => {
     fetchMock.disableMocks()
-    client.stop()
 })
 
 beforeEach(() => {
     fetchMock.resetMocks()
 })
 
+afterEach(() => {
+    client.stop()
+})
 
 describe('multichain client', () => {
     const chainInfo = {
