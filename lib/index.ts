@@ -36,6 +36,7 @@ export const defaultChainOptions: ChainOptions = {
     noCache: false,
 }
 
+// these should correspond to `hash` and `public_key` in the `ChainInfo` below
 export type ChainVerificationParams = {
     chainHash: string
     publicKey: string
@@ -113,24 +114,32 @@ async function validatedBeacon(client: ChainClient, beacon: RandomnessBeacon): P
     return beacon
 }
 
+// `ChainInfo` is returned by a node's `/info` endpoint
 export type ChainInfo = {
-    public_key: string
-    period: number
-    genesis_time: number
-    hash: string
-    groupHash: string
-    schemeID: string
+    public_key: string    // base64 encoded ed25519 public key
+    period: number        // how often the network emits randomness (in seconds)
+    genesis_time: number  // the time of the round 0 of the network (in epoch seconds)
+    hash: string          // the hash identifying this specific chain of beacons
+    groupHash: string     // a hash of the group file containing details of all the nodes participating in the network
+    schemeID: string      // the version/format of cryptography
     metadata: {
-        beaconID: string
+        beaconID: string  // the ID of the beacon chain this `ChainInfo` corresponds to
     }
 }
 
+// currently drand supports chained and unchained randomness - read more here: https://drand.love/docs/cryptography/#randomness
 export type RandomnessBeacon = ChainedBeacon | UnchainedBeacon
 export type ChainedBeacon = {
     round: number
     randomness: string
     signature: string
     previous_signature: string
+}
+
+export type UnchainedBeacon = {
+    round: number
+    randomness: string
+    signature: string
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -142,11 +151,6 @@ export function isChainedBeacon(value: any, info: ChainInfo): value is ChainedBe
         value.round > 0
 }
 
-export type UnchainedBeacon = {
-    round: number
-    randomness: string
-    signature: string
-}
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function isUnchainedBeacon(value: any, info: ChainInfo): value is UnchainedBeacon {

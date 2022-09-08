@@ -88,20 +88,20 @@ The `drand-client` contains HTTP implementations, but other transports can be su
         // don't forget to stop the speed testing!
         fastestNodeClient.stop()
 
-        // you can also use an async generator to watch the latest randomness automatically!
-        // use an abort controller to stop it
+        // you can also use the `watch` async generator to watch the latest randomness automatically!
+        // use an abort controller to stop it:
         const abortController = new AbortController()
         for await (const beacon of watch(client, abortController)) {
             if (beacon.round === 10) {
-                abortController.abort('round 10 reached')
+                abortController.abort('round 10 reached - listening stopped')
             }
         }
 
         // finally you can also interact with multibeacon nodes by using the `MultiBeaconNode` class
         const multiBeaconNode = new MultiBeaconNode('https://api.drand.sh', options)
-        const health = await multiBeaconNode.health()
 
         // you can monitor its health
+        const health = await multiBeaconNode.health()
         if (health.status === 200) {
             console.log(`Multibeacon node is healthy and has processed ${health.current} of ${health.expected} rounds`)
         }
@@ -115,9 +115,8 @@ The `drand-client` contains HTTP implementations, but other transports can be su
 
         // you can even create clients straight from the chains it returns
         const latestBeaconsFromAllChains = Promise.all(
-                chains
-                        .map(each => new HttpChainClient(each, options))
-                        .map(client => fetchBeacon(client))
+                chains.map(chain => new HttpChainClient(chain, options))
+                      .map(client => fetchBeacon(client))
         )
     }
 
@@ -132,11 +131,10 @@ the `--allow-net` flag e.g. `deno run --allow-net client.js`.
 
 ### Node.js
 
-If you'd like to run it in Node.js, add [`fetch`](http://npm.im/node-fetch)
+If you'd like to run it in Node.js, add a fetch polyfill such as [`node-fetch`](http://npm.im/node-fetch)
 and [`AbortController`](http://npm.im/abort-controller) as globals e.g.
 
 ```js
-import Client, { HTTP } from 'drand-client'
 import fetch from 'node-fetch'
 import AbortController from 'abort-controller'
 
@@ -151,7 +149,6 @@ global.AbortController = AbortController
 ```js
 const fetch = require('node-fetch')
 const AbortController = require('abort-controller')
-const { default: Client, HTTP } = await import('drand-client')
 
 global.fetch = fetch
 global.AbortController = AbortController
