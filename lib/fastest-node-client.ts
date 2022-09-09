@@ -3,7 +3,7 @@ import HttpCachingChain, {HttpChain} from './http-caching-chain'
 import {createSpeedTest, SpeedTest} from './speedtest'
 import HttpChainClient from './http-chain-client'
 
-const defaultSpeedTestInterval = 1000 * 60
+const defaultSpeedTestInterval = 1000 * 60 * 5
 
 type SpeedTestEntry = {
     test: SpeedTest
