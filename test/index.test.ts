@@ -12,8 +12,16 @@ import {testChain, validTestBeacon} from './data'
 import {StubChainClient} from './stub-chain-client'
 
 test('Beacon fetching works with testnet', async () => {
-    // connect to testnet
-    const node = new MultiBeaconNode('https://pl-us.testnet.drand.sh')
+    await endToEndTest('https://pl-us.testnet.drand.sh')
+})
+
+// skipped until we release to mainnet
+test.skip('Beacon fetching works with mainnet', async () => {
+    await endToEndTest('https://api.drand.sh')
+})
+
+async function endToEndTest(url: string) {
+    const node = new MultiBeaconNode(url)
     expect((await node.health()).status).toEqual(200)
     const chains = await node.chains()
     expect(chains).not.toHaveLength(0)
@@ -36,7 +44,7 @@ test('Beacon fetching works with testnet', async () => {
 
     // fail to get a beacon from before genesis
     await expect(fetchBeaconByTime(httpClient, 0)).rejects.toThrow()
-})
+}
 
 describe('watch', () => {
     it('should honour its abort controller', async () => {
