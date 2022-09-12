@@ -1,12 +1,15 @@
 import {Chain, ChainInfo, ChainOptions, ChainVerificationParams, defaultChainOptions} from './index'
-import {jsonOrError} from './util'
+import {HttpOptions, jsonOrError} from './util'
 
 class HttpChain implements Chain {
-    constructor(public baseUrl: string, private options: ChainOptions = defaultChainOptions) {
+    constructor(
+        public baseUrl: string,
+        private options: ChainOptions = defaultChainOptions,
+        private httpOptions: HttpOptions = {}) {
     }
 
     async info(): Promise<ChainInfo> {
-        const chainInfo = await jsonOrError(`${this.baseUrl}/info`)
+        const chainInfo = await jsonOrError(`${this.baseUrl}/info`, this.httpOptions)
         if (!!this.options.chainVerificationParams && !isValidInfo(chainInfo, this.options.chainVerificationParams)) {
             throw Error(`The chain info retrieved from ${this.baseUrl} did not match the verification params!`)
         }

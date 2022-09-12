@@ -22,7 +22,7 @@ describe('http chain client', () => {
 
             await expect(client.get(roundNumber)).resolves.toEqual(validTestBeacon)
             expect(fetchMock).toHaveBeenCalledTimes(1)
-            expect(fetchMock).toHaveBeenCalledWith(`https://example.com/public/${roundNumber}`)
+            expect(fetchMock).toHaveBeenCalledWith(`https://example.com/public/${roundNumber}`, {})
         })
 
         it('should call with API with a query param if noCache is set', async () => {
@@ -33,7 +33,7 @@ describe('http chain client', () => {
             await expect(client.get(roundNumber)).resolves.toEqual(validTestBeacon)
 
             // should have been with cache busting params, not just the normal latest endpoint
-            expect(fetchMock).not.toHaveBeenCalledWith(`https://example.com/public/${roundNumber}`)
+            expect(fetchMock).not.toHaveBeenCalledWith(`https://example.com/public/${roundNumber}`, {})
         })
     })
 
@@ -43,7 +43,7 @@ describe('http chain client', () => {
 
             await expect(client.latest()).resolves.toEqual(validTestBeacon)
             expect(fetchMock).toHaveBeenCalledTimes(1)
-            expect(fetchMock).toHaveBeenCalledWith('https://example.com/public/latest')
+            expect(fetchMock).toHaveBeenCalledWith('https://example.com/public/latest', {})
         })
 
         it('should call with API with a query param if noCache is set', async () => {
@@ -53,7 +53,7 @@ describe('http chain client', () => {
             await expect(client.latest()).resolves.toEqual(validTestBeacon)
 
             // should have been with random cache busting params, not just the normal `/latest` endpoint
-            expect(fetchMock).not.toHaveBeenCalledWith('https://example.com/public/latest')
+            expect(fetchMock).not.toHaveBeenCalledWith('https://example.com/public/latest', {})
         })
     })
 })

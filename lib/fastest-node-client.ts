@@ -17,6 +17,7 @@ type SpeedTestEntry = {
 class FastestNodeClient implements ChainClient {
 
     speedTests: Array<SpeedTestEntry> = []
+    speedTestHttpOptions = { userAgent: 'drand-web-client-speedtest' }
 
     constructor(
         public baseUrls: Array<string>,
@@ -48,7 +49,7 @@ class FastestNodeClient implements ChainClient {
 
         this.speedTests = this.baseUrls.map(url => {
                 const testFn = async () => {
-                    await new HttpChain(url, this.options).info()
+                    await new HttpChain(url, this.options, this.speedTestHttpOptions).info()
                     return
                 }
                 const test = createSpeedTest(testFn, this.speedTestIntervalMs)

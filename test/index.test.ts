@@ -16,7 +16,7 @@ test('Beacon fetching works with testnet', async () => {
     const node = new MultiBeaconNode('https://pl-us.testnet.drand.sh')
     expect((await node.health()).status).toEqual(200)
     const chains = await node.chains()
-    expect(await node.chains()).not.toHaveLength(0)
+    expect(chains).not.toHaveLength(0)
 
     const httpClient = new HttpChainClient(chains[0])
 
@@ -44,7 +44,7 @@ describe('watch', () => {
         const node = new MultiBeaconNode('https://pl-us.testnet.drand.sh')
         expect((await node.health()).status).toEqual(200)
         const chains = await node.chains()
-        expect(await node.chains()).not.toHaveLength(0)
+        expect(chains).not.toHaveLength(0)
 
         // start watching the chain
         const httpClient = new HttpChainClient(chains[0])

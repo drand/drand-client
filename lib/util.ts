@@ -1,3 +1,4 @@
+import 'isomorphic-fetch'
 import {ChainInfo} from './index'
 
 export function sleep(timeMs: number): Promise<void> {
@@ -21,9 +22,24 @@ export function roundTime(chain: ChainInfo, round: number) {
     return (chain.genesis_time + (round - 1) * chain.period) * 1000
 }
 
+export type HttpOptions = {
+    userAgent?: string
+}
+
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export async function jsonOrError(url: string): Promise<any> {
-    const response = await fetch(url)
+export async function jsonOrError(url: string, options: HttpOptions = {}): Promise<any> {
+    let fetchOptions = {}
+
+    if (options.userAgent) {
+        fetchOptions = {
+            headers: new Headers({
+                'Accept': 'application/json',
+                'User-Agent': options.userAgent
+            })
+        }
+    }
+
+    const response = await fetch(url, fetchOptions)
     if (!response.ok) {
         throw Error(`Error response fetching ${url} - got ${response.status}`)
     }

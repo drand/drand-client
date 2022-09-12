@@ -1,14 +1,14 @@
+import 'isomorphic-fetch'
 import {Chain, ChainOptions, defaultChainOptions, DrandNode, HealthCheckResponse} from './index'
 import HttpCachingChain from './http-caching-chain'
+import {jsonOrError} from './util'
 
 class MultiBeaconNode implements DrandNode {
     constructor(public baseUrl: string, private options: ChainOptions = defaultChainOptions) {
     }
 
     async chains(): Promise<Array<Chain>> {
-        const response = await fetch(`${this.baseUrl}/chains`)
-        const chains = await response.json()
-
+        const chains = await jsonOrError(`${this.baseUrl}/chains`)
         if (!Array.isArray(chains)) {
             throw Error(`Expected an array from the chains endpoint but got: ${chains}`)
         }
