@@ -41,6 +41,11 @@ class FastestNodeClient implements ChainClient {
     }
 
     start() {
+        if (this.baseUrls.length === 1) {
+            console.warn('There was only a single base URL in the `FastestNodeClient` - not running speed testing')
+            return
+        }
+
         this.speedTests = this.baseUrls.map(url => {
                 const testFn = async () => {
                     await new HttpChain(url, this.options).info()
