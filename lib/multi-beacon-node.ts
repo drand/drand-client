@@ -1,4 +1,3 @@
-import 'isomorphic-fetch'
 import {Chain, ChainOptions, defaultChainOptions, DrandNode, HealthCheckResponse} from './index'
 import HttpCachingChain from './http-caching-chain'
 import {jsonOrError} from './util'
