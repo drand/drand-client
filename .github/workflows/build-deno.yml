@@ -1,4 +1,4 @@
-name: build
+name: build-deno
 on:
   pull_request:
   push:
@@ -19,11 +19,6 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - run: npm run compile
-      - name: publish to npmjs
-        uses: JS-DevTools/npm-publish@v1
-        if: github.ref == 'refs/heads/master'
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          # don't try and deploy if versions haven't changed
-          check-version: true
+      - run: npm run compile:deno
+      - run: echo 'NEED SOME KIND OF DENO DEPLOY STEP HERE HMMM'
+
