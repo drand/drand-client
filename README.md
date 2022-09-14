@@ -183,4 +183,5 @@ This project is dual-licensed under Apache 2.0 and MIT terms:
   or http://opensource.org/licenses/MIT)
 
 ## Limitations
--  relays exposing only the default endpoints and not the chain-hash-based ones are not supported
+- relays exposing only the default endpoints and not the chain-hash-based ones are not supported
+- this supports only 1.4 drand nodes+
