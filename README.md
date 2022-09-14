@@ -21,19 +21,22 @@
     - [Node.js](#nodejs)
 - [Contribute](#contribute)
 - [License](#license)
+- [Limitations](#limitations)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Install
 
 In the browser or [Deno](https://deno.land) you can grab and use the client from a CDN
-e.g. https://cdn.jsdelivr.net/npm/drand-client/drand.js.
+e.g. https://cdn.jsdelivr.net/npm/drand-client/index.js.
 
-In [Node.js](https://nodejs.org), install with:
+In [Node.js](https://nodejs.org) or when using a bundler, install with:
 
 ```sh
 npm install drand-client
 ```
+
+Typescript types are included and don't need installed separately.
 
 ## Usage
 
@@ -178,3 +181,6 @@ This project is dual-licensed under Apache 2.0 and MIT terms:
   or http://www.apache.org/licenses/LICENSE-2.0)
 - MIT license ([LICENSE-MIT](https://github.com/drand/drand-client/blob/master/LICENSE-MIT)
   or http://opensource.org/licenses/MIT)
+
+## Limitations
+-  relays exposing only the default endpoints and not the chain-hash-based ones are not supported

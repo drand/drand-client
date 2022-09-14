@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "A client to the drand randomness beacon network.",
   "type": "module",
-  "main": "lib/drand.js",
+  "main": "lib/drand.ts",
   "scripts": {
     "clean": "rm -rf ./build/*",
     "compile": "tsc --project tsconfig.json",
