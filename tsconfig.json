@@ -11,10 +11,8 @@
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "lib": [
-      "dom",
       "esnext",
-      "dom.iterable",
-      "scripthost"
+      "dom"
     ],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -26,8 +24,7 @@
     ]
   },
   "include": [
-    "lib/**/*.ts",
-    "test/**/*.ts"
+    "lib/**/*.ts"
   ],
   "compileOnSave": true
 }
