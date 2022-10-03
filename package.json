@@ -23,7 +23,7 @@
     "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "abort-controller": "^3.0.0",
-    "denoify": "^1.1.2",
+    "denoify": "^1.1.6",
     "eslint": "^8.19.0",
     "jest": "^28.1.2",
     "jest-fetch-mock": "^3.0.3",
