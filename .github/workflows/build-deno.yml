@@ -1,24 +1,34 @@
 name: build-deno
 on:
-  pull_request:
   push:
-    branches: [master]
+    branches: [ master ]
     tags:
       - .*
 
 jobs:
-  build_test_and_publish:
+  compile_and_commit_deno:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: fetch deno branch
+        uses: actions/checkout@v3
+        with:
+          ref: "deno"
+
+      - name: catch up with master
+        run: git rebase master
 
       - uses: actions/setup-node@v3
         with:
           node-version: latest
 
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run compile:deno
-      - run: echo 'NEED SOME KIND OF DENO DEPLOY STEP HERE HMMM'
+      - name: install dependencies
+        run: npm ci
 
+      - name: clean any existing deno build
+        run: npm run clean:deno
+
+      - name: compile for deno
+        run: npm run compile:deno
+
+      - name: commit updated deno build
+        run: git add . && git commit -m"Updated deno build to latest master"

@@ -2,27 +2,56 @@ name: build
 on:
   pull_request:
   push:
-    branches: [master]
+    branches: [ master ]
     tags:
       - .*
 
 jobs:
-  build_test_and_publish:
+  build_and_test:
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Install node
+        uses: actions/setup-node@v3
         with:
           node-version: latest
 
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run compile
-      - name: publish to npmjs
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Compile
+        run: npm run compile
+
+  compile_for_deno:
+    name: Compile for deno
+    runs-on: ubuntu-latest
+    steps:
+      - name: install dependencies
+        run: npm ci
+
+      - name: clean any existing deno build
+        run: npm run clean:deno
+
+      - name: compile for deno
+        run: npm run compile:deno
+
+  publish_to_npm:
+    name: Publish to npmjs.com
+    needs: [ build_and_test ]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: "publish to npmjs"
         uses: JS-DevTools/npm-publish@v1
-        if: github.ref == 'refs/heads/master'
         with:
           token: ${{ secrets.NPM_TOKEN }}
           # don't try and deploy if versions haven't changed

@@ -8,8 +8,9 @@
     "index": "lib/index.ts"
   },
   "scripts": {
-    "clean": "rm -rf ./build/* && rm -rf ./deno_build/*",
+    "clean": "rm -rf ./build/* && npm run clean:deno",
     "compile": "tsc --project tsconfig.json",
+    "clean:deno": "rm -rf ./deno_build/*",
     "compile:deno": "denoify",
     "test": "jest --verbose --detectOpenHandles ./test/**.test.ts",
     "lint": "eslint ./**/*.ts",
