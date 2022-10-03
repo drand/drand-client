@@ -9,26 +9,26 @@ jobs:
   compile_and_commit_deno:
     runs-on: ubuntu-latest
     steps:
-      - name: fetch deno branch
+      - name: Fetch deno branch
         uses: actions/checkout@v3
         with:
           ref: "deno"
 
-      - name: catch up with master
+      - name: Catch up with master
         run: git rebase master
 
       - uses: actions/setup-node@v3
         with:
           node-version: latest
 
-      - name: install dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: clean any existing deno build
+      - name: Clean any existing deno build
         run: npm run clean:deno
 
-      - name: compile for deno
+      - name: Compile for deno
         run: npm run compile:deno
 
-      - name: commit updated deno build
+      - name: Commit updated deno build
         run: git add . && git commit -m"Updated deno build to latest master"

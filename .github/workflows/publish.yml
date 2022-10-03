@@ -1,0 +1,32 @@
+name: publish to npmjs
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - .*
+
+jobs:
+  publish_to_npm:
+    name: Publish to npmjs.com
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile
+        run: npm run compile
+
+      - name: "publish to npmjs"
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          # don't try and deploy if versions haven't changed
+          check-version: true

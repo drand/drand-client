@@ -136,7 +136,8 @@ The `drand-client` contains HTTP implementations, but other transports can be su
 ### Deno
 
 Usage in Deno is the same as the [browser](#browser), minus the HTML `<script>` tag. Ensure you run your script with
-the `--allow-net` flag e.g. `deno run --allow-net client.js`.
+the `--allow-net` flag e.g. `deno run --allow-net index.js`.
+Presently, the deno code is automatically built on the `deno` branch using [denoify](https://www.denoify.land/)
 
 ### Node.js
 

@@ -35,6 +35,14 @@ jobs:
     name: Compile for deno
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+
       - name: install dependencies
         run: npm ci
 
@@ -44,15 +52,3 @@ jobs:
       - name: compile for deno
         run: npm run compile:deno
 
-  publish_to_npm:
-    name: Publish to npmjs.com
-    needs: [ build_and_test ]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: "publish to npmjs"
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          # don't try and deploy if versions haven't changed
-          check-version: true
