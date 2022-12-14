@@ -3,7 +3,6 @@
 <p align="center"><img src="logo.png" width="220" /></p>
 
 <p align="center">
-  <a href="https://david-dm.org/drand/drand-client" title="dependencies Status"><img src="https://david-dm.org/drand/drand-client/status.svg" /></a>
   <a href="https://standardjs.com" title="JavaScript Style Guide"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" /></a>
 </p>
 
