@@ -115,7 +115,7 @@ async function validatedBeacon(client: ChainClient, beacon: RandomnessBeacon): P
 
 // `ChainInfo` is returned by a node's `/info` endpoint
 export type ChainInfo = {
-    public_key: string    // base64 encoded ed25519 public key
+    public_key: string    // base64 encoded public key of BLS12-381 G1
     period: number        // how often the network emits randomness (in seconds)
     genesis_time: number  // the time of the round 0 of the network (in epoch seconds)
     hash: string          // the hash identifying this specific chain of beacons
