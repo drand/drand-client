@@ -20,10 +20,13 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run compile
+      - name: Copy relevant documentation into the build folder
+        run: cp package.json README.md LICENSE-APACHE LICENSE-MIT ./build
       - name: publish to npmjs
         uses: JS-DevTools/npm-publish@v1
         if: github.ref == 'refs/heads/master'
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: build/package.json
           # don't try and deploy if versions haven't changed
           check-version: true

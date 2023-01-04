@@ -1,16 +1,10 @@
 {
   "name": "drand-client",
-  "version": "1.0.0-pre.2",
+  "version": "1.0.0-pre.3",
   "description": "A client to the drand randomness beacon network.",
   "type": "module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "files": [
-    "build",
-    "LICENSE-APACHE",
-    "LICENSE-MIT",
-    "README.md"
-  ],
   "scripts": {
     "clean": "rm -rf ./build/*",
     "compile": "tsc --project tsconfig.json",
