@@ -2,7 +2,7 @@ import {fetchBeacon, fetchBeaconByTime, HttpCachingChain, HttpChainClient} from 
 import 'jest-fetch-mock'
 
 describe('randomness client', () => {
-    const chain = new HttpCachingChain('https://api.drand.sh')
+    const chain = new HttpCachingChain('https://pl-eu.testnet.drand.sh')
     const client = new HttpChainClient(chain)
 
     it('can consume randomness', async () => {
