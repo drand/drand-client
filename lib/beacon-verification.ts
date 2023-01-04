@@ -16,12 +16,16 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Pro
 }
 
 async function chainedBeaconMessage(beacon: ChainedBeacon): Promise<Uint8Array> {
-    return await bls.utils.sha256(
-        Buffer.concat([
-            signatureBuffer(beacon.previous_signature),
-            roundBuffer(beacon.round)
-        ])
+    const message = Buffer.concat([
+        signatureBuffer(beacon.previous_signature),
+        roundBuffer(beacon.round)
+    ])
+
+    const hashedMessage = await bls.utils.sha256(
+        message
     )
+
+    return hashedMessage
 }
 
 async function unchainedBeaconMessage(beacon: UnchainedBeacon): Promise<Uint8Array> {
