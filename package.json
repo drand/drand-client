@@ -1,8 +1,7 @@
 {
   "name": "drand-client",
-  "version": "1.0.0-pre.4",
+  "version": "1.0.0-pre.5",
   "description": "A client to the drand randomness beacon network.",
-  "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
