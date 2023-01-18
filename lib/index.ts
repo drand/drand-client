@@ -106,7 +106,7 @@ export async function* watch(
 
     while (!abortController.signal.aborted) {
         const now = Date.now()
-        await sleep(currentRound - now)
+        await sleep(roundTime(info, currentRound) - now)
 
         const beacon = await retryOnError(async () => client.get(currentRound), options.retriesOnFailure)
         yield validatedBeacon(client, beacon)
