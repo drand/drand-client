@@ -2,7 +2,7 @@ import HttpCachingChain from './http-caching-chain'
 import HttpChainClient from './http-chain-client'
 import FastestNodeClient from './fastest-node-client'
 import MultiBeaconNode from './multi-beacon-node'
-import {roundAt, roundTime, sleep} from './util'
+import {retryOnError, roundAt, roundTime, sleep} from './util'
 import {verifyBeacon} from './beacon-verification'
 
 // functionality for inspecting a drand node
@@ -87,17 +87,33 @@ export async function fetchBeaconByTime(client: ChainClient, time: number): Prom
 }
 
 // an async generator emitting beacons from the latest round onwards
-export async function* watch(client: ChainClient, abortController: AbortController): AsyncGenerator<RandomnessBeacon> {
+export async function* watch(
+    client: ChainClient,
+    abortController: AbortController,
+    options: WatchOptions = defaultWatchOptions,
+): AsyncGenerator<RandomnessBeacon> {
+    const info = await client.chain().info()
+    let currentRound = roundAt(Date.now(), info)
+
     while (!abortController.signal.aborted) {
-        const info = await client.chain().info()
-        const beacon = await client.latest()
-        yield validatedBeacon(client, beacon)
-
-        const nextRoundTime = roundTime(info, beacon.round + 1)
         const now = Date.now()
+        await sleep(roundTime(info, currentRound) - now)
 
-        await sleep(nextRoundTime - now)
+        const beacon = await retryOnError(async () => client.get(currentRound), options.retriesOnFailure)
+        yield validatedBeacon(client, beacon)
+        currentRound = currentRound + 1
     }
+}
+
+// options for the async generator `watch` function
+export type WatchOptions = {
+    // the number of retries to attempt for a failed response
+    // could be useful if e.g. the network does not generate a round perfectly on time
+    retriesOnFailure: number
+}
+
+const defaultWatchOptions = {
+    retriesOnFailure: 3
 }
 
 // internal function for validating a beacon if validation has not been disabled in the client options

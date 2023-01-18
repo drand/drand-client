@@ -2,7 +2,7 @@ import {ChainInfo} from './index'
 
 export function sleep(timeMs: number): Promise<void> {
     return new Promise(resolve => {
-        if (timeMs < 0) {
+        if (timeMs <= 0) {
             resolve()
         }
         setTimeout(resolve, timeMs)
@@ -39,4 +39,15 @@ export async function jsonOrError(url: string, options: HttpOptions = {}): Promi
     }
 
     return await response.json()
+}
+
+export async function retryOnError<T>(fn: () => Promise<T>, times: number): Promise<T> {
+    try {
+        return await fn()
+    } catch (err) {
+        if (times === 0) {
+            throw err
+        }
+        return retryOnError(fn, times - 1)
+    }
 }
