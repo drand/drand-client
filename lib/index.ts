@@ -87,15 +87,6 @@ export async function fetchBeaconByTime(client: ChainClient, time: number): Prom
 }
 
 // an async generator emitting beacons from the latest round onwards
-export type WatchOptions = {
-    // the number of retries to attempt for a failed response
-    // could be useful if e.g. the network does not generate a round perfectly on time
-    retriesOnFailure: number
-}
-const defaultWatchOptions = {
-    retriesOnFailure: 3
-}
-
 export async function* watch(
     client: ChainClient,
     abortController: AbortController,
@@ -112,6 +103,17 @@ export async function* watch(
         yield validatedBeacon(client, beacon)
         currentRound = currentRound + 1
     }
+}
+
+// options for the async generator `watch` function
+export type WatchOptions = {
+    // the number of retries to attempt for a failed response
+    // could be useful if e.g. the network does not generate a round perfectly on time
+    retriesOnFailure: number
+}
+
+const defaultWatchOptions = {
+    retriesOnFailure: 3
 }
 
 // internal function for validating a beacon if validation has not been disabled in the client options
