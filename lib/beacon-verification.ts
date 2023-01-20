@@ -16,7 +16,7 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Pro
     }
 
     const signatureVerifies = await bls.verify(beacon.signature, message, publicKey)
-    if (!signatureVerifies || !await randomnessIsValid(beacon)) {
+    if (!(signatureVerifies && await randomnessIsValid(beacon))) {
         console.error('Beacon returned was invalid')
         return false
     }
