@@ -3,6 +3,7 @@
 <p align="center"><img src="logo.png" width="220" /></p>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/drand-client" title="drand-client on npm"><img src="https://img.shields.io/npm/v/drand-client.svg" /></a>
   <a href="https://standardjs.com" title="JavaScript Style Guide"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" /></a>
 </p>
 
