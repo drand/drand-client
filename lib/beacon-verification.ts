@@ -4,15 +4,23 @@ import {ChainedBeacon, ChainInfo, isChainedBeacon, isUnchainedBeacon, Randomness
 async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Promise<boolean> {
     const publicKey = chainInfo.public_key
 
+    let message: Uint8Array
     if (isChainedBeacon(beacon, chainInfo)) {
-        return bls.verify(beacon.signature, await chainedBeaconMessage(beacon), publicKey)
-    }
-    if (isUnchainedBeacon(beacon, chainInfo)) {
-        return bls.verify(beacon.signature, await unchainedBeaconMessage(beacon), publicKey)
+        message = await chainedBeaconMessage(beacon)
+
+    } else if (isUnchainedBeacon(beacon, chainInfo)) {
+        message = await unchainedBeaconMessage(beacon)
+    } else {
+        console.error(`Beacon type ${chainInfo.schemeID} was not supported`)
+        return false
     }
 
-    console.error(`Beacon type ${chainInfo.schemeID} was not supported or the fields of the provided beacon did not match the requirements`)
-    return false
+    const signatureVerifies = await bls.verify(beacon.signature, message, publicKey)
+    if (!(signatureVerifies && await randomnessIsValid(beacon))) {
+        console.error('Beacon returned was invalid')
+        return false
+    }
+    return true
 }
 
 async function chainedBeaconMessage(beacon: ChainedBeacon): Promise<Uint8Array> {
@@ -21,11 +29,7 @@ async function chainedBeaconMessage(beacon: ChainedBeacon): Promise<Uint8Array> 
         roundBuffer(beacon.round)
     ])
 
-    const hashedMessage = await bls.utils.sha256(
-        message
-    )
-
-    return hashedMessage
+    return await bls.utils.sha256(message)
 }
 
 async function unchainedBeaconMessage(beacon: UnchainedBeacon): Promise<Uint8Array> {
@@ -40,6 +44,11 @@ function roundBuffer(round: number) {
     const buffer = Buffer.alloc(8)
     buffer.writeBigUInt64BE(BigInt(round))
     return buffer
+}
+
+async function randomnessIsValid(beacon: RandomnessBeacon): Promise<boolean> {
+    const expectedRandomness = await bls.utils.sha256(Buffer.from(beacon.signature, 'hex'))
+    return Buffer.from(beacon.randomness, 'hex').compare(expectedRandomness) == 0
 }
 
 export {verifyBeacon, roundBuffer}

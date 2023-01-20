@@ -120,7 +120,7 @@ describe('verifyBeacon', () => {
 
         expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
     })
-    it('should not validate an chained beacon with an unchained beacon scheme in ChainInfo', async () => {
+    it('should not validate a chained beacon with an unchained beacon scheme in ChainInfo', async () => {
         // unchained scheme
         const chainInfo = createChainInfo(
             '8d91ae0f4e3cd277cfc46aba26680232b0d5bb4444602cdb23442d62e17f43cdffb1104909e535430c10a6a1ce680a65',
@@ -133,6 +133,21 @@ describe('verifyBeacon', () => {
             randomness: '7731783ab8118d7484d0e8e237f3023a4c7ef4532f35016f2e56e89a7570c796',
             signature: '94da96b5b985a22a3d99fa3051a42feb4da9218763f6c836fca3770292dbf4b01f5d378859a113960548d167eaa144250a2c8e34c51c5270152ac2bc7a52632236f746545e0fae52f69068c017745204240d19dae2b4d038cef3c6047fcd6539',
             previous_signature: 'a2237ee39a1a6569cb8e02c6e979c07efe1f30be0ac501436bd325015f1cd6129dc56fd60efcdf9158d74ebfa34bfcbd17803dbca6d2ae8bc3a968e4dc582f8710c69de80b2e649663fef5742d22fff7d1619b75d5f222e8c9b8840bc2044bce'
+        }
+
+        expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
+    })
+
+    it('should not validate if the randomness isnt what was signed', async () => {
+        const chainInfo = createChainInfo(
+            '8d91ae0f4e3cd277cfc46aba26680232b0d5bb4444602cdb23442d62e17f43cdffb1104909e535430c10a6a1ce680a65',
+            'pedersen-bls-unchained'
+        )
+
+        const beacon = {
+            round: 397092,
+            randomness: 'deadbeefdeadbeef',
+            signature: '94da96b5b985a22a3d99fa3051a42feb4da9218763f6c836fca3770292dbf4b01f5d378859a113960548d167eaa144250a2c8e34c51c5270152ac2bc7a52632236f746545e0fae52f69068c017745204240d19dae2b4d038cef3c6047fcd6539'
         }
 
         expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
