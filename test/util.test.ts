@@ -31,6 +31,24 @@ describe('roundAt', () => {
 
         expect(roundAt(1001, chainInfo)).toBe(2)
     })
+
+    it('should throw an error for positive infinity', () => {
+        const chainInfo = createChainInfo(1595431050, 30)
+
+        expect(() => roundAt(Infinity, chainInfo)).toThrow()
+    })
+
+    it('should throw an error for negative infinity', () => {
+        const chainInfo = createChainInfo(1595431050, 30)
+
+        expect(() => roundAt(Number.NEGATIVE_INFINITY, chainInfo)).toThrow()
+    })
+
+    it('should throw an error for NaN', () => {
+        const chainInfo = createChainInfo(1595431050, 30)
+
+        expect(() => roundAt(NaN, chainInfo)).toThrow()
+    })
 })
 
 describe('roundTime', () => {
@@ -68,10 +86,28 @@ describe('roundTime', () => {
         expect(roundTime(chainInfo, 2)).toBe(1595431080000)
     })
 
-    it('and should work with a larger round number', () => {
+    it('should work with a larger round number', () => {
         const chainInfo = createChainInfo(1595431050, 30)
 
         expect(roundTime(chainInfo, 2185561)).toBe(1660997850000)
+    })
+
+    it('should throw an error for positive infinity', () => {
+        const chainInfo = createChainInfo(1595431050, 30)
+
+        expect(() => roundTime(chainInfo, Infinity)).toThrow()
+    })
+
+    it('should throw an error for negative infinity', () => {
+        const chainInfo = createChainInfo(1595431050, 30)
+
+        expect(() => roundTime(chainInfo, Number.NEGATIVE_INFINITY)).toThrow()
+    })
+
+    it('should throw an error for NaN', () => {
+        const chainInfo = createChainInfo(1595431050, 30)
+
+        expect(() => roundTime(chainInfo, NaN)).toThrow()
     })
 })
 
@@ -79,7 +115,7 @@ describe('jsonOrError', () => {
     it('should set user agent header if passed as an option', async () => {
         const expectedUrl = 'https://example.com/'
         const expectedUserAgent = 'some-cool-agent'
-        const expectedResponse = { great: true }
+        const expectedResponse = {great: true}
 
         fetchMock.mockIf(expectedUrl, request => {
             const ua = request.headers.get('User-Agent')
@@ -96,7 +132,7 @@ describe('jsonOrError', () => {
     })
     it('should leave user agent empty if not passed', async () => {
         const expectedUrl = 'https://example.com/'
-        const expectedResponse = { great: true }
+        const expectedResponse = {great: true}
 
         fetchMock.mockIf(expectedUrl, request => {
             const ua = request.headers.get('User-Agent')
