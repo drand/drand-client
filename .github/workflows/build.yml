@@ -17,9 +17,9 @@ jobs:
           node-version: latest
 
       - run: npm ci
+      - run: npm run compile
       - run: npm run lint
       - run: npm test
-      - run: npm run compile
       - name: Copy relevant documentation into the build folder
         run: cp package.json README.md LICENSE-APACHE LICENSE-MIT ./build
       - name: publish to npmjs
