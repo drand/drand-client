@@ -1,4 +1,5 @@
 import {ChainInfo} from './index'
+import {version} from '../package.json'
 
 export function sleep(timeMs: number): Promise<void> {
     return new Promise(resolve => {
@@ -25,8 +26,12 @@ export type HttpOptions = {
     userAgent?: string
 }
 
+export const defaultHttpOptions: HttpOptions = {
+    userAgent: `drand-client-${version}`
+}
+
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export async function jsonOrError(url: string, options: HttpOptions = {}): Promise<any> {
+export async function jsonOrError(url: string, options: HttpOptions = defaultHttpOptions): Promise<any> {
     let requestOptions = {}
 
     if (options.userAgent) {

@@ -94,7 +94,7 @@ describe('jsonOrError', () => {
         expect(response).toEqual(expectedResponse)
         expect(fetchMock).toHaveBeenCalledTimes(1)
     })
-    it('should leave user agent empty if not passed', async () => {
+    it('should not use default user agent empty if empty', async () => {
         const expectedUrl = 'https://example.com/'
         const expectedResponse = { great: true }
 
@@ -106,7 +106,7 @@ describe('jsonOrError', () => {
             return new Promise(resolve => resolve(JSON.stringify(expectedResponse)))
         })
 
-        const response = await jsonOrError(expectedUrl)
+        const response = await jsonOrError(expectedUrl, { userAgent: ''})
 
         expect(response).toEqual(expectedResponse)
         expect(fetchMock).toHaveBeenCalledTimes(1)
