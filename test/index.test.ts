@@ -23,7 +23,21 @@ async function endToEndTest(url: string) {
     const chains = await node.chains()
     expect(chains).not.toHaveLength(0)
 
-    const httpClient = new HttpChainClient(chains[0])
+    // currently the drand-client does not support the new G1/G2 swapped scheme
+    let chainToUse
+    for (const chain of chains) {
+        const info = await chain.info()
+        if (info.schemeID === 'pedersen-bls-chained' || info.schemeID === 'pedersen-bls-unchained') {
+            chainToUse = chain
+            break
+        }
+    }
+
+    if (!chainToUse) {
+        throw Error('there was no chain with a supported scheme!')
+    }
+
+    const httpClient = new HttpChainClient(chainToUse)
 
     // get the latest beacon
     const latestBeacon = await fetchBeacon(httpClient)
