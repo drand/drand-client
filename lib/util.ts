@@ -11,6 +11,9 @@ export function sleep(timeMs: number): Promise<void> {
 }
 
 export function roundAt(time: number, chain: ChainInfo) {
+    if (!Number.isFinite(time)) {
+        throw new Error('Cannot use Infinity or NaN as a beacon time')
+    }
     if (time < chain.genesis_time * 1000) {
         throw Error('Cannot request a round before the genesis time')
     }
@@ -18,6 +21,9 @@ export function roundAt(time: number, chain: ChainInfo) {
 }
 
 export function roundTime(chain: ChainInfo, round: number) {
+    if (!Number.isFinite(round)) {
+        throw new Error('Cannot use Infinity or NaN as a round number')
+    }
     round = round < 0 ? 0 : round
     return (chain.genesis_time + (round - 1) * chain.period) * 1000
 }
