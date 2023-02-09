@@ -1,12 +1,13 @@
 {
   "name": "drand-client",
-  "version": "1.0.0-pre.8",
+  "version": "1.0.0-pre.9",
   "description": "A client to the drand randomness beacon network.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "clean": "rm -rf ./build/*",
-    "compile": "tsc --project tsconfig.json",
+    "clean": "rm -rf ./build/* && rm -rf lib/version.ts",
+    "precompile": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > lib/version.ts",
+    "compile": "npm run precompile && tsc --project tsconfig.json",
     "test": "jest --verbose ./test/**.test.ts",
     "lint": "eslint ./{lib,test}/*.ts",
     "lint:fix": "eslint ./{lib,test}/*.ts --fix"

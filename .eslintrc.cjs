@@ -8,7 +8,8 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
   ],
+  ignorePatterns: ['lib/version.ts'],
   rules: {
-    quotes: ["error", "single"],
-  }
+    quotes: ['error', 'single'],
+  },
 };
