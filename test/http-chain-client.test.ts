@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock'
 import {HttpChainClient} from '../lib'
 import {testChain, validTestBeacon} from './data'
-import {defaultHttpOptions} from "../lib/util";
+import {defaultHttpOptions} from '../lib/util'
 
 beforeAll(() => {
     fetchMock.enableMocks()
@@ -44,18 +44,18 @@ describe('http chain client', () => {
 
         it('should pass the custom user agent to fetch', async () => {
             const roundNumber = 1
-            const customUserAgent = "bananasinpyjamas"
+            const customUserAgent = 'bananasinpyjamas'
             const client = new HttpChainClient(testChain, {
                 noCache: false,
                 disableBeaconVerification: false
             }, {userAgent: customUserAgent})
 
-            fetchMock.mockIf(req => req.headers.get("User-Agent") == customUserAgent, JSON.stringify(validTestBeacon))
+            fetchMock.mockIf(req => req.headers.get('User-Agent') == customUserAgent, JSON.stringify(validTestBeacon))
             await expect(client.get(roundNumber)).resolves.toEqual(validTestBeacon)
             expect(fetchMock).toHaveBeenCalledTimes(1)
             expect(fetchMock).toHaveBeenCalledWith(`https://example.com/public/${roundNumber}`, {
-                "headers": {
-                    "User-Agent": customUserAgent
+                'headers': {
+                    'User-Agent': customUserAgent
                 }
             })
         })
@@ -81,18 +81,18 @@ describe('http chain client', () => {
         })
 
         it('should pass the custom user agent to fetch', async () => {
-            const customUserAgent = "bananasinpyjamas"
+            const customUserAgent = 'bananasinpyjamas'
             const client = new HttpChainClient(testChain, {
                 noCache: false,
                 disableBeaconVerification: false
             }, {userAgent: customUserAgent})
 
-            fetchMock.mockIf(req => req.headers.get("User-Agent") == customUserAgent, JSON.stringify(validTestBeacon))
+            fetchMock.mockIf(req => req.headers.get('User-Agent') == customUserAgent, JSON.stringify(validTestBeacon))
             await expect(client.latest()).resolves.toEqual(validTestBeacon)
             expect(fetchMock).toHaveBeenCalledTimes(1)
-            expect(fetchMock).toHaveBeenCalledWith(`https://example.com/public/latest`, {
-                "headers": {
-                    "User-Agent": customUserAgent
+            expect(fetchMock).toHaveBeenCalledWith('https://example.com/public/latest', {
+                'headers': {
+                    'User-Agent': customUserAgent
                 }
             })
         })
