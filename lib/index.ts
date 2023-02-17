@@ -1,4 +1,5 @@
 import HttpCachingChain from './http-caching-chain'
+import {HttpChain} from './http-caching-chain'
 import HttpChainClient from './http-chain-client'
 import FastestNodeClient from './fastest-node-client'
 import MultiBeaconNode from './multi-beacon-node'
@@ -178,4 +179,4 @@ export function isUnchainedBeacon(value: any, info: ChainInfo): value is Unchain
 }
 
 // exports some default implementations of the above interfaces and other utility functions that could be used with them
-export {HttpChainClient, HttpCachingChain, MultiBeaconNode, FastestNodeClient, roundAt, roundTime}
+export {HttpChain, HttpChainClient, HttpCachingChain, MultiBeaconNode, FastestNodeClient, roundAt, roundTime}
