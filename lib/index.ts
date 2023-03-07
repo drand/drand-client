@@ -144,23 +144,33 @@ export type ChainInfo = {
 }
 
 // currently drand supports chained and unchained randomness - read more here: https://drand.love/docs/cryptography/#randomness
-export type RandomnessBeacon = ChainedBeacon | UnchainedBeacon
+export type RandomnessBeacon = G2ChainedBeacon | G2UnchainedBeacon | G1UnchainedBeacon
 
-export type ChainedBeacon = {
+export type G2ChainedBeacon = {
     round: number
     randomness: string
     signature: string
     previous_signature: string
 }
 
-export type UnchainedBeacon = {
+export type G2UnchainedBeacon = {
     round: number
     randomness: string
     signature: string
+    // this is needed to distinguish it from the `G1UnchainedBeacon` so the type guard works correctly
+    _phantomg2?: never
+}
+
+export type G1UnchainedBeacon = {
+    round: number
+    randomness: string
+    signature: string
+    // this distinguishes it from the `G2UnchainedBeacon` so the type guard works correctly
+    _phantomg1?: never
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export function isChainedBeacon(value: any, info: ChainInfo): value is ChainedBeacon {
+export function isChainedBeacon(value: any, info: ChainInfo): value is G2ChainedBeacon {
     return info.schemeID === 'pedersen-bls-chained' &&
         !!value.previous_signature &&
         !!value.randomness &&
@@ -170,8 +180,17 @@ export function isChainedBeacon(value: any, info: ChainInfo): value is ChainedBe
 
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export function isUnchainedBeacon(value: any, info: ChainInfo): value is UnchainedBeacon {
+export function isUnchainedBeacon(value: any, info: ChainInfo): value is G2UnchainedBeacon {
     return info.schemeID === 'pedersen-bls-unchained' &&
+        !!value.randomness &&
+        !!value.signature &&
+        value.previous_signature === undefined &&
+        value.round > 0
+}
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export function isG1G2SwappedBeacon(value: any, info: ChainInfo): value is G1UnchainedBeacon {
+    return info.schemeID === 'bls-unchained-on-g1' &&
         !!value.randomness &&
         !!value.signature &&
         value.previous_signature === undefined &&
