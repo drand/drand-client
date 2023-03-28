@@ -33,21 +33,26 @@ export function roundTime(chain: ChainInfo, round: number) {
 
 export type HttpOptions = {
     userAgent?: string
+    headers?: Record<string, string>
 }
 
+// taking a separate `userAgent` param for backwards compatibility
 export const defaultHttpOptions: HttpOptions = {
-    userAgent: `drand-client-${LIB_VERSION}`
+    userAgent: `drand-client-${LIB_VERSION}`,
+    headers: {
+        'Access-Control-Allow-Origin': '*'
+    }
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export async function jsonOrError(url: string, options: HttpOptions = defaultHttpOptions): Promise<any> {
-    let requestOptions = {}
+    const headers = {...options.headers}
 
     if (options.userAgent) {
-        requestOptions = {...requestOptions, headers: {['User-Agent']: options.userAgent}}
+        headers['User-Agent'] = options.userAgent
     }
 
-    const response = await fetch(url, requestOptions)
+    const response = await fetch(url, {headers})
     if (!response.ok) {
         throw Error(`Error response fetching ${url} - got ${response.status}`)
     }
