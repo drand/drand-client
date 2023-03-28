@@ -39,9 +39,6 @@ export type HttpOptions = {
 // taking a separate `userAgent` param for backwards compatibility
 export const defaultHttpOptions: HttpOptions = {
     userAgent: `drand-client-${LIB_VERSION}`,
-    headers: {
-        'Access-Control-Allow-Origin': '*'
-    }
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any

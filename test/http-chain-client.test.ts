@@ -16,7 +16,7 @@ beforeEach(() => {
 describe('http chain client', () => {
     const client = new HttpChainClient(testChain)
     const defaultFetchOptions = {
-        headers: {'Access-Control-Allow-Origin': '*', 'User-Agent': defaultHttpOptions.userAgent || ''}
+        headers: {'User-Agent': defaultHttpOptions.userAgent || ''}
     }
 
     describe('get', () => {
@@ -94,6 +94,19 @@ describe('http chain client', () => {
             await expect(client.latest()).resolves.toEqual(validTestBeacon)
             expect(fetchMock).toHaveBeenCalledTimes(1)
             expect(fetchMock).toHaveBeenCalledWith('https://example.com/public/latest', params)
+        })
+
+        it('should pass custom headers from the config param', async () => {
+            const headers = {'Access-Control-Allow-Origin': '*'}
+            const client = new HttpChainClient(testChain, {
+                noCache: false,
+                disableBeaconVerification: false
+            }, {headers})
+            fetchMock.once(JSON.stringify(validTestBeacon))
+            await expect(client.latest()).resolves.toEqual(validTestBeacon)
+
+            expect(fetchMock).toHaveBeenCalledTimes(1)
+            expect(fetchMock).toHaveBeenCalledWith('https://example.com/public/latest', {headers})
         })
     })
 })
