@@ -1,7 +1,7 @@
 import fetchMock from 'jest-fetch-mock'
 import {HttpChainClient} from '../lib'
 import {testChain, validTestBeacon} from './data'
-import {defaultHttpOptions} from "../lib/util"
+import {defaultHttpOptions} from '../lib/util'
 
 beforeAll(() => {
     fetchMock.enableMocks()
