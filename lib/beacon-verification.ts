@@ -1,5 +1,6 @@
 import * as bls from '@noble/bls12-381'
 import {PointG1, PointG2, Fp12, pairing} from '@noble/bls12-381';
+import {Buffer} from 'buffer'
 
 import {
     G2ChainedBeacon,
