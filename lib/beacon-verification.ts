@@ -62,7 +62,7 @@ export async function verifySigOnG1(
     message: G1Hex,
     publicKey: G2Hex,
     // default DST is the invalid one used for 'bls-unchained-on-g1' for backwards compat
-    domainSeparationTag: string = 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_'
+    domainSeparationTag= 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_'
 ): Promise<boolean> {
     const P = normP2(publicKey);
     const Hm = await normP1Hash(message, domainSeparationTag);
