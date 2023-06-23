@@ -23,11 +23,10 @@ async function endToEndTest(url: string) {
     const chains = await node.chains()
     expect(chains).not.toHaveLength(0)
 
-    // currently the drand-client does not support the new G1/G2 swapped scheme
     let chainToUse
     for (const chain of chains) {
         const info = await chain.info()
-        if (info.schemeID === 'pedersen-bls-chained' || info.schemeID === 'pedersen-bls-unchained') {
+        if (info.schemeID === 'pedersen-bls-chained' || info.schemeID === 'pedersen-bls-unchained' || info.schemeID === 'bls-unchained-on-g1' || info.schemeID === 'bls-unchained-g1-rfc9380') {
             chainToUse = chain
             break
         }
