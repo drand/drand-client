@@ -10,7 +10,8 @@ import {
     RandomnessBeacon,
     G2UnchainedBeacon,
     isG1G2SwappedBeacon,
-    G1UnchainedBeacon
+    G1UnchainedBeacon,
+    isG1Rfc9380
 } from './index'
 
 async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Promise<boolean> {
@@ -32,6 +33,10 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Pro
         return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey)
     }
 
+    if (isG1Rfc9380(beacon, chainInfo)) {
+        return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey, 'BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_')
+    }
+
     console.error(`Beacon type ${chainInfo.schemeID} was not supported`)
     return false
 
@@ -49,13 +54,19 @@ function normP2(point: G2Hex): PointG2 {
     return point instanceof PointG2 ? point : PointG2.fromHex(point);
 }
 
-async function normP1Hash(point: G1Hex): Promise<PointG1> {
-    return point instanceof PointG1 ? point : PointG1.hashToCurve(point);
+async function normP1Hash(point: G1Hex, domainSeparationTag: string): Promise<PointG1> {
+    return point instanceof PointG1 ? point : PointG1.hashToCurve(point, {DST: domainSeparationTag});
 }
 
-export async function verifySigOnG1(signature: G1Hex, message: G1Hex, publicKey: G2Hex): Promise<boolean> {
+export async function verifySigOnG1(
+    signature: G1Hex,
+    message: G1Hex,
+    publicKey: G2Hex,
+    // default DST is the invalid one used for 'bls-unchained-on-g1' for backwards compat
+    domainSeparationTag= 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_'
+): Promise<boolean> {
     const P = normP2(publicKey);
-    const Hm = await normP1Hash(message);
+    const Hm = await normP1Hash(message, domainSeparationTag);
     const G = PointG2.BASE;
     const S = normP1(signature);
     const ePHm = pairing(Hm, P.negate(), false);

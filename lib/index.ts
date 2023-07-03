@@ -144,7 +144,7 @@ export type ChainInfo = {
 }
 
 // currently drand supports chained and unchained randomness - read more here: https://drand.love/docs/cryptography/#randomness
-export type RandomnessBeacon = G2ChainedBeacon | G2UnchainedBeacon | G1UnchainedBeacon
+export type RandomnessBeacon = G2ChainedBeacon | G2UnchainedBeacon | G1UnchainedBeacon | G1RFC9380Beacon
 
 export type G2ChainedBeacon = {
     round: number
@@ -157,7 +157,7 @@ export type G2UnchainedBeacon = {
     round: number
     randomness: string
     signature: string
-    // this is needed to distinguish it from the `G1UnchainedBeacon` so the type guard works correctly
+    // this is needed to distinguish it from the other unchained beacons so the type guard works correctly
     _phantomg2?: never
 }
 
@@ -165,8 +165,16 @@ export type G1UnchainedBeacon = {
     round: number
     randomness: string
     signature: string
-    // this distinguishes it from the `G2UnchainedBeacon` so the type guard works correctly
+    // this distinguishes it from the other unchained beacons so the type guard works correctly
     _phantomg1?: never
+}
+
+export type G1RFC9380Beacon = {
+    round: number
+    randomness: string
+    signature: string
+    // this distinguishes it from the other unchained beacons so the type guard works correctly
+    _phantomg19380?: never
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -191,6 +199,15 @@ export function isUnchainedBeacon(value: any, info: ChainInfo): value is G2Uncha
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function isG1G2SwappedBeacon(value: any, info: ChainInfo): value is G1UnchainedBeacon {
     return info.schemeID === 'bls-unchained-on-g1' &&
+        !!value.randomness &&
+        !!value.signature &&
+        value.previous_signature === undefined &&
+        value.round > 0
+}
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export function isG1Rfc9380(value: any, info: ChainInfo): value is G1RFC9380Beacon {
+    return info.schemeID === 'bls-unchained-g1-rfc9380' &&
         !!value.randomness &&
         !!value.signature &&
         value.previous_signature === undefined &&
