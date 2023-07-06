@@ -1,6 +1,11 @@
-import * as bls from '@noble/bls12-381'
-import {PointG1, PointG2, Fp12, pairing} from '@noble/bls12-381';
+import { bls12_381 as bls } from '@noble/curves/bls12-381'
+import { sha256 } from '@noble/hashes/sha256'
+import { ensureBytes }  from '@noble/curves/abstract/utils'
 import {Buffer} from 'buffer'
+
+
+type PointG1 = typeof bls.G1.ProjectivePoint.ZERO
+type PointG2 = typeof bls.G2.ProjectivePoint.ZERO
 
 import {
     G2ChainedBeacon,
@@ -42,20 +47,20 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Pro
 
 }
 
-// @noble/bls12-381 does everything on G2, so we've implemented a manual verification for beacons on G1
+// @noble/curves/bls12-381 has not yet implemented public keys on G2, so we've implemented a manual verification for beacons on G1
 type G1Hex = Uint8Array | string | PointG1;
 type G2Hex = Uint8Array | string | PointG2;
 
 function normP1(point: G1Hex): PointG1 {
-    return point instanceof PointG1 ? point : PointG1.fromHex(point);
+    return point instanceof bls.G1.ProjectivePoint ? point : bls.G1.ProjectivePoint.fromHex(point);
 }
 
 function normP2(point: G2Hex): PointG2 {
-    return point instanceof PointG2 ? point : PointG2.fromHex(point);
+    return point instanceof bls.G2.ProjectivePoint ? point : bls.G2.ProjectivePoint.fromHex(point);
 }
 
-async function normP1Hash(point: G1Hex, domainSeparationTag: string): Promise<PointG1> {
-    return point instanceof PointG1 ? point : PointG1.hashToCurve(point, {DST: domainSeparationTag});
+function normP1Hash(point: G1Hex, domainSeparationTag: string): PointG1 {
+    return point instanceof bls.G1.ProjectivePoint ? point : (bls.G1.hashToCurve(ensureBytes('point', point), {DST: domainSeparationTag}) as PointG1);
 }
 
 export async function verifySigOnG1(
@@ -66,13 +71,13 @@ export async function verifySigOnG1(
     domainSeparationTag= 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_'
 ): Promise<boolean> {
     const P = normP2(publicKey);
-    const Hm = await normP1Hash(message, domainSeparationTag);
-    const G = PointG2.BASE;
+    const Hm = normP1Hash(message, domainSeparationTag);
+    const G = bls.G2.ProjectivePoint.BASE;
     const S = normP1(signature);
-    const ePHm = pairing(Hm, P.negate(), false);
-    const eGS = pairing(S, G, false);
-    const exp = eGS.multiply(ePHm).finalExponentiate();
-    return exp.equals(Fp12.ONE);
+    const ePHm = bls.pairing(Hm, P.negate(), true);
+    const eGS = bls.pairing(S, G, true);
+    const exp = bls.fields.Fp12.mul(eGS, ePHm);
+    return bls.fields.Fp12.eql(exp, bls.fields.Fp12.ONE);
 }
 
 async function chainedBeaconMessage(beacon: G2ChainedBeacon): Promise<Uint8Array> {
@@ -81,11 +86,11 @@ async function chainedBeaconMessage(beacon: G2ChainedBeacon): Promise<Uint8Array
         roundBuffer(beacon.round)
     ])
 
-    return bls.utils.sha256(message)
+    return sha256(message)
 }
 
 async function unchainedBeaconMessage(beacon: G2UnchainedBeacon | G1UnchainedBeacon): Promise<Uint8Array> {
-    return bls.utils.sha256(roundBuffer(beacon.round))
+    return sha256(roundBuffer(beacon.round))
 }
 
 function signatureBuffer(sig: string) {
@@ -99,7 +104,7 @@ function roundBuffer(round: number) {
 }
 
 async function randomnessIsValid(beacon: RandomnessBeacon): Promise<boolean> {
-    const expectedRandomness = await bls.utils.sha256(Buffer.from(beacon.signature, 'hex'))
+    const expectedRandomness = await sha256(Buffer.from(beacon.signature, 'hex'))
     return Buffer.from(beacon.randomness, 'hex').compare(expectedRandomness) == 0
 }
 
