@@ -41,7 +41,7 @@ describe('verifyBeacon', () => {
             signature: '94da96b5b985a22a3d99fa3051a42feb4da9218763f6c836fca3770292dbf4b01f5d378859a113960548d167eaa144250a2c8e34c51c5270152ac2bc7a52632236f746545e0fae52f69068c017745204240d19dae2b4d038cef3c6047fcd6539'
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeTruthy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeTruthy()
     })
 
     it('should not validate unchained beacons that are invalid', async () => {
@@ -57,7 +57,7 @@ describe('verifyBeacon', () => {
             signature: '94da96b5b985a22a3d99fa3051a42feb4da9218763f6c836fca3770292dbf4b01f5d378859a113960548d167eaa144250a2c8e34c51c5270152ac2bc7a52632236f746545e0fae52f69068c017745204240d19dae2b4d038cef3c6047fcd6539'
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeFalsy()
     })
 
     it('should validate chained beacon from the go codebase', async () => {
@@ -72,7 +72,7 @@ describe('verifyBeacon', () => {
             previous_signature: 'a2237ee39a1a6569cb8e02c6e979c07efe1f30be0ac501436bd325015f1cd6129dc56fd60efcdf9158d74ebfa34bfcbd17803dbca6d2ae8bc3a968e4dc582f8710c69de80b2e649663fef5742d22fff7d1619b75d5f222e8c9b8840bc2044bce'
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeTruthy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeTruthy()
     })
 
     it('should not validate chained beacon without a previous_signature', async () => {
@@ -86,7 +86,7 @@ describe('verifyBeacon', () => {
             signature: '88ccd9a91946bc0bbef2c6c60a09bbf4a247b1d2059522449aa1a35758feddfad85efe818bbde3e1e4ab0c852d96e65f0b1f97f239bf3fc918860ea846cbb500fcf7c9d0dd3d851320374460b5fc596b8cfd629f4c07c7507c259bf9beca850a',
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeFalsy()
     })
     it('should not validate an invalid chained beacon', async () => {
         const chainInfo = createChainInfo(
@@ -101,7 +101,7 @@ describe('verifyBeacon', () => {
             previous_signature: 'a2237ee39a1a6569cb8e02c6e979c07efe1f30be0ac501436bd325015f1cd6129dc56fd60efcdf9158d74ebfa34bfcbd17803dbca6d2ae8bc3a968e4dc582f8710c69de80b2e649663fef5742d22fff7d1619b75d5f222e8c9b8840bc2044bce'
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeFalsy()
     })
 
     it('should not validate an unchained beacon with a chained beacon scheme in ChainInfo ', async () => {
@@ -118,7 +118,7 @@ describe('verifyBeacon', () => {
             signature: '94da96b5b985a22a3d99fa3051a42feb4da9218763f6c836fca3770292dbf4b01f5d378859a113960548d167eaa144250a2c8e34c51c5270152ac2bc7a52632236f746545e0fae52f69068c017745204240d19dae2b4d038cef3c6047fcd6539'
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeFalsy()
     })
     it('should not validate a chained beacon with an unchained beacon scheme in ChainInfo', async () => {
         // unchained scheme
@@ -135,7 +135,7 @@ describe('verifyBeacon', () => {
             previous_signature: 'a2237ee39a1a6569cb8e02c6e979c07efe1f30be0ac501436bd325015f1cd6129dc56fd60efcdf9158d74ebfa34bfcbd17803dbca6d2ae8bc3a968e4dc582f8710c69de80b2e649663fef5742d22fff7d1619b75d5f222e8c9b8840bc2044bce'
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeFalsy()
     })
 
     it('should not validate if the randomness isnt what was signed', async () => {
@@ -150,7 +150,7 @@ describe('verifyBeacon', () => {
             signature: '94da96b5b985a22a3d99fa3051a42feb4da9218763f6c836fca3770292dbf4b01f5d378859a113960548d167eaa144250a2c8e34c51c5270152ac2bc7a52632236f746545e0fae52f69068c017745204240d19dae2b4d038cef3c6047fcd6539'
         }
 
-        expect(await verifyBeacon(chainInfo, beacon)).toBeFalsy()
+        expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeFalsy()
     })
     describe('signatures on G1', () => {
         const validBeacon = {
@@ -169,12 +169,15 @@ describe('verifyBeacon', () => {
         }
 
         it('should verify a signature on G1', async () => {
-            await expect(verifyBeacon(chainInfo, validBeacon)).resolves.toEqual(true)
+            await expect(verifyBeacon(chainInfo, validBeacon, validBeacon.round)).resolves.toEqual(true)
         })
 
         it('should not verify a signature on G1 for the wrong round', async () => {
             const invalidBeacon = {...validBeacon, round: 55}
-            await expect(verifyBeacon(chainInfo, invalidBeacon)).resolves.toEqual(false)
+            await expect(verifyBeacon(chainInfo, invalidBeacon, invalidBeacon.round)).resolves.toEqual(false)
+        })
+        it('should not verify a valid beacon with the wrong expected round', async () => {
+            await expect(verifyBeacon(chainInfo, validBeacon, 2)).resolves.toEqual(false)
         })
     })
     describe('signatures on G1 with DST', () => {
@@ -195,11 +198,14 @@ describe('verifyBeacon', () => {
         }
 
         it('should verify a valid signature', async () => {
-            await expect(verifyBeacon(chainInfo, validBeacon)).resolves.toEqual(true)
+            await expect(verifyBeacon(chainInfo, validBeacon, validBeacon.round)).resolves.toEqual(true)
         })
         it('should not verify a signature on G1 for the wrong round', async () => {
             const invalidBeacon = {...validBeacon, round: 55}
-            await expect(verifyBeacon(chainInfo, invalidBeacon)).resolves.toEqual(false)
+            await expect(verifyBeacon(chainInfo, invalidBeacon, invalidBeacon.round)).resolves.toEqual(false)
+        })
+        it('should not verify a valid beacon with the wrong expected round', async () => {
+            await expect(verifyBeacon(chainInfo, validBeacon, 2)).resolves.toEqual(false)
         })
     })
 })

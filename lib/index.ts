@@ -77,7 +77,9 @@ export async function fetchBeacon(client: ChainClient, roundNumber?: number): Pr
         beacon = await client.get(roundNumber)
     }
 
-    return validatedBeacon(client, beacon)
+    const expectedRound = roundAt(Date.now(), await client.chain().info())
+
+    return validatedBeacon(client, beacon, expectedRound)
 }
 
 // fetch the most recent beacon to have been emitted at a given `time` in epoch ms
@@ -101,7 +103,7 @@ export async function* watch(
         await sleep(roundTime(info, currentRound) - now)
 
         const beacon = await retryOnError(async () => client.get(currentRound), options.retriesOnFailure)
-        yield validatedBeacon(client, beacon)
+        yield validatedBeacon(client, beacon, currentRound)
         currentRound = currentRound + 1
     }
 }
@@ -118,12 +120,12 @@ const defaultWatchOptions = {
 }
 
 // internal function for validating a beacon if validation has not been disabled in the client options
-async function validatedBeacon(client: ChainClient, beacon: RandomnessBeacon): Promise<RandomnessBeacon> {
+async function validatedBeacon(client: ChainClient, beacon: RandomnessBeacon, expectedRound: number): Promise<RandomnessBeacon> {
     if (client.options.disableBeaconVerification) {
         return beacon
     }
     const info = await client.chain().info()
-    if (!await verifyBeacon(info, beacon)) {
+    if (!await verifyBeacon(info, beacon, expectedRound)) {
         throw Error('The beacon retrieved was not valid!')
     }
 

@@ -16,11 +16,15 @@ import {
     G2UnchainedBeacon,
     isG1G2SwappedBeacon,
     G1UnchainedBeacon,
-    isG1Rfc9380
+    isG1Rfc9380, roundAt
 } from './index'
 
-async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Promise<boolean> {
+async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon, expectedRound: number): Promise<boolean> {
     const publicKey = chainInfo.public_key
+
+    if (beacon.round !== expectedRound) {
+        return false
+    }
 
     if (!await randomnessIsValid(beacon)) {
         return false
