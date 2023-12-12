@@ -77,7 +77,7 @@ export async function fetchBeacon(client: ChainClient, roundNumber?: number): Pr
         beacon = await client.get(roundNumber)
     }
 
-    const expectedRound = roundAt(Date.now(), await client.chain().info())
+    const expectedRound = roundNumber || roundAt(Date.now(), await client.chain().info())
 
     return validatedBeacon(client, beacon, expectedRound)
 }
