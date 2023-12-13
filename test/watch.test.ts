@@ -4,7 +4,7 @@ import fetchMock from 'jest-fetch-mock';
 
 describe('watch', () => {
     it('should honour its abort controller', async () => {
-        const client = new HttpChainClient(new HttpCachingChain("https://pl-eu.testnet.drand.sh"))
+        const client = new HttpChainClient(new HttpCachingChain('https://pl-eu.testnet.drand.sh'))
         const abortController = new AbortController()
         const generator = watch(client, abortController)
 
