@@ -1,21 +1,10 @@
 import {HttpCachingChain, HttpChainClient, watch} from '../lib';
-import {testChain, validTestBeacon, validTestChainInfo} from './data';
+import {validTestBeacon, validTestChainInfo} from './data';
 import fetchMock from 'jest-fetch-mock';
-import {StubChainClient} from './stub-chain-client';
-
-beforeAll(() => {
-    fetchMock.enableMocks()
-})
-afterAll(() => {
-    fetchMock.disableMocks()
-})
-beforeEach(() => {
-    fetchMock.resetMocks()
-})
 
 describe('watch', () => {
     it('should honour its abort controller', async () => {
-        const client  = new StubChainClient(testChain, validTestBeacon)
+        const client = new HttpChainClient(new HttpCachingChain("https://pl-eu.testnet.drand.sh"))
         const abortController = new AbortController()
         const generator = watch(client, abortController)
 
@@ -32,6 +21,8 @@ describe('watch', () => {
         expect(finishedValue.value).toBeUndefined()
     })
     it('should retry multiple times on error if retries on failure is > 0', async () => {
+        fetchMock.enableMocks()
+
         const retries = 3
         let hitCount = 0
         const url = 'https://example.com'
@@ -40,7 +31,8 @@ describe('watch', () => {
 
         fetchMock.mockIf(/^https:\/\/example.com.*?$/, async request => {
             if (request.url.endsWith('/info')) {
-                return JSON.stringify(validTestChainInfo)
+                // we modify the genesis time to now, so round == 1
+                return JSON.stringify({ ...validTestChainInfo, genesis_time: Date.now() / 1000 } )
             }
             if (hitCount < retries) {
                 hitCount++
@@ -58,15 +50,19 @@ describe('watch', () => {
         const beacon = await generator.next()
 
         expect(beacon.value).toEqual(validTestBeacon)
+        fetchMock.disableMocks()
     })
     it('should not retry if retries on failure is 0', async () => {
+        fetchMock.enableMocks()
+
         const url = 'https://example.com'
         const client = new HttpChainClient(new HttpCachingChain(url))
         const abort = new AbortController()
 
         fetchMock.mockIf(/^https:\/\/example.com.*?$/, async request => {
             if (request.url.endsWith('/info')) {
-                return JSON.stringify(validTestChainInfo)
+                // we modify the genesis time to now, so round == 1
+                return JSON.stringify({ ...validTestChainInfo, genesis_time: Date.now() / 1000 } )
             }
             return {
                 status: 404,
@@ -75,5 +71,6 @@ describe('watch', () => {
         })
         const generator = watch(client, abort, {retriesOnFailure: 0})
         await expect(() => generator.next()).rejects.toThrowError()
+        fetchMock.disableMocks()
     })
 })
