@@ -2,11 +2,6 @@ import { bls12_381 as bls } from '@noble/curves/bls12-381'
 import { sha256 } from '@noble/hashes/sha256'
 import { ensureBytes }  from '@noble/curves/abstract/utils'
 import {Buffer} from 'buffer'
-
-
-type PointG1 = typeof bls.G1.ProjectivePoint.ZERO
-type PointG2 = typeof bls.G2.ProjectivePoint.ZERO
-
 import {
     G2ChainedBeacon,
     ChainInfo,
@@ -19,8 +14,15 @@ import {
     isG1Rfc9380
 } from './index'
 
-async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon): Promise<boolean> {
+type PointG1 = typeof bls.G1.ProjectivePoint.ZERO
+type PointG2 = typeof bls.G2.ProjectivePoint.ZERO
+
+async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon, expectedRound: number): Promise<boolean> {
     const publicKey = chainInfo.public_key
+
+    if (beacon.round !== expectedRound) {
+        return false
+    }
 
     if (!await randomnessIsValid(beacon)) {
         return false
