@@ -21,10 +21,12 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon, expe
     const publicKey = chainInfo.public_key
 
     if (beacon.round !== expectedRound) {
+        console.error('round was not the expected round')
         return false
     }
 
     if (!await randomnessIsValid(beacon)) {
+        console.error('randomness did not match the signature')
         return false
     }
 
