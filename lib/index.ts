@@ -67,19 +67,16 @@ export interface ChainClient {
 
 // fetch a beacon for a given `roundNumber` or get the latest beacon by omitting the `roundNumber`
 export async function fetchBeacon(client: ChainClient, roundNumber?: number): Promise<RandomnessBeacon> {
-    let beacon = null
-
     if (!roundNumber) {
-        beacon = await client.latest()
-    } else if (roundNumber < 1) {
-        throw Error('Cannot request lower than round number 1')
-    } else {
-        beacon = await client.get(roundNumber)
+        roundNumber = roundAt(Date.now(), await client.chain().info())
     }
 
-    const expectedRound = roundNumber || roundAt(Date.now(), await client.chain().info())
+    if (roundNumber < 1) {
+        throw Error('Cannot request lower than round number 1')
+    }
+    const beacon = await client.get(roundNumber)
 
-    return validatedBeacon(client, beacon, expectedRound)
+    return validatedBeacon(client, beacon, roundNumber)
 }
 
 // fetch the most recent beacon to have been emitted at a given `time` in epoch ms
