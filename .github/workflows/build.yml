@@ -16,17 +16,51 @@ jobs:
         with:
           node-version: latest
 
-      - run: npm ci
-      - run: npm run compile
-      - run: npm run lint
-      - run: npm test
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile the typescript
+        run: npm run compile
+
+      - name: Lint the code
+        run: npm run lint
+
+      - name: Run the tests
+        run: npm test
+
+      - name: Check for version change
+        id: version-check
+        run: |
+          [ "$(git show head^:package.json | jq .version)" = "$(cat package.json| jq .version)" ] && echo "::set-output name=version_changed::true" || echo "::set-output name=version_changed::false"
+
       - name: Copy relevant documentation into the build folder
+        if: steps.version-check.outputs.version_changed == 'true'
         run: cp package.json README.md LICENSE-APACHE LICENSE-MIT ./build
-      - name: publish to npmjs
+
+      - name: Publish to npmjs
         uses: JS-DevTools/npm-publish@v1
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' && steps.version-check.outputs.version_changed == 'true'
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: build/package.json
           # don't try and deploy if versions haven't changed
           check-version: true
+
+      - name: Create tag variable
+        id: tagging
+        if: github.ref == 'refs/heads/master' && steps.version-check.outputs.version_changed == 'true'
+        run: echo "::set-output name=new_tag::v$(cat package.json | jq .version | sed "s/['\"]//g")"
+
+      - name: Create a GitHub release
+        if: github.ref == 'refs/heads/master' && steps.version-check.outputs.version_changed == 'true'
+        uses: ncipollo/release-action@v1
+        with:
+          custom_tag: ${{ steps.tagging.outputs.new_tag }}
+          name: Release ${{ steps.tagging.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}

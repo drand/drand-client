@@ -8,6 +8,7 @@
     "clean": "rm -rf ./build/* && rm -rf lib/version.ts",
     "precompile": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > lib/version.ts",
     "compile": "npm run precompile && tsc --project tsconfig.json",
+    "publish:github": "npm publish --registry https://npm.pkg.github.com",
     "test": "jest --verbose ./test/**.test.ts",
     "lint": "eslint ./{lib,test}/*.ts",
     "lint:fix": "eslint ./{lib,test}/*.ts --fix"
