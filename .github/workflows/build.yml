@@ -62,5 +62,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           custom_tag: ${{ steps.tagging.outputs.new_tag }}
-          name: Release ${{ steps.tagging.outputs.new_tag }]
+          name: Release ${{ steps.tagging.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
