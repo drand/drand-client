@@ -108,7 +108,7 @@ function roundBuffer(round: number) {
 }
 
 async function randomnessIsValid(beacon: RandomnessBeacon): Promise<boolean> {
-    const expectedRandomness = await sha256(Buffer.from(beacon.signature, 'hex'))
+    const expectedRandomness = sha256(Buffer.from(beacon.signature, 'hex'))
     return Buffer.from(beacon.randomness, 'hex').compare(expectedRandomness) == 0
 }
 

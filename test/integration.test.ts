@@ -3,7 +3,7 @@ import 'jest-fetch-mock'
 
 describe('randomness client', () => {
 
-    describe('testnet default network', () => {
+    describe('testnet unchained 3s network', () => {
         const testnetUnchainedUrl = 'https://pl-eu.testnet.drand.sh/7672797f548f3f4748ac4bf3352fc6c6b6468c9ad40ad456a397545c6e2df5bf';
         const chain = new HttpCachingChain(testnetUnchainedUrl)
         const client = new HttpChainClient(chain)
@@ -13,7 +13,7 @@ describe('randomness client', () => {
             expect(beacon.round).toBeGreaterThan(0)
         })
         it('can consume some round', async () => {
-            const beacon = await fetchBeacon(client, 7456110)
+            const beacon = await fetchBeacon(client, 19369060)
             expect(beacon.round).toBeGreaterThan(0)
         })
         it('watch returns successive rounds', async () => {
