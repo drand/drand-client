@@ -46,7 +46,7 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon, expe
         return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey, 'BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_')
     }
 
-    console.error(`Beacon type ${chainInfo.schemeID} was not supported`)
+    console.error(`Beacon type ${chainInfo.schemeID} was not supported or the beacon was not of the purported type`)
     return false
 
 }
@@ -108,7 +108,7 @@ function roundBuffer(round: number) {
 }
 
 async function randomnessIsValid(beacon: RandomnessBeacon): Promise<boolean> {
-    const expectedRandomness = await sha256(Buffer.from(beacon.signature, 'hex'))
+    const expectedRandomness = sha256(Buffer.from(beacon.signature, 'hex'))
     return Buffer.from(beacon.randomness, 'hex').compare(expectedRandomness) == 0
 }
 
