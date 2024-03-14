@@ -30,16 +30,15 @@ describe('verifyBeacon', () => {
         }
     })
     it('should validate unchained beacons from the go codebase', async () => {
+        const beacon = {
+            round: 19369534,
+            randomness: '778180564f4fb9b77580af69a559ce941eb23d8d3180c48c4d290484b516c6aa',
+            signature: 'a33833d2098f5e0c4df334fb6c5b1c2de3ab293c77825f55d816254dabf7f4f3d429b6207e1cd2a808876e06058a1f8102bb6f6927b654b391259ea99c3566a4eb55feb9665dbaf9d33af08a10b1d8d8b35d91fd3536eb4c197be0041beb5dc2'
+        }
         const chainInfo = createChainInfo(
-            '8d91ae0f4e3cd277cfc46aba26680232b0d5bb4444602cdb23442d62e17f43cdffb1104909e535430c10a6a1ce680a65',
+            '8200fc249deb0148eb918d6e213980c5d01acd7fc251900d9260136da3b54836ce125172399ddc69c4e3e11429b62c11',
             'pedersen-bls-unchained'
         )
-
-        const beacon = {
-            round: 397092,
-            randomness: '7731783ab8118d7484d0e8e237f3023a4c7ef4532f35016f2e56e89a7570c796',
-            signature: '94da96b5b985a22a3d99fa3051a42feb4da9218763f6c836fca3770292dbf4b01f5d378859a113960548d167eaa144250a2c8e34c51c5270152ac2bc7a52632236f746545e0fae52f69068c017745204240d19dae2b4d038cef3c6047fcd6539'
-        }
 
         expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeTruthy()
     })
