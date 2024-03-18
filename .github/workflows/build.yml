@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v3
         with:
@@ -37,7 +39,7 @@ jobs:
       - name: Check for version change
         id: version-check
         run: |
-          [ "$(git show head^:package.json | jq .version)" = "$(cat package.json| jq .version)" ] && echo "::set-output name=version_changed::true" || echo "::set-output name=version_changed::false"
+          [ "$(git show head^:package.json | jq .version)" = "$(cat package.json | jq .version)" ] && echo "::set-output name=version_changed::true" || echo "::set-output name=version_changed::false"
 
       - name: Copy relevant documentation into the build folder
         if: steps.version-check.outputs.version_changed == 'true'
