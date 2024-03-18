@@ -25,7 +25,7 @@ describe('caching chain', () => {
     }
     it('should only call the network for the first request', async () => {
         // create a client with some verification options matching the expected chainInfo
-        const chain = new HttpCachingChain('https:///example.com/wow', {
+        const chain = new HttpCachingChain('https://example.com/wow', {
             ...defaultChainOptions,
             chainVerificationParams: {
                 chainHash: chainInfo.hash,
