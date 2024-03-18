@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 2
 
       - uses: actions/setup-node@v3
@@ -36,23 +37,22 @@ jobs:
       - name: Run the tests
         run: npm test
 
-      - name: Check for version change
-        id: version-check
-        run: |
-          [ "$(git show head^:package.json | jq .version)" = "$(cat package.json | jq .version)" ] && echo "::set-output name=version_changed::true" || echo "::set-output name=version_changed::false"
-
       - name: Copy relevant documentation into the build folder
-        if: steps.version-check.outputs.version_changed == 'true'
         run: cp package.json README.md LICENSE-APACHE LICENSE-MIT ./build
 
       - name: Publish to npmjs
         uses: JS-DevTools/npm-publish@v1
-        if: github.ref == 'refs/heads/master' && steps.version-check.outputs.version_changed == 'true'
+        if: github.ref == 'refs/heads/master'
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: build/package.json
           # don't try and deploy if versions haven't changed
           check-version: true
+
+      - name: Check for version change
+        id: version-check
+        run: |
+          [ "$(git show head^:package.json | jq .version)" = "$(cat package.json | jq .version)" ] && echo "::set-output name=version_changed::true" || echo "::set-output name=version_changed::false"
 
       - name: Create tag variable
         id: tagging
