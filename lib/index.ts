@@ -5,6 +5,7 @@ import FastestNodeClient from './fastest-node-client'
 import MultiBeaconNode from './multi-beacon-node'
 import {retryOnError, roundAt, roundTime, sleep} from './util'
 import {verifyBeacon} from './beacon-verification'
+import {defaultClient, fastnetClient, quicknetClient, testnetDefaultClient, testnetQuicknetClient} from './defaults'
 
 // functionality for inspecting a drand node
 export interface DrandNode {
@@ -214,4 +215,17 @@ export function isG1Rfc9380(value: any, info: ChainInfo): value is G1RFC9380Beac
 }
 
 // exports some default implementations of the above interfaces and other utility functions that could be used with them
-export {HttpChain, HttpChainClient, HttpCachingChain, MultiBeaconNode, FastestNodeClient, roundAt, roundTime}
+export {
+    HttpChain,
+    HttpChainClient,
+    HttpCachingChain,
+    MultiBeaconNode,
+    FastestNodeClient,
+    roundAt,
+    roundTime,
+    defaultClient,
+    quicknetClient,
+    fastnetClient,
+    testnetDefaultClient,
+    testnetQuicknetClient,
+}
