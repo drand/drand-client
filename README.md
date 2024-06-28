@@ -69,6 +69,8 @@ The `drand-client` contains HTTP implementations, but other transports can be su
         }
 
         // if you want to connect to a single chain to grab the latest beacon you can simply do the following
+        // note: if you want to access e.g. quicknet you must use 'https://api.drand.sh/52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971'
+        // passing the chainHash in the `chainVerificationParams` will not fill in the path for you (unless using `MultiBeaconNode`)
         const chain = new HttpCachingChain('https://api.drand.sh', options)
         const client = new HttpChainClient(chain, options)
         const theLatestBeacon = await fetchBeacon(client)
@@ -107,6 +109,8 @@ The `drand-client` contains HTTP implementations, but other transports can be su
         // finally you can interact with multibeacon nodes by using the `MultiBeaconNode` class
         // prior to drand 1.4, each node could only follow and contribute to a single beacon chain 
         // - now nodes can contribute to many at once
+        // here you only need the base URL, and the chain hashes for each respective beacon chain
+        // will be filled in
         const multiBeaconNode = new MultiBeaconNode('https://api.drand.sh', options)
 
         // you can monitor its health
