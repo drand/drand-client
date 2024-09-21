@@ -293,7 +293,7 @@ export const bn254: CurveFn = bls({
         Gy: BigInt(2),
         a: Fp.ZERO,
         b: _3n,
-        htfDefaults: { ...drandHtf, m: 1, DST: 'BN254G2_XMD:SHA-256_SVDW_RO_' },
+        htfDefaults: { ...drandHtf, m: 1 },
         wrapPrivateKey: true,
         allowInfinityPoint: true,
         mapToCurve: mapToCurveG1,
