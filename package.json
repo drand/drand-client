@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.2",
-    "@noble/curves": "^1.4.0",
+    "@noble/curves": "^1.6.0",
     "buffer": "^6.0.3"
   },
   "repository": {
