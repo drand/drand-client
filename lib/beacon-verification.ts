@@ -1,4 +1,5 @@
 import { bls12_381 as bls } from '@noble/curves/bls12-381'
+import { bn254 } from '@kevincharm/noble-bn254-drand'
 import type { CHash } from '@noble/curves/abstract/utils'
 import { sha256 } from '@noble/hashes/sha256'
 import { keccak_256 } from '@noble/hashes/sha3'
@@ -16,7 +17,6 @@ import {
     isG1Rfc9380,
     isBn254OnG1
 } from './index'
-import { verifySigOnBn254G1 } from './beacon-verification-bn254'
 
 type PointG1 = typeof bls.G1.ProjectivePoint.ZERO
 type PointG2 = typeof bls.G2.ProjectivePoint.ZERO
@@ -51,7 +51,9 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon, expe
     }
 
     if (isBn254OnG1(beacon, chainInfo)) {
-        return verifySigOnBn254G1(beacon.signature, await unchainedBeaconMessage(beacon, keccak_256), publicKey)
+        return bn254.verifyShortSignature(beacon.signature, await unchainedBeaconMessage(beacon, keccak_256), publicKey, {
+            DST: 'BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_'
+        })
     }
 
     console.error(`Beacon type ${chainInfo.schemeID} was not supported or the beacon was not of the purported type`)

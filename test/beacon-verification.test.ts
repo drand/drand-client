@@ -211,22 +211,21 @@ describe('verifyBeacon', () => {
     describe('signatures on BN254 G1', () => {
         // TODO: Replace data with evmnet when it's live
         const validBeacon = {
-            round: 16068382,
-            randomness:
-              "247d730ee74ed4e14d6ac162ba54e7b2d33a211c1d014936146e1c361a5c0286",
+            round: 10,
             signature:
-              "2f8ad21f46e2c4a780ebd022fd0c76880478e84807241f384f992eac680a916300e46924693703883cda92d4999a5d8ef92199e4bb33407d5a6c36173e3c6bf5",
-          }
+                '0fd919ec1490bf01935f348837bd20f49f539c5adfd60ce29648fe16f8dbed8803bf3e8fb4c3cbce5dcb642333d81260a811cc432b2f7a687b9b7c2305ad01ee',
+            randomness: 'a62a0e81920b40fb361f9106efb34199af1fbdb0c53db51f7acbad73e0d9d0bf',
+        }
 
         const chainInfo = {
             public_key:
-              "11a5b52383dcdaf609c7d993e0eee909da873fafcc5b5727a757b70f390ba1321c698cd5ae4c6c1e0a8256853d80025e4e274e4a85466bc5966fa33c8887a7482d84ea13f327bbf97683f28a2c07048af9e0b109ac09b3adee4dbf76280cdb0c0aec4a98aae82e083c467a2cbb33ec23b49d01875fbf4b126395e4d7fec7a64a",
-            period: 1,
-            genesis_time: 1710884219,
-            hash: "ce2b88ba52087c5f4c3fd22e92ba78d1389295ac975d2bb95614a11efc532fa0",
-            groupHash: "70f37215b462863cea451f14da30c050f01e30b989ffd7e223c777078127481d",
-            schemeID: "bls-bn254-unchained-on-g1",
-            metadata: { beaconID: "fairy-drand-bn254-dev" },
+                '14018a8127d0cd185f0d0cd168bec330c584581d46f77f41e8ee33ad600588e104961f20efbcec8ce5e176aa182bf141f7059cfb467e3b508bc6f36f227d5cf31c7baa2a010677e813ffca24b4ff5faf3348b2750201c85b126a480118b149f514d3e7aba46a99f40aac6507a2c6d6f3c7a6b38038786831e3e6b5b0adf5894b',
+            period: 3,
+            genesis_time: 1726958055,
+            hash: 'f50064cd5f71a2e2de647940ac7fa2fd9f6128129ada163e971625ec9f082db2',
+            groupHash: '3a7cd8aa1864ff0cf8837e1bf77dad871aaaa8f046041ccecce74ab4e029f30c',
+            schemeID: 'bls-bn254-unchained-on-g1',
+            metadata: { beaconID: 'default' },
         }
 
         it('should verify a valid signature', async () => {
