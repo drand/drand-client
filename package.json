@@ -2,12 +2,27 @@
   "name": "drand-client",
   "version": "1.2.6",
   "description": "A client to the drand randomness beacon network.",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "./build/cjs/index.js",
+  "module": "./build/esm/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./build/index.d.ts",
+        "default": "./build/cjs/index.cjs"
+      },
+      "import": {
+        "types": "./build/index.d.ts",
+        "default": "./build/esm/index.js"
+      }
+    }
+  },
   "scripts": {
     "clean": "rm -rf ./build/* && rm -rf lib/version.ts",
     "precompile": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > lib/version.ts",
-    "compile": "npm run precompile && tsc --project tsconfig.json",
+    "compile": "npm run precompile && tsc --project tsconfig.json && tsc --project tsconfig-cjs.json",
     "publish:github": "npm publish --registry https://npm.pkg.github.com",
     "test": "jest --verbose ./test/**.test.ts",
     "lint": "eslint ./{lib,test}/*.ts",
