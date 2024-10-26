@@ -19,6 +19,10 @@
       }
     }
   },
+  "files": [
+    "build",
+    "src"
+  ],
   "scripts": {
     "clean": "rm -rf ./build/* && rm -rf lib/version.ts",
     "precompile": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > lib/version.ts",
