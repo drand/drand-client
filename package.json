@@ -11,7 +11,7 @@
     ".": {
       "require": {
         "types": "./build/index.d.ts",
-        "default": "./build/cjs/index.cjs"
+        "default": "./build/cjs/index.js"
       },
       "import": {
         "types": "./build/index.d.ts",
