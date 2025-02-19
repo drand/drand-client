@@ -1,5 +1,8 @@
 import { bls12_381 as bls } from '@noble/curves/bls12-381'
+import { bn254 } from '@kevincharm/noble-bn254-drand'
+import type { CHash } from '@noble/curves/abstract/utils'
 import { sha256 } from '@noble/hashes/sha256'
+import { keccak_256 } from '@noble/hashes/sha3'
 import { ensureBytes }  from '@noble/curves/abstract/utils'
 import {Buffer} from 'buffer'
 import {
@@ -11,7 +14,8 @@ import {
     G2UnchainedBeacon,
     isG1G2SwappedBeacon,
     G1UnchainedBeacon,
-    isG1Rfc9380
+    isG1Rfc9380,
+    isBn254OnG1
 } from './index'
 
 type PointG1 = typeof bls.G1.ProjectivePoint.ZERO
@@ -44,6 +48,12 @@ async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon, expe
 
     if (isG1Rfc9380(beacon, chainInfo)) {
         return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey, 'BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_')
+    }
+
+    if (isBn254OnG1(beacon, chainInfo)) {
+        return bn254.verifyShortSignature(beacon.signature, await unchainedBeaconMessage(beacon, keccak_256), publicKey, {
+            DST: 'BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_'
+        })
     }
 
     console.error(`Beacon type ${chainInfo.schemeID} was not supported or the beacon was not of the purported type`)
@@ -93,8 +103,8 @@ async function chainedBeaconMessage(beacon: G2ChainedBeacon): Promise<Uint8Array
     return sha256(message)
 }
 
-async function unchainedBeaconMessage(beacon: G2UnchainedBeacon | G1UnchainedBeacon): Promise<Uint8Array> {
-    return sha256(roundBuffer(beacon.round))
+async function unchainedBeaconMessage(beacon: G2UnchainedBeacon | G1UnchainedBeacon, hashFn: CHash = sha256): Promise<Uint8Array> {
+    return hashFn(roundBuffer(beacon.round))
 }
 
 function signatureBuffer(sig: string) {

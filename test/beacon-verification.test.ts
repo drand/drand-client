@@ -207,4 +207,29 @@ describe('verifyBeacon', () => {
             await expect(verifyBeacon(chainInfo, validBeacon, 2)).resolves.toEqual(false)
         })
     })
+
+    describe('signatures on BN254 G1', () => {
+        // TODO: Replace data with evmnet when it's live
+        const validBeacon = {
+            round: 10,
+            signature:
+                '0fd919ec1490bf01935f348837bd20f49f539c5adfd60ce29648fe16f8dbed8803bf3e8fb4c3cbce5dcb642333d81260a811cc432b2f7a687b9b7c2305ad01ee',
+            randomness: 'a62a0e81920b40fb361f9106efb34199af1fbdb0c53db51f7acbad73e0d9d0bf',
+        }
+
+        const chainInfo = {
+            public_key:
+                '14018a8127d0cd185f0d0cd168bec330c584581d46f77f41e8ee33ad600588e104961f20efbcec8ce5e176aa182bf141f7059cfb467e3b508bc6f36f227d5cf31c7baa2a010677e813ffca24b4ff5faf3348b2750201c85b126a480118b149f514d3e7aba46a99f40aac6507a2c6d6f3c7a6b38038786831e3e6b5b0adf5894b',
+            period: 3,
+            genesis_time: 1726958055,
+            hash: 'f50064cd5f71a2e2de647940ac7fa2fd9f6128129ada163e971625ec9f082db2',
+            groupHash: '3a7cd8aa1864ff0cf8837e1bf77dad871aaaa8f046041ccecce74ab4e029f30c',
+            schemeID: 'bls-bn254-unchained-on-g1',
+            metadata: { beaconID: 'default' },
+        }
+
+        it('should verify a valid signature', async () => {
+            await expect(verifyBeacon(chainInfo, validBeacon, validBeacon.round)).resolves.toEqual(true)
+        })
+    })
 })
