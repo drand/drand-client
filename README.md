@@ -144,11 +144,11 @@ the `--allow-net` flag e.g. `deno run --allow-net client.js`.
 
 ### Node.js
 
-If you'd like to run it in Node.js, add a fetch polyfill such as [`node-fetch`](http://npm.im/node-fetch)
+If you'd like to run it in Node.js, add a fetch polyfill such as [`isomorphic-fetch`](http://npm.im/isomorphic-fetch)
 and [`AbortController`](http://npm.im/abort-controller) as globals e.g.
 
 ```js
-import fetch from 'node-fetch'
+import fetch from 'isomorphic-fetch'
 import AbortController from 'abort-controller'
 
 global.fetch = fetch
@@ -160,7 +160,7 @@ global.AbortController = AbortController
 **From common.js:**
 
 ```js
-const fetch = require('node-fetch')
+const fetch = require('isomorphic-fetch')
 const AbortController = require('abort-controller')
 
 global.fetch = fetch
