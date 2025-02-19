@@ -36,7 +36,7 @@ In [Node.js](https://nodejs.org) or when using a bundler, install with:
 npm install drand-client
 ```
 
-Typescript types are included and don't need installed separately.
+Typescript types are included and don't need to be installed separately.
 
 ## Usage
 
