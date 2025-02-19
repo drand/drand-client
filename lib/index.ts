@@ -104,15 +104,11 @@ export async function* watch(
         
         await sleep(Math.max(0, waitTime))
 
-        try {
-            const beacon = await retryOnError(
-                async () => client.get(targetRound),
-                options.retriesOnFailure
-            )
-            yield validatedBeacon(client, beacon, targetRound)
-        } catch (error) {
-            throw error
-        }
+        const beacon = await retryOnError(
+            async () => client.get(targetRound),
+            options.retriesOnFailure
+        )
+        yield validatedBeacon(client, beacon, targetRound)
     }
 }
 
