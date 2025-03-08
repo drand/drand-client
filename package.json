@@ -29,7 +29,6 @@
     "typescript-eslint": "^0.0.1-alpha.0"
   },
   "dependencies": {
-    "@babel/traverse": "^7.23.2",
     "@noble/curves": "^1.4.0",
     "buffer": "^6.0.3",
     "isomorphic-fetch": "^3.0.0"
