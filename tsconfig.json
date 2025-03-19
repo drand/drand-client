@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "esnext",
     "target": "esnext",
     "sourceMap": true,
-    "outDir": "./build",
+    "outDir": "./build/esm",
     "moduleResolution": "node",
     "allowJs": true,
     "esModuleInterop": true,
