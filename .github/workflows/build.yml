@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 19.4.0
+          node-version: 22.x
 
       - name: Bump version and push tag
         if: github.ref == 'refs/heads/master'
