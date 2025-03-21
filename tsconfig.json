@@ -1,34 +1,14 @@
 {
   "compilerOptions": {
-    "module": "esnext",
-    "target": "esnext",
-    "sourceMap": true,
-    "outDir": "./build/esm",
-    "moduleResolution": "node",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "strict": true,
     "declaration": true,
-    "declarationDir": "./build",
-    "declarationMap": true,
-    "allowSyntheticDefaultImports": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "emitDeclarationOnly": true,
+    "outDir": "build",
+    "rootDir": "lib",
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": false,
-    "types": [
-      "node",
-      "jest"
-    ]
+    "composite": false, 
+    "module": "esnext",
+    "target": "es2020",
+    "moduleResolution": "bundler"
   },
-  "include": [
-    "lib/**/*.ts"
-  ],
-  "compileOnSave": true
+  "include": ["lib"]
 }
-
-

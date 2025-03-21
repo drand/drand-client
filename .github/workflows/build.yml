@@ -32,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: Compile the typescript
-        run: npm run compile
+        run: npm run build
 
       - name: Lint the code
         run: npm run lint
