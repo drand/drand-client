@@ -5,7 +5,7 @@ import FastestNodeClient from './fastest-node-client'
 import MultiBeaconNode from './multi-beacon-node'
 import {retryOnError, roundAt, roundTime, sleep} from './util'
 import {verifyBeacon} from './beacon-verification'
-import {defaultClient, fastnetClient, quicknetClient, testnetDefaultClient, testnetQuicknetClient} from './defaults'
+import {defaultClient, quicknetClient, testnetDefaultClient, testnetQuicknetClient} from './defaults'
 
 // functionality for inspecting a drand node
 export interface DrandNode {
@@ -242,7 +242,6 @@ export {
     roundTime,
     defaultClient,
     quicknetClient,
-    fastnetClient,
     testnetDefaultClient,
     testnetQuicknetClient,
 }
