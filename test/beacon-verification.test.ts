@@ -151,34 +151,6 @@ describe('verifyBeacon', () => {
 
         expect(await verifyBeacon(chainInfo, beacon, beacon.round)).toBeFalsy()
     })
-    describe('signatures on G1', () => {
-        const validBeacon = {
-            round: 3,
-            randomness: 'a4eb0ed6c4132da066843c3bfdce732ce5013eda86e74c136ab8ccc387b798dd',
-            signature: '8176555f90d71aa49ceb37739683749491c2bab15a46094b255289ed25cf8f01cdfb1fe8bd9cd5a19eb09448a3e53186'
-        }
-        const chainInfo = {
-            public_key: 'a0b862a7527fee3a731bcb59280ab6abd62d5c0b6ea03dc4ddf6612fdfc9d01f01c31542541771903475eb1ec6615f8d0df0b8b6dce385811d6dcf8cbefb8759e5e616a3dfd054c928940766d9a5b9db91e3b697e5d70a975181e007f87fca5e',
-            period: 3,
-            genesis_time: 1677685200,
-            hash: 'dbd506d6ef76e5f386f41c651dcb808c5bcbd75471cc4eafa3f4df7ad4e4c493',
-            groupHash: 'a81e9d63f614ccdb144b8ff79fbd4d5a2d22055c0bfe4ee9a8092003dab1c6c0',
-            schemeID: 'bls-unchained-on-g1',
-            metadata: {'beaconID': 'fastnet'}
-        }
-
-        it('should verify a signature on G1', async () => {
-            await expect(verifyBeacon(chainInfo, validBeacon, validBeacon.round)).resolves.toEqual(true)
-        })
-
-        it('should not verify a signature on G1 for the wrong round', async () => {
-            const invalidBeacon = {...validBeacon, round: 55}
-            await expect(verifyBeacon(chainInfo, invalidBeacon, invalidBeacon.round)).resolves.toEqual(false)
-        })
-        it('should not verify a valid beacon with the wrong expected round', async () => {
-            await expect(verifyBeacon(chainInfo, validBeacon, 2)).resolves.toEqual(false)
-        })
-    })
     describe('signatures on G1 with DST', () => {
         const validBeacon = {
             round: 38,
@@ -205,6 +177,31 @@ describe('verifyBeacon', () => {
         })
         it('should not verify a valid beacon with the wrong expected round', async () => {
             await expect(verifyBeacon(chainInfo, validBeacon, 2)).resolves.toEqual(false)
+        })
+    })
+
+    describe('signatures on BN254 G1', () => {
+        const validBeacon = {
+            round: 6390578,
+            signature:
+                '0d0d705983f50d6a2846e77d8d12a238f0be277a2307eb3e0d5206dc6765b0f91f04e596e3b28295086e8fda9047d40d37f7c2d8fb2f6686839101692e4f5f13',
+            randomness: '466262e8cb50407310fa05024bff96e52a8c701e7f6b209ac5cdbdf01cf903f2',
+        }
+
+        const chainInfo = {
+            public_key: '07e1d1d335df83fa98462005690372c643340060d205306a9aa8106b6bd0b3820557ec32c2ad488e4d4f6008f89a346f18492092ccc0d594610de2732c8b808f0095685ae3a85ba243747b1b2f426049010f6b73a0cf1d389351d5aaaa1047f6297d3a4f9749b33eb2d904c9d9ebf17224150ddd7abd7567a9bec6c74480ee0b',
+            period: 3,
+            genesis_time: 1727521075,
+            hash: '04f1e9062b8a81f848fded9c12306733282b2727ecced50032187751166ec8c3',
+            groupHash: 'cd7ad2f0e0cce5d8c288f2dd016ffe7bc8dc88dbb229b3da2b6ad736490dfed6',
+            schemeID: 'bls-bn254-unchained-on-g1',
+            metadata: {
+                beaconID: 'evmnet'
+            }
+        }
+
+        it('should verify a valid signature', async () => {
+            await expect(verifyBeacon(chainInfo, validBeacon, validBeacon.round)).resolves.toEqual(true)
         })
     })
 })

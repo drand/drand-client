@@ -5,7 +5,7 @@ import FastestNodeClient from './fastest-node-client'
 import MultiBeaconNode from './multi-beacon-node'
 import {retryOnError, roundAt, roundTime, sleep} from './util'
 import {verifyBeacon} from './beacon-verification'
-import {defaultClient, fastnetClient, quicknetClient, testnetDefaultClient, testnetQuicknetClient} from './defaults'
+import {defaultClient, quicknetClient, testnetDefaultClient, testnetQuicknetClient} from './defaults'
 
 // functionality for inspecting a drand node
 export interface DrandNode {
@@ -144,7 +144,7 @@ export type ChainInfo = {
 }
 
 // currently drand supports chained and unchained randomness - read more here: https://drand.love/docs/cryptography/#randomness
-export type RandomnessBeacon = G2ChainedBeacon | G2UnchainedBeacon | G1UnchainedBeacon | G1RFC9380Beacon
+export type RandomnessBeacon = G2ChainedBeacon | G2UnchainedBeacon | G1UnchainedBeacon | G1RFC9380Beacon  | Bn254OnG1Beacon
 
 export type G2ChainedBeacon = {
     round: number
@@ -175,6 +175,14 @@ export type G1RFC9380Beacon = {
     signature: string
     // this distinguishes it from the other unchained beacons so the type guard works correctly
     _phantomg19380?: never
+}
+
+export type Bn254OnG1Beacon = {
+    round: number
+    randomness: string
+    signature: string
+    // this distinguishes it from the other unchained beacons so the type guard works correctly
+    _phantombn254ong1?: never
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -214,6 +222,15 @@ export function isG1Rfc9380(value: any, info: ChainInfo): value is G1RFC9380Beac
         value.round > 0
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export function isBn254OnG1(value: any, info: ChainInfo): value is Bn254OnG1Beacon {
+    return info.schemeID === 'bls-bn254-unchained-on-g1' &&
+        !!value.randomness &&
+        !!value.signature &&
+        value.previous_signature === undefined &&
+        value.round > 0
+}
+
 // exports some default implementations of the above interfaces and other utility functions that could be used with them
 export {
     HttpChain,
@@ -225,7 +242,6 @@ export {
     roundTime,
     defaultClient,
     quicknetClient,
-    fastnetClient,
     testnetDefaultClient,
     testnetQuicknetClient,
 }
