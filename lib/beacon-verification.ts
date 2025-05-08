@@ -102,7 +102,7 @@ async function chainedBeaconMessage(beacon: G2ChainedBeacon): Promise<Uint8Array
 }
 
 async function unchainedBeaconMessage(beacon: G2UnchainedBeacon | G1UnchainedBeacon, hashFn: CHash = sha256): Promise<Uint8Array> {
-    return sha256(roundBuffer(beacon.round))
+    return hashFn(roundBuffer(beacon.round))
 }
 
 function signatureBuffer(sig: string) {
