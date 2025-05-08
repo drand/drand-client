@@ -1,7 +1,7 @@
-import { bls12_381 as bls } from '@noble/curves/bls12-381'
-import { bn254 } from '@kevincharm/noble-bn254-drand'
-import { sha256 } from '@noble/hashes/sha2'
-import { keccak_256 } from '@noble/hashes/sha3'
+import {bls12_381 as bls} from '@noble/curves/bls12-381'
+import {bn254} from '@kevincharm/noble-bn254-drand'
+import {sha256} from '@noble/hashes/sha2'
+import {keccak_256} from '@noble/hashes/sha3'
 import {CHash, ensureBytes} from '@noble/curves/abstract/utils'
 import {Buffer} from 'buffer'
 import {
@@ -80,7 +80,7 @@ export async function verifySigOnG1(
     message: G1Hex,
     publicKey: G2Hex,
     // default DST is the invalid one used for 'bls-unchained-on-g1' for backwards compat
-    domainSeparationTag= 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_'
+    domainSeparationTag = 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_'
 ): Promise<boolean> {
     const P = normP2(publicKey);
     const Hm = normP1Hash(message, domainSeparationTag);
