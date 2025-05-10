@@ -1,6 +1,6 @@
 {
   "name": "drand-client",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A client to the drand randomness beacon network.",
   "source": "lib/index.ts",
   "main": "./build/cjs/index.js",
@@ -20,7 +20,9 @@
   },
   "files": [
     "build",
-    "lib"
+    "lib",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "clean": "rm -rf ./build/* && rm -rf lib/version.ts",

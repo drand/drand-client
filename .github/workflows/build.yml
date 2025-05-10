@@ -48,7 +48,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          package: build/package.json
+          package: package.json
           # don't try and deploy if versions haven't changed
           check-version: true
 
