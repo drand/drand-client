@@ -20,43 +20,52 @@ type PointG1 = typeof bls.G1.ProjectivePoint.ZERO
 type PointG2 = typeof bls.G2.ProjectivePoint.ZERO
 
 async function verifyBeacon(chainInfo: ChainInfo, beacon: RandomnessBeacon, expectedRound: number): Promise<boolean> {
-    const publicKey = chainInfo.public_key
+    try {
+        if (!chainInfo || !chainInfo.public_key) {
+            throw new Error('Invalid chain info: Missing public key');
+        }
 
-    if (beacon.round !== expectedRound) {
-        console.error('round was not the expected round')
-        return false
+        const publicKey = chainInfo.public_key;
+
+        if (!beacon || typeof beacon.round !== 'number') {
+            throw new Error('Invalid beacon: Missing or invalid round number');
+        }
+
+        if (beacon.round !== expectedRound) {
+            throw new Error(`Round mismatch: Expected ${expectedRound}, got ${beacon.round}`);
+        }
+
+        if (!await randomnessIsValid(beacon)) {
+            throw new Error('Invalid beacon: Randomness does not match signature');
+        }
+
+        if (isChainedBeacon(beacon, chainInfo)) {
+            return bls.verify(beacon.signature, await chainedBeaconMessage(beacon), publicKey);
+        }
+
+        if (isUnchainedBeacon(beacon, chainInfo)) {
+            return bls.verify(beacon.signature, await unchainedBeaconMessage(beacon), publicKey);
+        }
+
+        if (isG1G2SwappedBeacon(beacon, chainInfo)) {
+            return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey);
+        }
+
+        if (isG1Rfc9380(beacon, chainInfo)) {
+            return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey, 'BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_');
+        }
+
+        if (isBn254OnG1(beacon, chainInfo)) {
+            return bn254.verifyShortSignature(beacon.signature, await unchainedBeaconMessage(beacon, keccak_256), publicKey, {
+                DST: 'BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_'
+            });
+        }
+
+        throw new Error(`Unsupported beacon type: ${chainInfo.schemeID}`);
+    } catch (error) {
+        console.error('Beacon verification failed:', error instanceof Error ? error.message : 'Unknown error');
+        return false;
     }
-
-    if (!await randomnessIsValid(beacon)) {
-        console.error('randomness did not match the signature')
-        return false
-    }
-
-    if (isChainedBeacon(beacon, chainInfo)) {
-        return bls.verify(beacon.signature, await chainedBeaconMessage(beacon), publicKey)
-    }
-
-    if (isUnchainedBeacon(beacon, chainInfo)) {
-        return bls.verify(beacon.signature, await unchainedBeaconMessage(beacon), publicKey)
-    }
-
-    if (isG1G2SwappedBeacon(beacon, chainInfo)) {
-        return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey)
-    }
-
-    if (isG1Rfc9380(beacon, chainInfo)) {
-        return verifySigOnG1(beacon.signature, await unchainedBeaconMessage(beacon), publicKey, 'BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_')
-    }
-
-    if (isBn254OnG1(beacon, chainInfo)) {
-        return bn254.verifyShortSignature(beacon.signature, await unchainedBeaconMessage(beacon, keccak_256), publicKey, {
-            DST: 'BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_'
-        })
-    }
-
-    console.error(`Beacon type ${chainInfo.schemeID} was not supported or the beacon was not of the purported type`)
-    return false
-
 }
 
 // @noble/curves/bls12-381 has not yet implemented public keys on G2, so we've implemented a manual verification for beacons on G1
@@ -110,9 +119,16 @@ function signatureBuffer(sig: string) {
 }
 
 function roundBuffer(round: number) {
-    const buffer = Buffer.alloc(8)
-    buffer.writeBigUInt64BE(BigInt(round))
-    return buffer
+    if (!Number.isInteger(round) || round < 0) {
+        throw new Error('Round number must be a non-negative integer');
+    }
+    const buffer = Buffer.alloc(8);
+    let value = BigInt(round);
+    for (let i = 7; i >= 0; i--) {
+        buffer[i] = Number(value & BigInt(0xFF));
+        value = value >> BigInt(8);
+    }
+    return buffer;
 }
 
 async function randomnessIsValid(beacon: RandomnessBeacon): Promise<boolean> {
