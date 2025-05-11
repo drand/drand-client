@@ -6,64 +6,107 @@ import {LIB_VERSION} from './version'
 
 export function sleep(timeMs: number): Promise<void> {
     return new Promise(resolve => {
-        if (timeMs <= 0) {
-            resolve()
+        if (!Number.isFinite(timeMs)) {
+            throw new Error('Invalid sleep time: Must be a finite number');
         }
-        setTimeout(resolve, timeMs)
-    })
+        if (timeMs <= 0) {
+            resolve();
+            return;
+        }
+        setTimeout(resolve, timeMs);
+    });
 }
 
-export function roundAt(time: number, chain: ChainInfo) {
+export function roundAt(time: number, chain: ChainInfo): number {
     if (!Number.isFinite(time)) {
-        throw new Error('Cannot use Infinity or NaN as a beacon time')
+        throw new Error('Invalid time: Must be a finite number');
     }
-    if (time < chain.genesis_time * 1000) {
-        throw Error('Cannot request a round before the genesis time')
+    if (!chain || !chain.genesis_time || !chain.period) {
+        throw new Error('Invalid chain info: Missing required fields');
     }
-    return Math.floor((time - (chain.genesis_time * 1000)) / (chain.period * 1000)) + 1
+    
+    const genesisTimeMs = chain.genesis_time * 1000;
+    if (time < genesisTimeMs) {
+        throw new Error(`Invalid time: Cannot request a round before the genesis time (${new Date(genesisTimeMs).toISOString()})`);
+    }
+    
+    return Math.floor((time - genesisTimeMs) / (chain.period * 1000)) + 1;
 }
 
-export function roundTime(chain: ChainInfo, round: number) {
+export function roundTime(chain: ChainInfo, round: number): number {
     if (!Number.isFinite(round)) {
-        throw new Error('Cannot use Infinity or NaN as a round number')
+        throw new Error('Invalid round: Must be a finite number');
     }
-    round = round < 0 ? 0 : round
-    return (chain.genesis_time + (round - 1) * chain.period) * 1000
+    if (!chain || !chain.genesis_time || !chain.period) {
+        throw new Error('Invalid chain info: Missing required fields');
+    }
+    
+    round = Math.max(0, round);
+    return (chain.genesis_time + (round - 1) * chain.period) * 1000;
 }
 
 export type HttpOptions = {
-    userAgent?: string
-    headers?: Record<string, string>
-}
+    userAgent?: string;
+    headers?: Record<string, string>;
+    timeout?: number;
+};
 
 // taking a separate `userAgent` param for backwards compatibility
 export const defaultHttpOptions: HttpOptions = {
     userAgent: `drand-client-${LIB_VERSION}`,
-}
+    timeout: 30000, // 30 second default timeout
+};
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export async function jsonOrError(url: string, options: HttpOptions = defaultHttpOptions): Promise<any> {
-    const headers = {...options.headers}
+export async function jsonOrError<T>(url: string, options: HttpOptions = defaultHttpOptions): Promise<T> {
+    if (!url || typeof url !== 'string') {
+        throw new Error('Invalid URL: Must be a non-empty string');
+    }
 
+    const headers: Record<string, string> = {...(options.headers || {})};
     if (options.userAgent) {
-        headers['User-Agent'] = options.userAgent
+        headers['User-Agent'] = options.userAgent;
     }
 
-    const response = await fetch(url, {headers})
-    if (!response.ok) {
-        throw Error(`Error response fetching ${url} - got ${response.status}`)
-    }
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), options.timeout || defaultHttpOptions.timeout);
 
-    return await response.json()
+        const response = await fetch(url, {
+            headers,
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.name === 'AbortError') {
+                throw new Error(`Request timeout after ${options.timeout || defaultHttpOptions.timeout}ms`);
+            }
+            throw new Error(`Failed to fetch ${url}: ${error.message}`);
+        }
+        throw new Error(`Failed to fetch ${url}: Unknown error`);
+    }
 }
 
-export async function retryOnError<T>(fn: () => Promise<T>, times: number): Promise<T> {
+export async function retryOnError<T>(fn: () => Promise<T>, times: number, delayMs: number = 1000): Promise<T> {
+    if (!Number.isInteger(times) || times < 0) {
+        throw new Error('Invalid retry count: Must be a non-negative integer');
+    }
+
     try {
-        return await fn()
-    } catch (err) {
+        return await fn();
+    } catch (error) {
         if (times === 0) {
-            throw err
+            throw error;
         }
-        return retryOnError(fn, times - 1)
+        
+        await sleep(delayMs);
+        return retryOnError(fn, times - 1, delayMs);
     }
 }
