@@ -94,15 +94,21 @@ export async function* watch(
     options: WatchOptions = defaultWatchOptions,
 ): AsyncGenerator<RandomnessBeacon> {
     const info = await client.chain().info()
-    let currentRound = roundAt(Date.now(), info)
-
+    
     while (!abortController.signal.aborted) {
         const now = Date.now()
-        await sleep(roundTime(info, currentRound) - now)
+        const targetRound = roundAt(now, info)
+        
+        const nextRoundTime = roundTime(info, targetRound)
+        const waitTime = nextRoundTime - now
+        
+        await sleep(Math.max(0, waitTime))
 
-        const beacon = await retryOnError(async () => client.get(currentRound), options.retriesOnFailure)
-        yield validatedBeacon(client, beacon, currentRound)
-        currentRound = currentRound + 1
+        const beacon = await retryOnError(
+            async () => client.get(targetRound),
+            options.retriesOnFailure
+        )
+        yield validatedBeacon(client, beacon, targetRound)
     }
 }
 
