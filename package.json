@@ -1,13 +1,36 @@
 {
   "name": "drand-client",
-  "version": "1.2.6",
+  "version": "1.4.2",
   "description": "A client to the drand randomness beacon network.",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "source": "lib/index.ts",
+  "main": "./build/cjs/index.cjs",
+  "module": "./build/esm/index.mjs",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./build/index.d.ts",
+        "default": "./build/cjs/index.cjs"
+      },
+      "import": {
+        "types": "./build/index.d.ts",
+        "default": "./build/esm/index.mjs"
+      }
+    }
+  },
+  "files": [
+    "build",
+    "lib",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "clean": "rm -rf ./build/* && rm -rf lib/version.ts",
-    "precompile": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > lib/version.ts",
-    "compile": "npm run precompile && tsc --project tsconfig.json",
+    "build": "npm run build:precompile && npm run build:esm && npm run build:cjs && npm run build:types",
+    "build:precompile": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > lib/version.ts",
+    "build:esm": "esbuild lib/index.ts --bundle --platform=browser --format=esm --outdir=build/esm --sourcemap --target=es2020 --out-extension:.js=.mjs",
+    "build:cjs": "esbuild lib/index.ts --bundle --platform=node --format=cjs --outdir=build/cjs --sourcemap --target=es2020 --out-extension:.js=.cjs",
+    "build:types": "tsc --emitDeclarationOnly --outDir build",
     "publish:github": "npm publish --registry https://npm.pkg.github.com",
     "test": "jest --verbose ./test/**.test.ts",
     "lint": "eslint ./{lib,test}/*.ts",
@@ -16,23 +39,24 @@
   "author": "Alan Shaw",
   "license": "(Apache-2.0 OR MIT)",
   "devDependencies": {
+    "@types/isomorphic-fetch": "^0.0.39",
     "@types/jest": "^29.5.3",
-    "@types/node-fetch": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "abort-controller": "^3.0.0",
+    "esbuild": "^0.25.1",
     "eslint": "^8.45.0",
     "jest": "^29.6.1",
     "jest-fetch-mock": "^3.0.3",
-    "node-fetch": "^3.3.1",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
     "typescript-eslint": "^0.0.1-alpha.0"
   },
   "dependencies": {
-    "@babel/traverse": "^7.23.2",
-    "@noble/curves": "^1.4.0",
-    "buffer": "^6.0.3"
+    "@kevincharm/noble-bn254-drand": "^0.0.1",
+    "@noble/curves": "^1.6.0",
+    "buffer": "^6.0.3",
+    "isomorphic-fetch": "^3.0.0"
   },
   "repository": {
     "type": "git",

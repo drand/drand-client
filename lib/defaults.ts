@@ -28,18 +28,6 @@ export const QUICKNET_CHAIN_INFO = {
         beaconID: 'quicknet'
     }
 }
-export const FASTNET_CHAIN_URL = 'https://api.drand.sh/dbd506d6ef76e5f386f41c651dcb808c5bcbd75471cc4eafa3f4df7ad4e4c493'
-export const FASTNET_CHAIN_INFO: ChainInfo = {
-    hash: 'dbd506d6ef76e5f386f41c651dcb808c5bcbd75471cc4eafa3f4df7ad4e4c493',
-    public_key: 'a0b862a7527fee3a731bcb59280ab6abd62d5c0b6ea03dc4ddf6612fdfc9d01f01c31542541771903475eb1ec6615f8d0df0b8b6dce385811d6dcf8cbefb8759e5e616a3dfd054c928940766d9a5b9db91e3b697e5d70a975181e007f87fca5e',
-    period: 3,
-    genesis_time: 1677685200,
-    groupHash: 'a81e9d63f614ccdb144b8ff79fbd4d5a2d22055c0bfe4ee9a8092003dab1c6c0',
-    schemeID: 'bls-unchained-on-g1',
-    metadata: {
-        beaconID: 'fastnet'
-    }
-};
 
 export const TESTNET_DEFAULT_CHAIN_URL = 'https://pl-us.testnet.drand.sh'
 export const TESTNET_DEFAULT_CHAIN_INFO: ChainInfo = {
@@ -86,18 +74,6 @@ export function quicknetClient(): HttpChainClient {
         }
     }
     const chain = new HttpCachingChain(QUICKNET_CHAIN_URL, opts)
-    return new HttpChainClient(chain, opts)
-}
-
-export function fastnetClient(): HttpChainClient {
-    const opts = {
-        ...defaultChainOptions,
-        chainVerificationParams: {
-            chainHash: FASTNET_CHAIN_INFO.hash,
-            publicKey: FASTNET_CHAIN_INFO.public_key,
-        }
-    }
-    const chain = new HttpCachingChain(FASTNET_CHAIN_URL, opts)
     return new HttpChainClient(chain, opts)
 }
 
