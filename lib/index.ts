@@ -98,9 +98,25 @@ export async function* watch(
 
     while (!abortController.signal.aborted) {
         const now = Date.now()
-        await sleep(roundTime(info, currentRound) - now)
 
-        const beacon = await retryOnError(async () => client.get(currentRound), options.retriesOnFailure)
+        // Computing which round should be next based on real time
+        const expectedRound = roundAt(now, info)
+
+        // If we've fallen behind just skip the old rounds
+        if (expectedRound > currentRound) {
+            currentRound = expectedRound
+        }
+
+        const waitTime = roundTime(info, currentRound) - now
+        if (waitTime > 0) {
+            await sleep(waitTime)
+        }
+        
+        const beacon = await retryOnError(
+            async () => client.get(currentRound),
+            options.retriesOnFailure,
+        )
+
         yield validatedBeacon(client, beacon, currentRound)
         currentRound = currentRound + 1
     }
