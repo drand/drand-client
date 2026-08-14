@@ -5,7 +5,14 @@ import FastestNodeClient from './fastest-node-client'
 import MultiBeaconNode from './multi-beacon-node'
 import {retryOnError, roundAt, roundTime, sleep} from './util'
 import {verifyBeacon} from './beacon-verification'
-import {defaultClient, quicknetClient, testnetDefaultClient, testnetQuicknetClient} from './defaults'
+import {
+    defaultClient,
+    defaultClientV2,
+    quicknetClient,
+    quicknetClientV2,
+    testnetDefaultClient,
+    testnetQuicknetClient
+} from './defaults'
 
 // functionality for inspecting a drand node
 export interface DrandNode {
@@ -21,6 +28,10 @@ export interface Chain {
     info(): Promise<ChainInfo>
 }
 
+// the flavour of the drand HTTP API a relay speaks. cloudflare relays serve `v1`;
+// the drand team's relays serve `v2`. see lib/api.ts for how the two are mapped.
+export type ApiVersion = 'v1' | 'v2'
+
 export type ChainOptions = {
     // setting this to true will skip validation of beacons signatures (not recommended)
     disableBeaconVerification: boolean
@@ -31,11 +42,15 @@ export type ChainOptions = {
     // adding these params will verify that the chain info from the requested chain matches them, otherwise an error will be thrown.
     // Leaving them out assumes that you are sure the `baseUrl` you are using for the chain client is the correct chain
     chainVerificationParams?: ChainVerificationParams
+
+    // the HTTP API flavour the relay speaks. defaults to `v1`.
+    apiVersion?: ApiVersion
 }
 
 export const defaultChainOptions: ChainOptions = {
     disableBeaconVerification: false,
     noCache: false,
+    apiVersion: 'v1',
 }
 
 // these should correspond to `hash` and `public_key` in the `ChainInfo` below
@@ -241,7 +256,9 @@ export {
     roundAt,
     roundTime,
     defaultClient,
+    defaultClientV2,
     quicknetClient,
+    quicknetClientV2,
     testnetDefaultClient,
     testnetQuicknetClient,
 }

@@ -31,6 +31,23 @@ describe('multichain node', () => {
             expect(chains).toHaveLength(2)
         })
 
+        it('should list chains from the v2 endpoint and build v2 chain urls', async () => {
+            const v2Node = new MultiBeaconNode('https://example.com', {
+                disableBeaconVerification: false,
+                noCache: false,
+                apiVersion: 'v2'
+            })
+            fetchMock.mockResponseOnce(JSON.stringify(['deadbeef', 'cafebabe']))
+
+            const chains = await v2Node.chains()
+
+            expect(fetchMock.mock.calls[0][0]).toEqual('https://example.com/v2/chains')
+            expect(chains.map(c => c.baseUrl)).toEqual([
+                'https://example.com/v2/chains/deadbeef',
+                'https://example.com/v2/chains/cafebabe'
+            ])
+        })
+
     })
     describe('health', () => {
         it('should return the status if not 200', async () => {

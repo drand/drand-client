@@ -1,17 +1,22 @@
 import {Chain, ChainOptions, defaultChainOptions, DrandNode, HealthCheckResponse} from './index'
 import HttpCachingChain from './http-caching-chain'
 import {jsonOrError} from './util'
+import {apiVersionOf} from './api'
 
 class MultiBeaconNode implements DrandNode {
     constructor(public baseUrl: string, private options: ChainOptions = defaultChainOptions) {
     }
 
     async chains(): Promise<Array<Chain>> {
-        const chains = await jsonOrError(`${this.baseUrl}/chains`)
+        const v2 = apiVersionOf(this.options) === 'v2'
+        const chains = await jsonOrError(`${this.baseUrl}${v2 ? '/v2/chains' : '/chains'}`)
         if (!Array.isArray(chains)) {
             throw Error(`Expected an array from the chains endpoint but got: ${chains}`)
         }
-        return chains.map((chainHash: string) => new HttpCachingChain(`${this.baseUrl}/${chainHash}`), this.options)
+        return chains.map((chainHash: string) => {
+            const chainUrl = v2 ? `${this.baseUrl}/v2/chains/${chainHash}` : `${this.baseUrl}/${chainHash}`
+            return new HttpCachingChain(chainUrl, this.options)
+        })
     }
 
     async health(): Promise<HealthCheckResponse> {

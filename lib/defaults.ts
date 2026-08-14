@@ -1,4 +1,4 @@
-import {ChainInfo, defaultChainOptions} from './index';
+import {ChainInfo, ChainOptions, defaultChainOptions} from './index';
 import HttpChainClient from './http-chain-client';
 import HttpCachingChain from './http-caching-chain';
 
@@ -74,6 +74,36 @@ export function quicknetClient(): HttpChainClient {
         }
     }
     const chain = new HttpCachingChain(QUICKNET_CHAIN_URL, opts)
+    return new HttpChainClient(chain, opts)
+}
+
+// the drand team's relays serve the v2 API, where each chain lives under `/v2/chains/{hash}`
+export const DEFAULT_CHAIN_V2_URL = `${DEFAULT_CHAIN_URL}/v2/chains/${DEFAULT_CHAIN_INFO.hash}`
+export const QUICKNET_CHAIN_V2_URL = `${DEFAULT_CHAIN_URL}/v2/chains/${QUICKNET_CHAIN_INFO.hash}`
+
+export function defaultClientV2(): HttpChainClient {
+    const opts: ChainOptions = {
+        ...defaultChainOptions,
+        apiVersion: 'v2',
+        chainVerificationParams: {
+            chainHash: DEFAULT_CHAIN_INFO.hash,
+            publicKey: DEFAULT_CHAIN_INFO.public_key
+        }
+    }
+    const chain = new HttpCachingChain(DEFAULT_CHAIN_V2_URL, opts)
+    return new HttpChainClient(chain, opts)
+}
+
+export function quicknetClientV2(): HttpChainClient {
+    const opts: ChainOptions = {
+        ...defaultChainOptions,
+        apiVersion: 'v2',
+        chainVerificationParams: {
+            chainHash: QUICKNET_CHAIN_INFO.hash,
+            publicKey: QUICKNET_CHAIN_INFO.public_key
+        }
+    }
+    const chain = new HttpCachingChain(QUICKNET_CHAIN_V2_URL, opts)
     return new HttpChainClient(chain, opts)
 }
 
