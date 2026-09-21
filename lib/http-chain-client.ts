@@ -1,5 +1,6 @@
 import {Chain, ChainClient, ChainOptions, defaultChainOptions, RandomnessBeacon} from './index'
 import {defaultHttpOptions, HttpOptions, jsonOrError} from './util'
+import {apiVersionOf, normaliseBeacon, roundEndpoint} from './api'
 
 class HttpChainClient implements ChainClient {
 
@@ -10,13 +11,15 @@ class HttpChainClient implements ChainClient {
     }
 
     async get(roundNumber: number): Promise<RandomnessBeacon> {
-        const url = withCachingParams(`${this.someChain.baseUrl}/public/${roundNumber}`, this.options)
-        return await jsonOrError(url, this.httpOptions)
+        const endpoint = roundEndpoint(apiVersionOf(this.options), roundNumber)
+        const url = withCachingParams(`${this.someChain.baseUrl}/${endpoint}`, this.options)
+        return normaliseBeacon(await jsonOrError(url, this.httpOptions))
     }
 
     async latest(): Promise<RandomnessBeacon> {
-        const url = withCachingParams(`${this.someChain.baseUrl}/public/latest`, this.options)
-        return await jsonOrError(url, this.httpOptions)
+        const endpoint = roundEndpoint(apiVersionOf(this.options), 'latest')
+        const url = withCachingParams(`${this.someChain.baseUrl}/${endpoint}`, this.options)
+        return normaliseBeacon(await jsonOrError(url, this.httpOptions))
     }
 
     chain(): Chain {

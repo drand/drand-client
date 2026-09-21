@@ -1,5 +1,6 @@
 import fetchMock from 'jest-fetch-mock'
 import {HttpCachingChain, defaultChainOptions} from '../lib'
+import {validTestChainInfo, validV2ChainInfoResponse} from './data'
 
 beforeAll(() => {
     fetchMock.enableMocks()
@@ -79,6 +80,22 @@ describe('caching chain', () => {
 
         const response = await chain.info()
         expect(response).toEqual(chainInfo)
+    })
+
+    it('should normalise a v2 info response and verify it against the params', async () => {
+        const chain = new HttpCachingChain('https://example.com/v2/chains/wow', {
+            ...defaultChainOptions,
+            apiVersion: 'v2',
+            chainVerificationParams: {
+                chainHash: validTestChainInfo.hash,
+                publicKey: validTestChainInfo.public_key
+            }
+        })
+
+        fetchMock.mockResponseOnce(JSON.stringify(validV2ChainInfoResponse))
+
+        const response = await chain.info()
+        expect(response).toEqual(validTestChainInfo)
     })
 
 })

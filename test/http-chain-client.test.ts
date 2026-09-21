@@ -1,6 +1,6 @@
 import fetchMock from 'jest-fetch-mock'
 import {HttpChainClient} from '../lib'
-import {testChain, validTestBeacon} from './data'
+import {testChain, validTestBeacon, validV2BeaconNormalised, validV2BeaconResponse} from './data'
 import {defaultHttpOptions} from '../lib/util'
 
 beforeAll(() => {
@@ -107,6 +107,31 @@ describe('http chain client', () => {
 
             expect(fetchMock).toHaveBeenCalledTimes(1)
             expect(fetchMock).toHaveBeenCalledWith('https://example.com/public/latest', {headers})
+        })
+    })
+
+    describe('v2 API', () => {
+        const v2Client = new HttpChainClient(testChain, {
+            noCache: false,
+            disableBeaconVerification: false,
+            apiVersion: 'v2'
+        })
+        const defaultFetchOptions = {
+            headers: {'User-Agent': defaultHttpOptions.userAgent || ''}
+        }
+
+        it('get should hit the `rounds` endpoint and derive randomness', async () => {
+            fetchMock.once(JSON.stringify(validV2BeaconResponse))
+
+            await expect(v2Client.get(1000)).resolves.toEqual(validV2BeaconNormalised)
+            expect(fetchMock).toHaveBeenCalledWith('https://example.com/rounds/1000', defaultFetchOptions)
+        })
+
+        it('latest should hit the `rounds/latest` endpoint and derive randomness', async () => {
+            fetchMock.once(JSON.stringify(validV2BeaconResponse))
+
+            await expect(v2Client.latest()).resolves.toEqual(validV2BeaconNormalised)
+            expect(fetchMock).toHaveBeenCalledWith('https://example.com/rounds/latest', defaultFetchOptions)
         })
     })
 })

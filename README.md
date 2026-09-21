@@ -43,6 +43,24 @@ Typescript types are included and don't need installed separately.
 The `drand-client` contains HTTP implementations, but other transports can be supported by implementing the `DrandNode`
 , `Chain` and `ChainClient` interfaces where appropriate.
 
+### API versions (v1 & v2)
+
+drand relays serve one of two HTTP API flavours. Cloudflare relays (e.g. `https://drand.cloudflare.com`) serve `v1`;
+the drand team's relays serve `v2` under `https://api.drand.sh/v2`. The client speaks `v1` by default; pass
+`apiVersion: 'v2'` in the options and point the `baseUrl` at the v2 chain path to talk to a v2 relay:
+
+```js
+const chainHash = '52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971' // quicknet
+const options = { disableBeaconVerification: false, noCache: false, apiVersion: 'v2' }
+const chain = new HttpCachingChain(`https://api.drand.sh/v2/chains/${chainHash}`, options)
+const client = new HttpChainClient(chain, options)
+const beacon = await fetchBeacon(client)
+```
+
+Ready-made clients for the drand team's v2 relays are exported as `defaultClientV2()` and `quicknetClientV2()` (the
+`defaultClient()` / `quicknetClient()` helpers remain `v1`). Beacons are returned in the same shape regardless of API
+version — v2 omits `randomness` on the wire, so the client derives it (the sha256 of the signature) for you.
+
 ### Browser
 
 ```html
@@ -188,4 +206,5 @@ This project is dual-licensed under Apache 2.0 and MIT terms:
 
 ## Limitations
 - relays exposing only the default endpoints and not the chain-hash-based ones are not supported
-- this supports only 1.4 drand nodes+
+- this supports the drand `v1` and `v2` HTTP APIs (1.4 drand nodes+)
+- a single client speaks one API version; to mix `v1` and `v2` relays (e.g. in a `FastestNodeClient`) use one client per version
