@@ -1,5 +1,9 @@
 import {roundBuffer, verifyBeacon} from '../lib/beacon-verification'
 
+// the negative cases below make verifyBeacon log its reason; keep the test output clean
+beforeAll(() => jest.spyOn(console, 'error').mockImplementation(() => undefined))
+afterAll(() => jest.restoreAllMocks())
+
 test('round buffer converts numbers < 255 correctly', async () => {
     expect(roundBuffer(1).readBigUInt64BE()).toBe(BigInt(1))
 })
