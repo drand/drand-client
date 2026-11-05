@@ -60,7 +60,7 @@ describe('fetch beacon', () => {
     it('should throw an error for a round number less than 1', async () => {
         const client = new StubChainClient(testChain, validTestBeacon, defaultChainOptions)
 
-        await expect(fetchBeacon(client, -1)).rejects.toThrowError()
+        await expect(fetchBeacon(client, -1)).rejects.toThrow()
 
         expect(fetchMock).not.toHaveBeenCalled()
     })
@@ -69,7 +69,7 @@ describe('fetch beacon', () => {
         const invalidBeacon = {...validTestBeacon, signature: 'deadbeefdeadbeefdeadbeefdeadbeef'}
         const client = new StubChainClient(testChain, invalidBeacon, defaultChainOptions)
 
-        await expect(fetchBeacon(client, 1)).rejects.toThrowError()
+        await expect(fetchBeacon(client, 1)).rejects.toThrow()
     })
 
     it('should not throw an error if the returned beacon is not valid when `disableBeaconVerification` is set', async () => {
