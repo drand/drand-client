@@ -17,7 +17,7 @@ beforeEach(() => {
 describe('roundAt', () => {
     it('should return an error when time is less than genesis', () => {
         const chainInfo = createChainInfo(1, 1)
-        expect(() => roundAt(0, chainInfo)).toThrowError()
+        expect(() => roundAt(0, chainInfo)).toThrow()
     })
 
     it('should get round 1 for first round', () => {
