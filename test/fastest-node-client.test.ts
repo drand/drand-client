@@ -39,7 +39,7 @@ describe('multichain client', () => {
     }
 
     it('should throw an error if no baseUrls are provided', () => {
-        expect(() => new MultichainClient([])).toThrowError()
+        expect(() => new MultichainClient([])).toThrow()
     })
 
     it('should select the fastest client', async () => {

@@ -56,7 +56,7 @@ describe('caching chain', () => {
 
         fetchMock.mockResponseOnce(JSON.stringify(chainInfo))
 
-        await expect(chain.info()).rejects.toThrowError()
+        await expect(chain.info()).rejects.toThrow()
     })
 
     it('should throw an error if the public key returned does not match the verification params', async () => {
@@ -69,7 +69,7 @@ describe('caching chain', () => {
         })
         fetchMock.mockResponseOnce(JSON.stringify(chainInfo))
 
-        await expect(chain.info()).rejects.toThrowError()
+        await expect(chain.info()).rejects.toThrow()
     })
 
     it('should not throw an error if the there are no chain verification params provided', async () => {

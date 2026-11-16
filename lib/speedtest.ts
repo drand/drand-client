@@ -14,7 +14,7 @@ export function createSpeedTest(test: () => Promise<void>, frequencyMs: number, 
         try {
             await test()
             queue.add(Date.now() - startTime)
-        } catch (err) {
+        } catch {
             queue.add(Number.MAX_SAFE_INTEGER)
         }
     }

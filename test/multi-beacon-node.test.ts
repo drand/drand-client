@@ -20,7 +20,7 @@ describe('multichain node', () => {
         it('should blow up if the response from the node isn\'t an array', async () => {
             fetchMock.mockResponseOnce('deadbeef')
 
-            await expect(multiChainNode.chains()).rejects.toThrowError()
+            await expect(multiChainNode.chains()).rejects.toThrow()
         })
 
         it('should create a chain object for each chain', async () => {

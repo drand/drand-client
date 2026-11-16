@@ -70,7 +70,7 @@ describe('watch', () => {
             }
         })
         const generator = watch(client, abort, {retriesOnFailure: 0})
-        await expect(() => generator.next()).rejects.toThrowError()
+        await expect(() => generator.next()).rejects.toThrow()
         fetchMock.disableMocks()
     })
 })
